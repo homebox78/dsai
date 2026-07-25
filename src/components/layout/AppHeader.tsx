@@ -39,9 +39,6 @@ export function AppHeader() {
       >
         <Icon name="search" size={17} className="text-white/85" />
         <span className="truncate">문서·대화·Task 추론 검색</span>
-        <span className="ml-auto flex-none rounded border border-white/28 bg-white/12 px-1 py-px text-[10.7px] text-white">
-          ⌘K
-        </span>
       </button>
 
       {/* 조직&사업부 전환 (N) */}

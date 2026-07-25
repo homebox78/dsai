@@ -772,7 +772,6 @@ function SearchModal() {
           placeholder="문장으로 물어보세요 — 단어가 달라도 의미로 찾습니다"
           className="min-w-0 flex-1 border-none bg-transparent p-0 text-body outline-none"
         />
-        <span className="flex-none rounded border border-ink-200 bg-ink-50 px-1.5 py-0.5 text-tiny text-ink-400">⌘K</span>
       </div>
       <div className="mb-2 text-tiny font-extrabold tracking-[.06em] text-ink-400">추천 결과</div>
       <div className="flex flex-col gap-1">
