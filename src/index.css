@@ -1,0 +1,226 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+
+/* 아이콘 = Google Material Symbols (전 화면 통일, CDN 아닌 로컬 번들) */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 100 700;
+  src: url('./assets/fonts/material-symbols-outlined.woff2') format('woff2');
+  font-display: block;
+}
+
+/*
+  Amber Document Intelligence — 디자인 토큰 (단일 진리원)
+  ─────────────────────────────────────────────────────────
+  · 화면 CSS에 hex 직접 작성 금지. 항상 이 파일의 토큰을 사용한다.
+  · 컨셉: 블루 (스토리보드 p3·p7 "블루 느낌으로 컨셉으로")
+  · 영역 구분은 카드가 아닌 라인(divider) — p4 특이사항
+  ⚠️ 스토리보드 캡처가 저해상이라 색은 근사치. 고해상 시안 수신 시 이 파일만 보정한다.
+*/
+
+/* `static` — 미사용 토큰도 CSS 변수로 내보낸다(인라인 style에서 var() 참조 가능) */
+@theme static {
+  /* ── Brand Blue ───────────────────────────────── */
+  --color-brand-50: #eff5ff;
+  --color-brand-100: #dbe7fe;
+  --color-brand-200: #bfd6fe;
+  --color-brand-300: #93bbfd;
+  --color-brand-400: #609afa;
+  --color-brand-500: #3b7ff6;
+  --color-brand-600: #2563eb; /* 기본 채움 버튼 */
+  --color-brand-700: #1d4ed8; /* 헤더 바 */
+  --color-brand-800: #1e40af; /* 셋업 사이드 패널 */
+  --color-brand-900: #1e3a8a;
+
+  /* ── Blue-Gray (중립) ─────────────────────────── */
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #f1f5f9;
+  --color-ink-200: #e6ebf2;
+  --color-ink-300: #cfd8e3;
+  --color-ink-400: #9aa8bd;
+  --color-ink-500: #6b7a90;
+  --color-ink-600: #4d5b70;
+  --color-ink-700: #374253;
+  --color-ink-800: #252d3a;
+  --color-ink-900: #161c26;
+
+  /* ── 상태 (배지·진행률) ───────────────────────── */
+  --color-state-success: #12a150;
+  --color-state-success-soft: #e8f7ee;
+  --color-state-warning: #d97706;
+  --color-state-warning-soft: #fef3e2;
+  --color-state-danger: #e5484d;
+  --color-state-danger-soft: #fdecec;
+  --color-state-info: #3b7ff6;
+  --color-state-info-soft: #eaf2ff;
+  --color-state-idle: #6b7a90;
+  --color-state-idle-soft: #f1f5f9;
+
+  /* ── AI 강조 (챗봇·AI 생성물) ─────────────────── */
+  --color-ai: #7c5cff;
+  --color-ai-soft: #f1edff;
+
+  /* ── 타이포 ───────────────────────────────────── */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    'Helvetica Neue', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'D2Coding', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ── 화면 영역 색 (사용자 지정) ───────────────── */
+  --color-surface-sidebar: #fafbfc; /* 가장 좌측 사이드메뉴 = 연한 그레이 */
+  --color-surface-header: var(--color-brand-700); /* 헤더 = 블루톤 */
+
+  /* ── 레이아웃 상수 (패널 폭·헤더 높이) ────────── */
+  --spacing-header: 56px;
+  --spacing-crumb: 44px;
+  --spacing-menu: 220px;
+  --spacing-menu-collapsed: 56px;
+  --spacing-submenu: 260px;
+  --spacing-chatbot: 320px;
+}
+
+/* ── shadcn/ui 시맨틱 토큰 (브랜드 토큰에 매핑) ─────── */
+:root {
+  --radius: 0.5rem;
+
+  --background: #ffffff;
+  --foreground: var(--color-ink-900);
+
+  --card: #ffffff;
+  --card-foreground: var(--color-ink-900);
+  --popover: #ffffff;
+  --popover-foreground: var(--color-ink-900);
+
+  --primary: var(--color-brand-600);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--color-ink-100);
+  --secondary-foreground: var(--color-ink-700);
+
+  --muted: var(--color-ink-100);
+  --muted-foreground: var(--color-ink-500);
+
+  --accent: var(--color-brand-50);
+  --accent-foreground: var(--color-brand-700);
+
+  --destructive: var(--color-state-danger);
+  --destructive-foreground: #ffffff;
+
+  --border: var(--color-ink-200);
+  --input: var(--color-ink-300);
+  --ring: var(--color-brand-500);
+
+  --sidebar: var(--color-surface-sidebar);
+  --sidebar-foreground: var(--color-ink-700);
+  --sidebar-primary: var(--color-brand-600);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-brand-50);
+  --sidebar-accent-foreground: var(--color-brand-700);
+  --sidebar-border: var(--color-ink-200);
+  --sidebar-ring: var(--color-brand-500);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 폼 요소는 폰트를 상속하지 않는다 — 명시 지정 */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+  }
+
+  /* Material Symbols 아이콘 (Icon 컴포넌트가 사용) */
+  .mi {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    font-variation-settings:
+      'FILL' var(--mi-fill, 0),
+      'wght' var(--mi-wght, 400),
+      'GRAD' var(--mi-grad, 0),
+      'opsz' var(--mi-opsz, 24);
+  }
+
+  /* 스크롤바 (콘솔 톤) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-300);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-400);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
