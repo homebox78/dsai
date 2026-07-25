@@ -28,3 +28,7 @@ dist-ssr
 *.png
 !public/**/*.png
 !src/assets/**/*.png
+
+# delivery: 중복 사본 (delivery/delivery 는 delivery/ 와 동일)
+delivery/delivery/
+delivery/.thumbnail

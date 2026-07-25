@@ -5,6 +5,7 @@ import { PanelHandle } from '@/components/layout/PanelHandle'
 import { fileStatusTone, filesByFolder, folders, findFile } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { useLayoutMetrics } from '@/lib/responsive'
 import { FileDetail } from './FileDetail'
 import { EditorPane } from './EditorPane'
 
@@ -24,14 +25,19 @@ const SORTS: [string, string][] = [
 ]
 
 export function StoreView() {
-  const { folder, fileId, storeMode, botOpen, toggleBot, setFolder, openFile } = useAppStore()
+  const { folder, fileId, storeMode, botOpen: botPref, toggleBot, setFolder, openFile } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const [folderQuery, setFolderQuery] = useState('')
   const [fileQuery, setFileQuery] = useState('')
   const [scope, setScope] = useState('project')
   const [status, setStatus] = useState('전체')
   const [sort, setSort] = useState('recent')
-  const [listOpen, setListOpen] = useState(true)
+  const [listPref, setListPref] = useState<boolean | null>(null)
+  const { storeRowMin, contentMin, autoHideList, autoHideBot } = useLayoutMetrics()
+  // 시안: 좁아지면 자동 접힘, 단 목록 모드거나 사용자가 명시로 펼치면 유지
+  const listOpen = listPref ?? (!autoHideList || storeMode === 'list')
+  // 시안: botAuto = bot && !narrow — 1240px 미만이면 챗봇 자동 접힘
+  const botOpen = botPref && !autoHideBot
 
   const curFolder = folders.find((f) => f.id === folder) ?? folders[1]
   const folderFiles = filesByFolder[folder] ?? filesByFolder.f2
@@ -41,7 +47,7 @@ export function StoreView() {
   const curFile = (fileId ? findFile(fileId) : null) ?? folderFiles[0]
 
   return (
-    <div className="flex min-h-0 min-w-[1060px] flex-1">
+    <div className="flex min-h-0 flex-1" style={{ minWidth: storeRowMin }}>
       {/* 1영역: 폴더 구조 */}
       <div className="flex w-[212px] flex-none flex-col border-r border-ink-200 bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
@@ -214,12 +220,12 @@ export function StoreView() {
       <PanelHandle
         side="left"
         open={listOpen}
-        onClick={() => setListOpen((v) => !v)}
+        onClick={() => setListPref(!listOpen)}
         title={listOpen ? '파일 목록 접기' : '파일 목록 펼치기'}
       />
 
       {/* 3영역: 목록 / 상세 / 작성 */}
-      <div className="flex min-w-[420px] flex-1 flex-col bg-ink-50">
+      <div className="flex flex-1 flex-col bg-ink-50" style={{ minWidth: contentMin }}>
         {storeMode === 'list' && (
           <>
             <div className="flex h-10 flex-none items-center gap-2 border-b border-ink-200 bg-white px-3.5">

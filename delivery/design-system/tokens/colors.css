@@ -1,0 +1,72 @@
+:root {
+  /* ---- Brand blue (헤더 · 프라이머리) ---- */
+  --blue-900: #1345bd;   /* primary hover / deep text on tint */
+  --blue-700: #1750d8;   /* PRIMARY — 헤더, 프라이머리 버튼, 선택 상태 */
+  --blue-600: #2563eb;   /* 링크, 인라인 액션 텍스트 */
+  --blue-500: #1d4ed8;   /* 링크 hover */
+  --blue-200: #bfdbfe;   /* tint border */
+  --blue-100: #dbeafe;
+  --blue-50:  #eff6ff;   /* tint surface (선택 행·배지) */
+  --blue-text-soft: #c5d8f8; /* 딥블루 배경 위 보조 텍스트 */
+
+  /* ---- Neutral (blue-grey slate) ---- */
+  --slate-950: #0f172a;  /* 본문 텍스트 */
+  --slate-700: #334155;  /* 라벨 */
+  --slate-600: #475569;  /* 아이콘·보조 라벨 */
+  --slate-500: #64748b;  /* 서브 텍스트 */
+  --slate-400: #94a3b8;  /* 메타·플레이스홀더 */
+  --slate-300: #cbd5e1;  /* 컨트롤 보더 */
+  --slate-200: #e2e8f0;  /* 구조 보더 (패널·테이블 구분) */
+  --slate-100: #f1f5f9;  /* 행 hover · 얕은 채움 */
+  --slate-50:  #f8fafc;  /* 캔버스 배경 · 푸터 */
+  --slate-25:  #fafbfc;  /* 사이드 메뉴 배경 */
+  --white:     #ffffff;
+
+  /* ---- Semantic ---- */
+  --green-700: #15803d; --green-600: #16a34a; --green-50: #f0fdf4;
+  --amber-700: #b45309; --amber-500: #f59e0b; --amber-400: #fbbf24; --amber-50: #fffbeb;
+  --orange-700: #c2410c; --orange-400: #fb923c; --orange-50: #fff7ed;
+  --red-700: #b91c1c; --red-600: #dc2626; --red-400: #f87171; --red-200: #fecaca; --red-50: #fef2f2;
+
+  /* ---- Semantic aliases (use these in components) ---- */
+  --text-body: var(--slate-950);
+  --text-label: var(--slate-700);
+  --text-sub: var(--slate-500);
+  --text-meta: var(--slate-400);
+  --text-on-brand: var(--white);
+  --text-link: var(--blue-600);
+  --text-accent: var(--blue-900);
+
+  --surface-canvas: var(--slate-50);
+  --surface-panel: var(--white);
+  --surface-side: var(--slate-25);
+  --surface-footer: var(--slate-50);
+  --surface-row-hover: var(--slate-100);
+  --surface-selected: var(--blue-50);
+  --surface-brand: var(--blue-700);
+  --surface-brand-hover: var(--blue-900);
+
+  --border-structure: var(--slate-200);   /* 패널·테이블 라인 */
+  --border-hairline: var(--slate-100);    /* 행 사이 라인 */
+  --border-control: var(--slate-300);     /* 입력·보조 버튼 */
+  --border-brand: var(--blue-700);
+  --border-tint: var(--blue-200);
+
+  --focus-ring: 0 0 0 3px rgba(23, 80, 216, .12);
+  --focus-border: var(--blue-700);
+
+  /* 헤더(딥블루) 위 컨트롤 */
+  --on-brand-fill: rgba(255, 255, 255, .10);
+  --on-brand-fill-hover: rgba(255, 255, 255, .20);
+  --on-brand-border: rgba(255, 255, 255, .24);
+  --on-brand-text-soft: rgba(255, 255, 255, .75);
+
+  /* 상태 (배지 · 칩) */
+  --state-done-fg: var(--green-700);   --state-done-bg: var(--green-50);   --state-done-bar: var(--green-600);
+  --state-wait-fg: var(--amber-700);   --state-wait-bg: var(--amber-50);   --state-wait-bar: var(--amber-500);
+  --state-soon-fg: var(--orange-700);  --state-soon-bg: var(--orange-50);  --state-soon-bar: var(--orange-400);
+  --state-alert-fg: var(--red-700);    --state-alert-bg: var(--red-50);    --state-alert-bar: var(--red-600);
+  --state-idle-fg: var(--slate-600);   --state-idle-bg: var(--slate-100);  --state-idle-bar: var(--slate-300);
+
+  --scrim: rgba(15, 23, 42, .38);
+}

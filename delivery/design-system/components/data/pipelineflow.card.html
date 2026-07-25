@@ -1,0 +1,21 @@
+<!-- @dsCard group="Components" viewport="700x150" subtitle="PipelineFlow — 문서 처리 단계 흐름" name="Pipeline flow" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>PipelineFlow</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:16px;font-family:var(--font-ui);color:var(--text-body);background:#fff;line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1;display:inline-block;flex:none}
+  .panel{background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  .ph{height:44px;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid var(--border-structure);font-size:13.6px;font-weight:800}
+  .lnk{margin-left:auto;background:none;border:none;color:var(--text-link);font-size:12.1px;font-weight:600;display:flex;align-items:center}
+  .flow{display:flex;align-items:center;padding:12px 18px}
+  .st{display:flex;align-items:center;flex:1;min-width:0}
+  .lab{display:block;font-size:10.7px;color:var(--text-sub);margin-top:4px;white-space:nowrap}
+  .ln{flex:1;height:1px;background:var(--border-structure);margin:0 8px}</style></head><body>
+<div class="panel">
+  <div class="ph">문서 파이프라인<button class="lnk">문서 저장소<span class="msym" style="font-size:16px">chevron_right</span></button></div>
+  <div class="flow">
+    <div class="st"><div><span style="display:flex;align-items:center;gap:4px"><span class="msym" style="font-size:16px;color:var(--slate-700)">upload_file</span><span style="font-size:16px;font-weight:800;color:var(--slate-700)">1287</span></span><span class="lab">업로드</span></div><span class="ln"></span></div><div class="st"><div><span style="display:flex;align-items:center;gap:4px"><span class="msym" style="font-size:16px;color:var(--amber-700)">document_scanner</span><span style="font-size:16px;font-weight:800;color:var(--amber-700)">3</span></span><span class="lab">OCR 처리</span></div><span class="ln"></span></div><div class="st"><div><span style="display:flex;align-items:center;gap:4px"><span class="msym" style="font-size:16px;color:var(--green-700)">auto_awesome</span><span style="font-size:16px;font-weight:800;color:var(--green-700)">1284</span></span><span class="lab">RAG 색인</span></div><span class="ln"></span></div><div class="st"><div><span style="display:flex;align-items:center;gap:4px"><span class="msym" style="font-size:16px;color:var(--blue-700)">search_insights</span><span style="font-size:16px;font-weight:800;color:var(--blue-700)">412</span></span><span class="lab">검색 이용</span></div></div>
+  </div>
+</div>
+</body></html>

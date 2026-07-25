@@ -3,11 +3,15 @@ import { Icon } from '@/components/common/icon'
 import { tasks, taskHistory, taskStatusTone, type TaskStatus } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { useLayoutMetrics } from '@/lib/responsive'
 
 /** 업무 관리 (p55~56) — 상태 196px | 목록 322px | 상세 | 실시간 스트림 284px */
 
+/** 좌측 상태 필터 (시안 tfDefs) */
 const FILTERS: { id: string; label: string; dot: string }[] = [
   { id: 'all', label: '전체', dot: '#94a3b8' },
+  { id: 'mine', label: '내가 받은 요청', dot: '#2563eb' },
+  { id: 'sent', label: '내가 보낸 요청', dot: '#64748b' },
   { id: '요청됨', label: '요청됨', dot: '#94a3b8' },
   { id: '진행중', label: '진행중', dot: '#2563eb' },
   { id: '검토대기', label: '검토대기', dot: '#f59e0b' },
@@ -15,61 +19,95 @@ const FILTERS: { id: string; label: string; dot: string }[] = [
   { id: '반려', label: '반려', dot: '#ef4444' },
 ]
 
-const FLOW: { key: TaskStatus | '완료'; label: string; icon: string }[] = [
-  { key: '요청됨', label: '요청', icon: 'send' },
-  { key: '진행중', label: '진행', icon: 'sync' },
-  { key: '검토대기', label: '검토', icon: 'rate_review' },
-  { key: '완료', label: '완료', icon: 'check' },
+/** 워크플로 (시안 flowSteps) */
+const FLOW: { key: TaskStatus; icon: string }[] = [
+  { key: '요청됨', icon: 'send' },
+  { key: '진행중', icon: 'autorenew' },
+  { key: '검토대기', icon: 'rate_review' },
+  { key: '완료', icon: 'check_circle' },
 ]
 
 const STREAM = [
-  { who: '이수진', time: '10분 전', text: 'TASK-142 자료 요청을 다시 확인했습니다. 사업장별 구분 파일이 필요합니다.', dot: '#2563eb' },
-  { who: '나', time: '1시간 전', text: 'TASK-139 미서명 9개사 목록을 첨부해 회신했습니다.', dot: '#16a34a' },
-  { who: '김대성', time: '3시간 전', text: '확인했습니다. 구매팀과 협의해 이번 주 내 마무리 예정입니다.', dot: '#94a3b8' },
-  { who: '시스템', time: '어제', text: 'TASK-131 완료 처리 · 첨부 2건 문서 저장소 등록', dot: '#94a3b8' },
+  { who: '이수진', time: '3분 전', text: '요청 자료 아직 안 올라온 것 같아요. 확인 부탁드립니다.', dot: '#f59e0b' },
+  { who: '나', time: '1시간 전', text: '구매팀에 원본 요청해 두었습니다. 오늘 중 회신 예정입니다.', dot: '#2563eb' },
+  { who: '시스템', time: '2시간 전', text: '기한 D-3 알림이 담당자에게 발송되었습니다.', dot: '#cbd5e1' },
+  { who: '김대성', time: '어제', text: 'TASK-139 상태가 진행중으로 변경되었습니다.', dot: '#94a3b8' },
 ]
 
-const PRESETS = ['확인했습니다', '자료 준비 중입니다', '기한 연장 요청']
+const PRESETS = ['확인했습니다', '자료 첨부했습니다', '기한 연장 요청', '담당자 변경 필요']
+
+const ACTIONS = [
+  { label: '진행 시작', color: '#1d4ed8', bd: '#cbd5e1' },
+  { label: '검토 요청', color: '#b45309', bd: '#cbd5e1' },
+  { label: '완료 처리', color: '#15803d', bd: '#cbd5e1' },
+  { label: '반려', color: '#b91c1c', bd: '#fecaca' },
+]
+
+const STATUS_ORDER: TaskStatus[] = ['요청됨', '진행중', '검토대기', '완료', '반려']
+
+const SORTS: [string, string][] = [
+  ['due', '기한순'],
+  ['recent', '최신순'],
+  ['status', '상태순'],
+]
+
+const isOverdue = (t: { due: string; status: TaskStatus }) =>
+  t.due < '07.25' && t.status !== '완료' && t.status !== '반려'
+const isSoon = (t: { due: string; status: TaskStatus }) =>
+  t.due >= '07.25' && t.due <= '07.28' && t.status !== '완료'
 
 export function TaskView() {
-  const { taskId, setTaskId, setScreen } = useAppStore()
+  const { taskId, setTaskId, setScreen, taskFilter: filter, setTaskFilter: setFilter } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState('all')
   const [due, setDue] = useState('all')
+  const [sort, setSort] = useState('due')
+  const [sortOpen, setSortOpen] = useState(false)
   const [comment, setComment] = useState('')
   const [streamOpen, setStreamOpen] = useState(true)
+  const { taskRowMin, contentMin, veryNarrow } = useLayoutMetrics()
 
   const cur = tasks.find((t) => t.id === taskId) ?? tasks[0]
   const tone = taskStatusTone[cur.status]
-  const list = tasks
-    .filter((t) => filter === 'all' || t.status === filter)
-    .filter((t) => !query.trim() || t.title.includes(query.trim()) || t.from.includes(query.trim()))
-    .filter((t) => (due === 'over' ? t.due < '07.25' : due === 'week' ? t.due <= '07.28' : true))
+
+  const byFilter = (id: string) =>
+    id === 'all'
+      ? tasks
+      : id === 'mine'
+        ? tasks.filter((t) => t.to === '나')
+        : id === 'sent'
+          ? tasks.filter((t) => t.from === '나')
+          : tasks.filter((t) => t.status === id)
+
+  const q = query.trim()
+  const list = byFilter(filter)
+    .filter((t) => !q || t.title.includes(q) || t.from.includes(q) || t.to.includes(q))
+    .filter((t) => (due === 'over' ? isOverdue(t) : due === 'soon' ? isSoon(t) : true))
+    .slice()
+    .sort((a, b) =>
+      sort === 'due'
+        ? a.due.localeCompare(b.due)
+        : sort === 'recent'
+          ? b.no.localeCompare(a.no)
+          : STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status),
+    )
 
   const history = taskHistory[cur.id] ?? [
     { who: '시스템', time: '-', text: '아직 처리 이력이 없습니다.', tag: '안내' },
   ]
 
-  const flowIdx = FLOW.findIndex((f) => f.key === cur.status)
-  const doneIdx = cur.status === '완료' ? 3 : cur.status === '반려' ? 0 : flowIdx
+  // 시안: 반려는 1단계로 표시
+  const doneIdx = cur.status === '반려' ? 1 : Math.max(0, FLOW.findIndex((f) => f.key === cur.status))
 
   const meta = [
     { label: '요청자', value: cur.from },
     { label: '담당자', value: cur.to },
-    { label: '기한', value: cur.due },
-    { label: '첨부', value: `${cur.files}건` },
-  ]
-
-  const actions = [
-    { label: '완료 처리', bg: '#1750d8', bd: '#1750d8', color: '#fff' },
-    { label: '수정 요청', bg: '#fff', bd: '#cbd5e1', color: '#334155' },
-    { label: '기한 변경', bg: '#fff', bd: '#cbd5e1', color: '#334155' },
-    { label: '반려', bg: '#fff', bd: '#fecaca', color: '#b91c1c' },
+    { label: '처리 기한', value: cur.due },
+    { label: '연결된 대화방', value: cur.room },
   ]
 
   return (
-    <div className="flex min-h-0 min-w-[1180px] flex-1">
+    <div className="flex min-h-0 flex-1" style={{ minWidth: taskRowMin }}>
       {/* 업무 상태 */}
       <div className="flex w-[196px] flex-none flex-col border-r border-ink-200 bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
@@ -87,7 +125,7 @@ export function TaskView() {
         <div className="flex-1 overflow-auto py-[5px]">
           {FILTERS.map((f) => {
             const on = filter === f.id
-            const count = f.id === 'all' ? tasks.length : tasks.filter((t) => t.status === f.id).length
+            const count = byFilter(f.id).length
             return (
               <button
                 key={f.id}
@@ -118,7 +156,8 @@ export function TaskView() {
         </div>
       </div>
 
-      {/* 목록 */}
+      {/* 목록 — 아주 좁으면 자동 접힘 */}
+      {!veryNarrow && (
       <div className="flex w-[322px] flex-none flex-col border-r border-ink-200 bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
           <div className="mb-2 flex items-center gap-2">
@@ -127,26 +166,58 @@ export function TaskView() {
             </span>
             <span className="whitespace-nowrap text-xs2 text-ink-400">{list.length}건</span>
             <div className="flex-1" />
-            <button className="flex items-center gap-1 whitespace-nowrap rounded-md border border-ink-300 bg-white px-2 py-1 text-xs2 font-bold text-ink-700 hover:bg-ink-50">
-              <Icon name="swap_vert" size={15} className="text-ink-400" />
-              기한순
-            </button>
+            <div className="relative flex-none">
+              <button
+                onClick={() => setSortOpen((v) => !v)}
+                className="flex items-center gap-1 whitespace-nowrap rounded-md border bg-white px-2 py-1 text-xs2 font-bold text-ink-700 hover:bg-ink-50"
+                style={{ borderColor: sortOpen ? '#1750d8' : '#cbd5e1' }}
+              >
+                <Icon name="swap_vert" size={15} className="text-ink-400" />
+                {SORTS.find(([id]) => id === sort)?.[1]}
+                <Icon name={sortOpen ? 'expand_less' : 'expand_more'} size={14.1} className="text-ink-400" />
+              </button>
+              {sortOpen && (
+                <div className="anim-pop absolute right-0 top-[calc(100%+4px)] z-30 rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]">
+                  {SORTS.map(([id, label]) => {
+                    const on = sort === id
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => { setSort(id); setSortOpen(false) }}
+                        className="flex w-full items-center gap-1.5 whitespace-nowrap rounded-md px-[9px] py-1.5 text-left text-cap text-ink-900 hover:bg-ink-100"
+                        style={{ background: on ? '#eff6ff' : 'transparent', fontWeight: on ? 700 : 500 }}
+                      >
+                        <Icon
+                          name={on ? 'check' : 'radio_button_unchecked'}
+                          size={15}
+                          style={{ color: on ? '#1750d8' : '#cbd5e1' }}
+                        />
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex gap-1">
-            {([['all', '전체'], ['week', '이번 주'], ['over', '기한 초과']] as const).map(([id, label]) => {
+            {([['all', '전체'], ['over', '기한초과'], ['soon', '임박']] as const).map(([id, label]) => {
               const on = due === id
+              const arr = byFilter(filter)
+              const cnt = id === 'over' ? arr.filter(isOverdue).length : id === 'soon' ? arr.filter(isSoon).length : 0
               return (
                 <button
                   key={id}
                   onClick={() => setDue(id)}
                   className="flex-1 whitespace-nowrap rounded-[5px] border py-1 text-tiny font-bold"
                   style={{
-                    background: on ? '#eff6ff' : '#fff',
-                    borderColor: on ? '#bfdbfe' : '#cbd5e1',
-                    color: on ? '#1345bd' : '#334155',
+                    background: on ? '#1750d8' : '#fff',
+                    borderColor: on ? '#1750d8' : '#cbd5e1',
+                    color: on ? '#fff' : '#334155',
                   }}
                 >
                   {label}
+                  {!!cnt && <span className="ml-[3px] opacity-75">{cnt}</span>}
                 </button>
               )
             })}
@@ -175,7 +246,7 @@ export function TaskView() {
                     className="ml-auto text-tiny font-semibold"
                     style={{ color: t.due < '07.25' ? '#b91c1c' : '#64748b' }}
                   >
-                    {t.due < '07.25' ? '기한 초과' : `~${t.due}`}
+                    ~{t.due}
                   </span>
                 </span>
                 <span className="block text-body font-bold leading-[1.6]">{t.title}</span>
@@ -187,9 +258,10 @@ export function TaskView() {
           })}
         </div>
       </div>
+      )}
 
       {/* 상세 */}
-      <div className="flex min-w-[420px] flex-1 flex-col bg-ink-50">
+      <div className="flex flex-1 flex-col bg-ink-50" style={{ minWidth: contentMin }}>
         <div className="flex-none border-b border-ink-200 bg-white px-3.5 py-3">
           <div className="mb-[7px] flex items-center gap-2">
             <span
@@ -224,21 +296,21 @@ export function TaskView() {
                     <span
                       className="flex size-5 flex-none items-center justify-center rounded-full border"
                       style={{
-                        background: done ? '#eff6ff' : '#fff',
-                        borderColor: done ? '#bfdbfe' : '#e2e8f0',
+                        background: done ? '#1750d8' : '#fff',
+                        borderColor: done ? '#1750d8' : '#cbd5e1',
                       }}
                     >
-                      <Icon name={f.icon} size={14.1} style={{ color: done ? '#1750d8' : '#cbd5e1' }} />
+                      <Icon name={f.icon} size={14.1} style={{ color: done ? '#fff' : '#94a3b8' }} />
                     </span>
                     <span
                       className="whitespace-nowrap text-cap font-bold"
-                      style={{ color: done ? '#0f172a' : '#94a3b8' }}
+                      style={{ color: i === doneIdx ? '#0f172a' : done ? '#475569' : '#94a3b8' }}
                     >
-                      {f.label}
+                      {f.key}
                     </span>
                   </div>
                   {i < FLOW.length - 1 && (
-                    <span className="mx-2 h-px flex-1" style={{ background: i < doneIdx ? '#bfdbfe' : '#e2e8f0' }} />
+                    <span className="mx-2 h-px flex-1" style={{ background: i < doneIdx ? '#1750d8' : '#e2e8f0' }} />
                   )}
                 </div>
               )
@@ -255,11 +327,11 @@ export function TaskView() {
           </div>
 
           <div className="mt-[13px] flex gap-1.5">
-            {actions.map((a) => (
+            {ACTIONS.map((a) => (
               <button
                 key={a.label}
-                className="rounded-md border px-[13px] py-[7px] text-sm2 font-bold"
-                style={{ background: a.bg, borderColor: a.bd, color: a.color }}
+                className="rounded-md border bg-white px-[13px] py-[7px] text-sm2 font-bold hover:bg-ink-50"
+                style={{ borderColor: a.bd, color: a.color }}
               >
                 {a.label}
               </button>
@@ -274,7 +346,10 @@ export function TaskView() {
           {history.map((h, i) => (
             <div key={i} className="flex gap-3">
               <div className="flex w-2.5 flex-none flex-col items-center">
-                <span className="mt-1 size-[9px] flex-none rounded-full bg-ink-400" />
+                <span
+                  className="mt-1 size-[9px] flex-none rounded-full"
+                  style={{ background: h.who === '나' ? '#2563eb' : h.who === '시스템' ? '#cbd5e1' : '#94a3b8' }}
+                />
                 <span className="mt-1 w-px flex-1 bg-ink-200" />
               </div>
               <div className="flex-1 pb-4">

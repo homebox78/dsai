@@ -1,0 +1,71 @@
+<!-- @dsCard group="Components" viewport="700x320" subtitle="Button · IconButton · Badge · Input" name="Core" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Core</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1.35;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;line-height:1.35;white-space:nowrap;cursor:pointer}
+  .pri{background:var(--surface-brand);color:#fff;border:1px solid var(--surface-brand);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:700}
+  .sec{background:#fff;color:var(--text-label);border:1px solid var(--border-control);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .ghost{background:transparent;color:var(--text-label);border:1px solid transparent;border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .dgr{background:#fff;color:var(--state-alert-fg);border:1px solid var(--red-200);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .lnk{background:none;border:none;color:var(--text-link);font-size:12.6px;font-weight:600;padding:0}
+  .ib{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-md);color:var(--slate-600);position:relative}
+  .ibb{position:absolute;top:-3px;right:-3px;background:var(--red-600);color:#fff;border-radius:999px;font-size:9px;font-weight:800;padding:1px 4px}
+  .bdg{display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800;white-space:nowrap}
+  .inp{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-control);border-radius:var(--r-md);padding:9px 11px;font-size:13.6px;color:var(--text-body)}
+  .und{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-structure);padding:6px 2px;font-size:12.6px;color:var(--text-meta)}
+  .lab{font-size:12.1px;font-weight:700;color:var(--text-label);margin-bottom:6px;display:flex;gap:6px;align-items:baseline}
+  .req{font-size:10.7px;font-weight:800;color:var(--red-600)}
+  .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 11px;font-size:12.1px;font-weight:700;background:#fff;border:1px solid var(--border-control);color:var(--text-label)}
+  .chip.on{background:var(--surface-brand);border-color:var(--surface-brand);color:#fff}
+  .panel{background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  .ph{height:44px;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid var(--border-structure);font-size:12.1px;font-weight:800}
+  .lr{display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border-hairline);background:#fff}
+  .lr.sel{background:var(--surface-selected);border-left:2px solid var(--border-brand)}
+  .lr.hov{background:var(--surface-row-hover)}
+  .tile{width:28px;height:28px;border-radius:var(--r-md);background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;font-weight:800;color:var(--slate-600);flex:none}
+  .nm{font-size:13.6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt{font-size:11.6px;color:var(--text-meta);margin-top:4px;white-space:nowrap}
+  .tg{width:38px;height:22px;border-radius:999px;background:var(--slate-300);position:relative;flex:none}
+  .tg.on{background:var(--surface-brand)}
+  .tg i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:999px;background:#fff;box-shadow:var(--shadow-handle)}
+  .tg.on i{left:18px}
+  .bar{height:5px;background:var(--slate-100);border-radius:999px;overflow:hidden;display:flex}
+  .lbl{font-size:10.7px;font-weight:800;color:var(--text-meta);letter-spacing:.05em}</style></head><body>
+<div class="row">
+  <button class="btn pri"><span class="msym" style="font-size:17px">upload</span>파일 업로드</button>
+  <button class="btn sec">취소</button>
+  <button class="btn ghost"><span class="msym" style="font-size:17px">filter_list</span>필터</button>
+  <button class="btn dgr"><span class="msym" style="font-size:17px">delete</span>삭제</button>
+  <button class="btn lnk">전체 보기<span class="msym" style="font-size:15px">chevron_right</span></button>
+</div>
+<div class="row">
+  <button class="btn pri" style="padding:7px 11px;font-size:12.1px;border-radius:var(--r-md)">sm</button>
+  <button class="btn pri">md</button>
+  <button class="btn pri" style="padding:11px 20px;font-size:13.6px;border-radius:var(--r-xl)">lg</button>
+  <button class="btn pri" style="opacity:.45">disabled</button>
+  <span style="display:flex;gap:8px;background:var(--surface-brand);padding:6px 8px;border-radius:8px">
+    <button class="btn" style="background:var(--on-brand-fill);border:1px solid var(--on-brand-border);color:#fff;border-radius:var(--r-md);padding:7px 11px;font-size:12.1px;font-weight:600">onBrand</button>
+    <span class="ib" style="background:var(--on-brand-fill);border-color:var(--on-brand-border);color:#fff"><span class="msym" style="font-size:18px">notifications</span><span class="ibb" style="background:var(--red-400)">4</span></span>
+    <span class="ib" style="background:var(--on-brand-fill);border-color:var(--on-brand-border);color:#fff"><span class="msym" style="font-size:18px">settings</span></span>
+  </span>
+</div>
+<div class="row">
+  <span class="ib"><span class="msym" style="font-size:18px">search</span></span>
+  <span class="ib"><span class="msym" style="font-size:18px">more_horiz</span></span>
+  <span class="ib" style="background:var(--surface-selected);border-color:var(--border-tint);color:var(--text-accent)"><span class="msym" style="font-size:18px">auto_awesome</span></span>
+  <span class="bdg" style="background:var(--state-done-bg);color:var(--state-done-fg)">RAG 색인 완료</span>
+  <span class="bdg" style="background:var(--state-wait-bg);color:var(--state-wait-fg)">검토대기</span>
+  <span class="bdg" style="background:var(--state-soon-bg);color:var(--state-soon-fg)">만료임박</span>
+  <span class="bdg" style="background:var(--state-alert-bg);color:var(--state-alert-fg)">미연결</span>
+  <span class="bdg" style="background:var(--state-idle-bg);color:var(--state-idle-fg)">비공개</span>
+  <span class="bdg" style="background:var(--state-alert-bg);color:var(--state-alert-fg);font-size:10.7px;padding:1px 7px">2</span>
+</div>
+<div class="row" style="align-items:flex-end">
+  <div style="width:250px"><div class="lab">조직 이름<span class="req">필수</span></div><div class="inp"><span style="color:var(--text-meta)">예: Amber Evolution</span></div></div>
+  <div style="width:220px"><div class="und"><span class="msym" style="font-size:16px">search</span>파일명·내용 검색</div></div>
+</div>
+</body></html>

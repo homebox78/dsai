@@ -90,7 +90,7 @@ export function SideMenu() {
   return (
     <aside
       className="flex flex-none flex-col border-r border-ink-200 bg-surface-sidebar transition-[width] duration-150"
-      style={{ width: menuOpen ? 226 : 52 }}
+      style={{ width: menuOpen ? 234 : 48 }}
     >
       {menuOpen && (
         <div className="flex-none border-b border-ink-200">

@@ -1,0 +1,16 @@
+:root {
+  --r-xs: 4px;    /* 모노 코드 배지 */
+  --r-sm: 5px;    /* 작은 파일 타일 */
+  --r-md: 6px;    /* 아이콘 버튼·입력 */
+  --r-lg: 7px;    /* 보조 버튼·칩 컨테이너 */
+  --r-xl: 8px;    /* 프라이머리 버튼·카드 */
+  --r-2xl: 10px;  /* 드롭다운·패널 카드 */
+  --r-3xl: 12px;  /* 모달 */
+  --r-pill: 999px;
+
+  --shadow-dropdown: 0 14px 36px rgba(15, 23, 42, .14);
+  --shadow-modal: 0 24px 60px rgba(15, 23, 42, .22);
+  --shadow-sheet: -18px 0 48px rgba(15, 23, 42, .16);
+  --shadow-handle: 0 1px 3px rgba(15, 23, 42, .12);
+  --shadow-handle-hover: 0 0 0 3px rgba(23, 80, 216, .14);
+}

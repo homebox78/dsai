@@ -3,19 +3,29 @@ import { Icon } from '@/components/common/icon'
 import { members, msgs, rooms, tasks, taskStatusTone } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { useLayoutMetrics } from '@/lib/responsive'
 
 /** 채팅 (p46~50) — 룸 목록 250px | 대화 | 업무존 318px(탭 전환, 룸 안에서는 항상 열림) */
 
 const ROOM_FILTERS: [string, string][] = [
   ['all', '전체'],
-  ['group', '그룹'],
-  ['dm', 'DM'],
+  ['unread', '안읽음'],
+  ['task', '업무있음'],
 ]
 
 const PINNED = [
   { who: '이수진', text: '에코바디스 제출 마감 8/12 · 증빙 누락분 우선 처리', time: '07.20' },
   { who: '홍길동', text: '문서 업로드 시 반드시 폴더 지정 후 업로드해주세요', time: '07.18' },
 ]
+
+/** 메시지 리액션 (시안 실측: 2번째 메시지 👍2, 그 외 ✓3 👁1) */
+const REACTIONS: Record<number, { icon: string; count: number; color: string }[]> = {
+  1: [{ icon: 'thumb_up', count: 2, color: '#1750d8' }],
+  3: [
+    { icon: 'check_circle', count: 3, color: '#16a34a' },
+    { icon: 'visibility', count: 1, color: '#64748b' },
+  ],
+}
 
 const ROOM_FILES = [
   { ext: 'PDF', name: 'ISO 14001 인증서_2026.pdf', who: '박지원', date: '07.20' },
@@ -35,18 +45,31 @@ export function ChatView() {
   const [zoneFilter, setZoneFilter] = useState('all')
   const [input, setInput] = useState('')
   const [mentionOpen, setMentionOpen] = useState(false)
+  const { chatRowMin, autoHideZone } = useLayoutMetrics()
 
   const cur = rooms.find((r) => r.id === room) ?? rooms[0]
   const curMsgs = msgs[room] ?? []
   const roomTasks = tasks.filter((t) => t.room === cur.name)
   const shownRooms = rooms
     .filter((r) => !roomQuery.trim() || r.name.includes(roomQuery.trim()) || r.last.includes(roomQuery.trim()))
-    .filter((r) => roomFilter === 'all' || (roomFilter === 'group' ? r.type.startsWith('그룹') : r.type === '1:1'))
+    .filter((r) =>
+      roomFilter === 'all'
+        ? true
+        : roomFilter === 'unread'
+          ? !!r.unread
+          : tasks.some((t) => t.room === r.name && t.status !== '완료'),
+    )
+  const roomFilterCount = (id: string) =>
+    id === 'unread'
+      ? rooms.filter((r) => r.unread).length
+      : id === 'task'
+        ? rooms.filter((r) => tasks.some((t) => t.room === r.name && t.status !== '완료')).length
+        : 0
 
   const iconBtn = 'size-[30px] flex-none rounded-md border border-ink-300 bg-white p-0 text-ink-600 hover:bg-ink-100'
 
   return (
-    <div className="flex min-h-0 min-w-[1100px] flex-1">
+    <div className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
       {/* 채팅룸 목록 */}
       <div className="flex w-[250px] flex-none flex-col border-r border-ink-200 bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
@@ -71,6 +94,7 @@ export function ChatView() {
           <div className="flex gap-1">
             {ROOM_FILTERS.map(([id, label]) => {
               const on = roomFilter === id
+              const cnt = roomFilterCount(id)
               return (
                 <button
                   key={id}
@@ -83,6 +107,7 @@ export function ChatView() {
                   }}
                 >
                   {label}
+                  {!!cnt && <span className="ml-[3px] opacity-75">{cnt}</span>}
                 </button>
               )
             })}
@@ -267,6 +292,7 @@ export function ChatView() {
                       {m.text}
                     </div>
                     <div className="flex items-center gap-1 pb-0.5">
+                      {m.mine && <span className="whitespace-nowrap text-mini font-bold text-ink-400">읽음</span>}
                       <button title="답장" className="size-[22px] p-0 text-ink-300 hover:text-brand">
                         <Icon name="reply" size={16} />
                       </button>
@@ -281,6 +307,20 @@ export function ChatView() {
                         <Icon name="task_alt" size={16} />
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {m.text && REACTIONS[i] && (
+                  <div className="mt-[5px] flex gap-1">
+                    {REACTIONS[i].map((rc) => (
+                      <span
+                        key={rc.icon}
+                        className="flex items-center gap-1 rounded-full border border-ink-200 bg-ink-50 px-2 py-0.5 text-xs2 font-bold text-ink-600"
+                      >
+                        <Icon name={rc.icon} size={14.1} style={{ color: rc.color }} />
+                        {rc.count}
+                      </span>
+                    ))}
                   </div>
                 )}
 
@@ -389,10 +429,11 @@ export function ChatView() {
         </div>
       </div>
 
-      {/* 업무 영역 (탭 전환) */}
+      {/* 업무 영역 (탭 전환) — 룸 안에서는 항상 열림, 아주 좁을 때만 숨김 */}
+      {!autoHideZone && (
       <aside className="flex w-[318px] flex-none flex-col border-l border-ink-200 bg-white">
         <div className="flex flex-none items-center border-b border-ink-200">
-          {([['task', '업무'], ['info', '대화방 정보']] as const).map(([id, label]) => {
+          {([['task', 'Task 업무영역'], ['info', '대화방 정보']] as const).map(([id, label]) => {
             const on = zoneTab === id
             return (
               <button
@@ -419,7 +460,7 @@ export function ChatView() {
                 이 대화방의 업무 요청
               </div>
               <div className="flex gap-1">
-                {([['all', '전체'], ['open', '진행중'], ['done', '완료']] as const).map(([id, label]) => {
+                {([['all', '전체'], ['mine', '내 담당'], ['open', '진행중']] as const).map(([id, label]) => {
                   const on = zoneFilter === id
                   return (
                     <button
@@ -427,8 +468,8 @@ export function ChatView() {
                       onClick={() => setZoneFilter(id)}
                       className="rounded-full border px-2 py-0.5 text-xs2 font-bold"
                       style={{
-                        background: on ? '#1750d8' : '#fff',
-                        borderColor: on ? '#1750d8' : '#cbd5e1',
+                        background: on ? '#2563eb' : '#fff',
+                        borderColor: on ? '#2563eb' : '#cbd5e1',
                         color: on ? '#fff' : '#334155',
                       }}
                     >
@@ -441,7 +482,11 @@ export function ChatView() {
             <div className="flex-1 overflow-auto">
               {roomTasks
                 .filter((t) =>
-                  zoneFilter === 'all' ? true : zoneFilter === 'done' ? t.status === '완료' : t.status !== '완료',
+                  zoneFilter === 'all'
+                    ? true
+                    : zoneFilter === 'mine'
+                      ? t.to === '나'
+                      : t.status === '진행중' || t.status === '요청됨',
                 )
                 .map((t) => {
                   const tone = taskStatusTone[t.status]
@@ -530,6 +575,7 @@ export function ChatView() {
           </div>
         )}
       </aside>
+      )}
     </div>
   )
 }

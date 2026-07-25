@@ -1,0 +1,62 @@
+<!-- @dsCard group="Components" viewport="700x240" subtitle="KpiTile · ProgressBar" name="Data" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Data</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1.35;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;line-height:1.35;white-space:nowrap;cursor:pointer}
+  .pri{background:var(--surface-brand);color:#fff;border:1px solid var(--surface-brand);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:700}
+  .sec{background:#fff;color:var(--text-label);border:1px solid var(--border-control);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .ghost{background:transparent;color:var(--text-label);border:1px solid transparent;border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .dgr{background:#fff;color:var(--state-alert-fg);border:1px solid var(--red-200);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .lnk{background:none;border:none;color:var(--text-link);font-size:12.6px;font-weight:600;padding:0}
+  .ib{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-md);color:var(--slate-600);position:relative}
+  .ibb{position:absolute;top:-3px;right:-3px;background:var(--red-600);color:#fff;border-radius:999px;font-size:9px;font-weight:800;padding:1px 4px}
+  .bdg{display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800;white-space:nowrap}
+  .inp{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-control);border-radius:var(--r-md);padding:9px 11px;font-size:13.6px;color:var(--text-body)}
+  .und{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-structure);padding:6px 2px;font-size:12.6px;color:var(--text-meta)}
+  .lab{font-size:12.1px;font-weight:700;color:var(--text-label);margin-bottom:6px;display:flex;gap:6px;align-items:baseline}
+  .req{font-size:10.7px;font-weight:800;color:var(--red-600)}
+  .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 11px;font-size:12.1px;font-weight:700;background:#fff;border:1px solid var(--border-control);color:var(--text-label)}
+  .chip.on{background:var(--surface-brand);border-color:var(--surface-brand);color:#fff}
+  .panel{background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  .ph{height:44px;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid var(--border-structure);font-size:12.1px;font-weight:800}
+  .lr{display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border-hairline);background:#fff}
+  .lr.sel{background:var(--surface-selected);border-left:2px solid var(--border-brand)}
+  .lr.hov{background:var(--surface-row-hover)}
+  .tile{width:28px;height:28px;border-radius:var(--r-md);background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;font-weight:800;color:var(--slate-600);flex:none}
+  .nm{font-size:13.6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt{font-size:11.6px;color:var(--text-meta);margin-top:4px;white-space:nowrap}
+  .tg{width:38px;height:22px;border-radius:999px;background:var(--slate-300);position:relative;flex:none}
+  .tg.on{background:var(--surface-brand)}
+  .tg i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:999px;background:#fff;box-shadow:var(--shadow-handle)}
+  .tg.on i{left:18px}
+  .bar{height:5px;background:var(--slate-100);border-radius:999px;overflow:hidden;display:flex}
+  .lbl{font-size:10.7px;font-weight:800;color:var(--text-meta);letter-spacing:.05em}</style></head><body>
+<div style="margin:-18px -18px 14px;display:flex;border-bottom:1px solid var(--border-structure)">
+<div style="flex:1;min-width:0;padding:14px 18px;border-right:1px solid var(--border-structure)">
+  <div style="display:flex;align-items:center;gap:6px"><span class="msym" style="font-size:17px;color:var(--text-meta)">description</span><span style="font-size:11.6px;font-weight:700;color:var(--text-sub);white-space:nowrap">색인 문서</span></div>
+  <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px"><span style="font-size:23.3px;font-weight:800;letter-spacing:-.02em">1,284</span><span style="font-size:11.6px;color:var(--text-meta)">건</span><span style="margin-left:auto;font-size:10.7px;font-weight:700;color:var(--state-done-fg);white-space:nowrap">+128</span></div>
+  <div class="bar" style="height:4px;margin-top:8px"><span style="width:82%;background:var(--blue-700);border-radius:999px"></span></div>
+</div><div style="flex:1;min-width:0;padding:14px 18px;border-right:1px solid var(--border-structure)">
+  <div style="display:flex;align-items:center;gap:6px"><span class="msym" style="font-size:17px;color:var(--text-meta)">task_alt</span><span style="font-size:11.6px;font-weight:700;color:var(--text-sub);white-space:nowrap">진행중 업무</span></div>
+  <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px"><span style="font-size:23.3px;font-weight:800;letter-spacing:-.02em">6</span><span style="font-size:11.6px;color:var(--text-meta)">건</span><span style="margin-left:auto;font-size:10.7px;font-weight:700;color:var(--state-alert-fg);white-space:nowrap">기한초과 2</span></div>
+  <div class="bar" style="height:4px;margin-top:8px"><span style="width:45%;background:var(--blue-700);border-radius:999px"></span></div>
+</div><div style="flex:1;min-width:0;padding:14px 18px;border-right:1px solid var(--border-structure)">
+  <div style="display:flex;align-items:center;gap:6px"><span class="msym" style="font-size:17px;color:var(--text-meta)">checklist</span><span style="font-size:11.6px;font-weight:700;color:var(--text-sub);white-space:nowrap">답변 완료</span></div>
+  <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px"><span style="font-size:23.3px;font-weight:800;letter-spacing:-.02em">152</span><span style="font-size:11.6px;color:var(--text-meta)">/ 300</span></div>
+  <div class="bar" style="height:4px;margin-top:8px"><span style="width:51%;background:var(--blue-700);border-radius:999px"></span></div>
+</div><div style="flex:1;min-width:0;padding:14px 18px;border-right:1px solid var(--border-structure)">
+  <div style="display:flex;align-items:center;gap:6px"><span class="msym" style="font-size:17px;color:var(--text-meta)">verified_user</span><span style="font-size:11.6px;font-weight:700;color:var(--text-sub);white-space:nowrap">증빙 커버리지</span></div>
+  <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px"><span style="font-size:23.3px;font-weight:800;letter-spacing:-.02em">82</span><span style="font-size:11.6px;color:var(--text-meta)">%</span></div>
+  <div class="bar" style="height:4px;margin-top:8px"><span style="width:82%;background:var(--blue-700);border-radius:999px"></span></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+  <div><div style="display:flex;gap:6px;margin-bottom:6px"><span style="flex:1;font-size:11.6px;font-weight:600;color:var(--text-label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">OCR 처리 · 에너지 사용 실적_월별.xlsx</span><span style="font-size:10.7px;font-weight:700;color:var(--text-sub)">62%</span></div><div class="bar"><span style="width:62%;background:var(--blue-700);border-radius:999px"></span></div></div>
+  <div><div style="display:flex;gap:6px;margin-bottom:6px"><span style="flex:1;font-size:11.6px;font-weight:600;color:var(--text-label)">RAG 색인 대기</span><span style="font-size:10.7px;font-weight:700;color:var(--text-sub)">8%</span></div><div class="bar"><span style="width:8%;background:var(--amber-500);border-radius:999px"></span></div></div>
+  <div><div class="lbl" style="margin-bottom:6px">증빙 커버리지 합산</div><div class="bar" style="height:9px"><span style="width:66%;background:var(--green-600)"></span><span style="width:16%;background:var(--amber-500)"></span><span style="width:18%;background:var(--red-200)"></span></div></div>
+</div>
+</body></html>

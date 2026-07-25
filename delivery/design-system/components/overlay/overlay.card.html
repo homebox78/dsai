@@ -1,0 +1,69 @@
+<!-- @dsCard group="Components" viewport="700x360" subtitle="Modal · Sheet · Dropdown" name="Overlay" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Overlay</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1.35;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;line-height:1.35;white-space:nowrap;cursor:pointer}
+  .pri{background:var(--surface-brand);color:#fff;border:1px solid var(--surface-brand);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:700}
+  .sec{background:#fff;color:var(--text-label);border:1px solid var(--border-control);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .ghost{background:transparent;color:var(--text-label);border:1px solid transparent;border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .dgr{background:#fff;color:var(--state-alert-fg);border:1px solid var(--red-200);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .lnk{background:none;border:none;color:var(--text-link);font-size:12.6px;font-weight:600;padding:0}
+  .ib{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-md);color:var(--slate-600);position:relative}
+  .ibb{position:absolute;top:-3px;right:-3px;background:var(--red-600);color:#fff;border-radius:999px;font-size:9px;font-weight:800;padding:1px 4px}
+  .bdg{display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800;white-space:nowrap}
+  .inp{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-control);border-radius:var(--r-md);padding:9px 11px;font-size:13.6px;color:var(--text-body)}
+  .und{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-structure);padding:6px 2px;font-size:12.6px;color:var(--text-meta)}
+  .lab{font-size:12.1px;font-weight:700;color:var(--text-label);margin-bottom:6px;display:flex;gap:6px;align-items:baseline}
+  .req{font-size:10.7px;font-weight:800;color:var(--red-600)}
+  .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 11px;font-size:12.1px;font-weight:700;background:#fff;border:1px solid var(--border-control);color:var(--text-label)}
+  .chip.on{background:var(--surface-brand);border-color:var(--surface-brand);color:#fff}
+  .panel{background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  .ph{height:44px;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid var(--border-structure);font-size:12.1px;font-weight:800}
+  .lr{display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border-hairline);background:#fff}
+  .lr.sel{background:var(--surface-selected);border-left:2px solid var(--border-brand)}
+  .lr.hov{background:var(--surface-row-hover)}
+  .tile{width:28px;height:28px;border-radius:var(--r-md);background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;font-weight:800;color:var(--slate-600);flex:none}
+  .nm{font-size:13.6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt{font-size:11.6px;color:var(--text-meta);margin-top:4px;white-space:nowrap}
+  .tg{width:38px;height:22px;border-radius:999px;background:var(--slate-300);position:relative;flex:none}
+  .tg.on{background:var(--surface-brand)}
+  .tg i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:999px;background:#fff;box-shadow:var(--shadow-handle)}
+  .tg.on i{left:18px}
+  .bar{height:5px;background:var(--slate-100);border-radius:999px;overflow:hidden;display:flex}
+  .lbl{font-size:10.7px;font-weight:800;color:var(--text-meta);letter-spacing:.05em}</style></head><body>
+<div style="display:flex;gap:14px;align-items:flex-start;margin:-18px;padding:18px;background:var(--surface-canvas);height:360px">
+  <div style="width:300px;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-3xl);box-shadow:var(--shadow-modal);overflow:hidden">
+    <div style="display:flex;gap:8px;padding:15px 18px;border-bottom:1px solid var(--border-structure)">
+      <div style="flex:1"><div style="font-size:14.1px;font-weight:800;letter-spacing:-.01em">파일 업로드</div><div style="font-size:11.6px;color:var(--text-sub);margin-top:4px">업로드 후 OCR·RAG 색인을 실행합니다</div></div>
+      <span class="msym" style="font-size:17px;color:var(--text-meta)">close</span>
+    </div>
+    <div style="padding:18px">
+      <div style="border:1px dashed var(--border-control);border-radius:var(--r-lg);padding:16px;text-align:center">
+        <span class="msym" style="font-size:26px;color:var(--blue-700)">upload</span>
+        <div style="font-size:12.6px;font-weight:700;margin-top:6px">파일을 끌어다 놓으세요</div>
+        <div style="font-size:11px;color:var(--text-meta);margin-top:4px">PDF, DOCX, XLSX, HWP</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--border-structure);background:var(--surface-footer)">
+      <button class="btn sec" style="flex:1">취소</button><button class="btn pri" style="flex:1">업로드 시작</button>
+    </div>
+  </div>
+  <div style="width:220px;background:#fff;border-left:1px solid var(--border-structure);box-shadow:var(--shadow-sheet);height:100%;display:flex;flex-direction:column">
+    <div style="display:flex;gap:8px;padding:15px 18px;border-bottom:1px solid var(--border-structure)">
+      <div style="flex:1"><div style="font-size:14.1px;font-weight:800">업무 요청</div><div style="font-size:11.6px;color:var(--text-sub);margin-top:4px">담당자에게 자료를 요청합니다</div></div>
+      <span class="msym" style="font-size:17px;color:var(--text-meta)">close</span>
+    </div>
+    <div style="flex:1;padding:18px"><div class="lab">담당자<span class="req">필수</span></div><div class="inp"><span style="color:var(--text-meta);font-size:12.6px">이름 또는 이메일</span></div></div>
+    <div style="display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--border-structure);background:var(--surface-footer)"><button class="btn sec" style="flex:1">취소</button><button class="btn pri" style="flex:1">보내기</button></div>
+  </div>
+  <div style="width:250px;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);box-shadow:var(--shadow-dropdown);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:8px;padding:11px 18px;border-bottom:1px solid var(--border-structure)"><span style="font-size:12.1px;font-weight:800">알림</span><span class="btn lnk" style="margin-left:auto;font-size:10.7px;font-weight:700">모두 읽음</span></div>
+    <div style="padding:10px 18px;border-bottom:1px solid var(--border-hairline)"><div style="display:flex;gap:6px;align-items:center"><span class="bdg" style="background:var(--surface-selected);color:var(--text-accent)">업무 요청</span><span style="margin-left:auto;font-size:10px;color:var(--text-meta)">3분 전</span></div><div style="font-size:11.6px;margin-top:4px;line-height:1.5">이수진님이 자료를 요청했습니다.</div></div>
+    <div style="padding:10px 18px"><div style="display:flex;gap:6px;align-items:center"><span class="bdg" style="background:var(--surface-selected);color:var(--text-accent)">색인 완료</span><span style="margin-left:auto;font-size:10px;color:var(--text-meta)">18분 전</span></div><div style="font-size:11.6px;margin-top:4px;line-height:1.5">ISO 14001 인증서 색인이 끝났습니다.</div></div>
+  </div>
+</div>
+</body></html>

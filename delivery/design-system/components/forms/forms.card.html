@@ -1,0 +1,63 @@
+<!-- @dsCard group="Components" viewport="700x300" subtitle="Select · Checkbox · Toggle · FilterChip" name="Forms" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Forms</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1.35;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;line-height:1.35;white-space:nowrap;cursor:pointer}
+  .pri{background:var(--surface-brand);color:#fff;border:1px solid var(--surface-brand);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:700}
+  .sec{background:#fff;color:var(--text-label);border:1px solid var(--border-control);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .ghost{background:transparent;color:var(--text-label);border:1px solid transparent;border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .dgr{background:#fff;color:var(--state-alert-fg);border:1px solid var(--red-200);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .lnk{background:none;border:none;color:var(--text-link);font-size:12.6px;font-weight:600;padding:0}
+  .ib{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-md);color:var(--slate-600);position:relative}
+  .ibb{position:absolute;top:-3px;right:-3px;background:var(--red-600);color:#fff;border-radius:999px;font-size:9px;font-weight:800;padding:1px 4px}
+  .bdg{display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800;white-space:nowrap}
+  .inp{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-control);border-radius:var(--r-md);padding:9px 11px;font-size:13.6px;color:var(--text-body)}
+  .und{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-structure);padding:6px 2px;font-size:12.6px;color:var(--text-meta)}
+  .lab{font-size:12.1px;font-weight:700;color:var(--text-label);margin-bottom:6px;display:flex;gap:6px;align-items:baseline}
+  .req{font-size:10.7px;font-weight:800;color:var(--red-600)}
+  .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 11px;font-size:12.1px;font-weight:700;background:#fff;border:1px solid var(--border-control);color:var(--text-label)}
+  .chip.on{background:var(--surface-brand);border-color:var(--surface-brand);color:#fff}
+  .panel{background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  .ph{height:44px;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid var(--border-structure);font-size:12.1px;font-weight:800}
+  .lr{display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border-hairline);background:#fff}
+  .lr.sel{background:var(--surface-selected);border-left:2px solid var(--border-brand)}
+  .lr.hov{background:var(--surface-row-hover)}
+  .tile{width:28px;height:28px;border-radius:var(--r-md);background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;font-weight:800;color:var(--slate-600);flex:none}
+  .nm{font-size:13.6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt{font-size:11.6px;color:var(--text-meta);margin-top:4px;white-space:nowrap}
+  .tg{width:38px;height:22px;border-radius:999px;background:var(--slate-300);position:relative;flex:none}
+  .tg.on{background:var(--surface-brand)}
+  .tg i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:999px;background:#fff;box-shadow:var(--shadow-handle)}
+  .tg.on i{left:18px}
+  .bar{height:5px;background:var(--slate-100);border-radius:999px;overflow:hidden;display:flex}
+  .lbl{font-size:10.7px;font-weight:800;color:var(--text-meta);letter-spacing:.05em}</style></head><body>
+<div class="row" style="align-items:flex-start">
+  <div style="width:150px">
+    <div class="inp" style="border-color:var(--focus-border);box-shadow:var(--focus-ring);font-size:12.1px;font-weight:600;padding:6px 9px"><span style="flex:1">기한순</span><span class="msym" style="font-size:16px;color:var(--text-meta)">expand_more</span></div>
+    <div style="margin-top:4px;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);box-shadow:var(--shadow-dropdown);padding:5px">
+      <div style="display:flex;align-items:center;gap:6px;background:var(--surface-selected);border-radius:var(--r-lg);padding:8px 10px;font-size:12.1px;font-weight:700;color:var(--text-accent)"><span style="flex:1">기한순</span><span class="msym" style="font-size:16px;color:var(--blue-700)">check</span></div>
+      <div style="padding:8px 10px;font-size:12.1px;font-weight:600">최신순</div>
+      <div style="padding:8px 10px;font-size:12.1px;font-weight:600">상태순</div>
+    </div>
+  </div>
+  <div style="width:250px"><div class="inp" style="font-size:12.6px;font-weight:600"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">공개 (조직&amp;사업부 전체)</span><span class="msym" style="font-size:16px;color:var(--text-meta)">expand_more</span></div></div>
+</div>
+<div class="row">
+  <span class="chip on">전체 <span style="color:rgba(255,255,255,.8);font-size:10.7px;font-weight:800">6</span></span>
+  <span class="chip">활성 <span style="color:var(--text-meta);font-size:10.7px;font-weight:800">4</span></span>
+  <span class="chip">초대 대기 <span style="color:var(--text-meta);font-size:10.7px;font-weight:800">1</span></span>
+  <span class="chip">외부 협업자 <span style="color:var(--text-meta);font-size:10.7px;font-weight:800">1</span></span>
+</div>
+<div class="row" style="gap:26px;align-items:flex-start">
+  <span style="display:flex;gap:8px"><span class="msym" style="font-size:19px;color:var(--blue-700)">check_box</span><span><span style="display:block;font-size:12.6px;font-weight:600">서비스 이용약관 동의</span><span style="display:block;font-size:11.6px;color:var(--text-meta);margin-top:4px">필수 항목입니다</span></span></span>
+  <span style="display:flex;gap:8px;align-items:center"><span class="msym" style="font-size:19px;color:var(--slate-300)">check_box_outline_blank</span><span style="font-size:12.6px;font-weight:600">마케팅 수신 (선택)</span></span>
+</div>
+<div style="width:400px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:11px"><span style="flex:1"><span style="display:block;font-size:12.6px;font-weight:700">OCR 텍스트 추출</span><span style="display:block;font-size:11.6px;color:var(--text-meta);margin-top:4px">스캔 PDF·이미지에서 텍스트를 추출합니다</span></span><span class="tg on"><i></i></span></div>
+  <div style="display:flex;align-items:center;gap:11px"><span style="flex:1;font-size:12.6px;font-weight:700">RAG 색인 즉시 실행</span><span class="tg"><i></i></span></div>
+</div>
+</body></html>

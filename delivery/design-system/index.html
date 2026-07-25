@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amber Document Intelligence · Design System</title>
+<link rel="icon" href="assets/logo/amber-logo.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-ui);color:var(--text-body);background:var(--surface-canvas);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased}
+  a{color:var(--text-link);text-decoration:none}a:hover{color:var(--blue-500)}
+  header.top{position:sticky;top:0;z-index:20;background:var(--surface-brand);padding:0 26px;height:var(--header-h);display:flex;align-items:center;gap:12px}
+  header.top img{height:22px;display:block}
+  header.top .t{font-size:14.1px;font-weight:800;color:#fff;letter-spacing:-.01em;white-space:nowrap}
+  header.top .s{font-size:11.2px;color:var(--on-brand-text-soft);white-space:nowrap}
+  nav{position:sticky;top:var(--header-h);z-index:19;display:flex;gap:2px;padding:0 22px;background:#fff;border-bottom:1px solid var(--border-structure);overflow-x:auto}
+  nav a{padding:11px 10px;font-size:12.1px;font-weight:700;color:var(--text-sub);white-space:nowrap;border-bottom:2px solid transparent}
+  nav a:hover{color:var(--text-accent);border-bottom-color:var(--border-tint)}
+  main{padding:0 26px 60px;max-width:1460px;margin:0 auto}
+  .hero{padding:26px 0 4px;border-bottom:1px solid var(--border-structure);margin-bottom:22px}
+  .hero h1{margin:0;font-size:23.3px;font-weight:800;letter-spacing:-.02em}
+  .hero p{margin:8px 0 0;font-size:13.6px;color:var(--text-sub);max-width:760px}
+  .hero .meta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px}
+  .hero .meta span{white-space:nowrap;font-size:10.7px;font-weight:800;background:var(--surface-selected);color:var(--text-accent);border:1px solid var(--border-tint);border-radius:999px;padding:3px 9px}
+  section{padding:22px 0 8px;border-top:1px solid var(--border-structure)}
+  section:first-of-type{border-top:none}
+  h2{margin:0 0 14px;font-size:16px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  h2::before{content:'';width:3px;height:15px;background:var(--blue-700);border-radius:2px}
+  figure{margin:0 0 14px;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  figcaption{display:flex;align-items:center;gap:8px;padding:0 18px;height:38px;border-bottom:1px solid var(--border-structure);font-size:11.6px;font-weight:800;color:var(--text-label);background:var(--surface-footer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  figcaption a{flex:none;margin-left:auto;color:var(--text-meta);display:inline-flex}
+  figcaption a:hover{color:var(--blue-700)}
+  figcaption .msym{font-size:16px}
+  iframe{display:block;width:100%;border:none;background:#fff}
+  figure.wide iframe{height:720px}
+  footer{padding:22px 0 0;border-top:1px solid var(--border-structure);font-size:11.6px;color:var(--text-meta);line-height:1.8}
+  footer code{font-family:var(--font-mono);font-size:10.7px;color:var(--text-sub)}
+</style></head>
+<body>
+<header class="top">
+  <img src="assets/logo/amber-logo.png" alt="Amber">
+  <span class="t">Amber Document Intelligence</span>
+  <span class="s">Design System</span>
+</header>
+<nav><a href="#brand">브랜드 기초</a><a href="#color">색</a><a href="#type">타입</a><a href="#space">간격 · 치수</a><a href="#comp">컴포넌트</a><a href="#domain">도메인 컴포넌트</a><a href="#kit">콘솔 UI 키트</a></nav>
+<main>
+  <div class="hero">
+    <h1>Amber Document Intelligence Design System</h1>
+    <p>EvolvAiLab의 사내 전용 AI 문서 지식 콘솔 UI 언어. 「Amber UIX 설계서 V0.1」 Storyboard(front Office) V1.1 63p와 구현 목업에서 역추출한 토큰·컴포넌트·화면 규격을 한 화면에 모았습니다.</p>
+    <div class="meta">
+      <span>토큰 6파일</span><span>컴포넌트 27종</span><span>Foundation 스펙 18장</span><span>콘솔 화면 4종</span><span>Pretendard Variable</span><span>Material Symbols Rounded</span>
+    </div>
+  </div>
+<section id="brand">
+  <h2>브랜드 기초</h2>
+  <figure>
+    <figcaption>로고<a href="guidelines/logo.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/logo.html" style="height:130px" title="로고"></iframe>
+  </figure>
+  <figure>
+    <figcaption>아이콘<a href="guidelines/iconography.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/iconography.html" style="height:160px" title="아이콘"></iframe>
+  </figure>
+  <figure>
+    <figcaption>라인 vs 카드<a href="guidelines/lines-vs-cards.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/lines-vs-cards.html" style="height:190px" title="라인 vs 카드"></iframe>
+  </figure>
+  <figure>
+    <figcaption>엘리베이션<a href="guidelines/elevation.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/elevation.html" style="height:155px" title="엘리베이션"></iframe>
+  </figure>
+  <figure>
+    <figcaption>라운딩<a href="guidelines/radius.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/radius.html" style="height:125px" title="라운딩"></iframe>
+  </figure>
+  <figure>
+    <figcaption>상태<a href="guidelines/states.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/states.html" style="height:160px" title="상태"></iframe>
+  </figure>
+  <figure>
+    <figcaption>모션<a href="guidelines/motion.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/motion.html" style="height:130px" title="모션"></iframe>
+  </figure>
+</section>
+<section id="color">
+  <h2>색</h2>
+  <figure>
+    <figcaption>브랜드 블루<a href="guidelines/colors-brand.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/colors-brand.html" style="height:125px" title="브랜드 블루"></iframe>
+  </figure>
+  <figure>
+    <figcaption>뉴트럴 슬레이트<a href="guidelines/colors-neutral.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/colors-neutral.html" style="height:125px" title="뉴트럴 슬레이트"></iframe>
+  </figure>
+  <figure>
+    <figcaption>시맨틱<a href="guidelines/colors-semantic.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/colors-semantic.html" style="height:125px" title="시맨틱"></iframe>
+  </figure>
+  <figure>
+    <figcaption>상태 배지 페어<a href="guidelines/colors-state-pairs.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/colors-state-pairs.html" style="height:115px" title="상태 배지 페어"></iframe>
+  </figure>
+  <figure>
+    <figcaption>On-brand 표면<a href="guidelines/colors-on-brand.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/colors-on-brand.html" style="height:125px" title="On-brand 표면"></iframe>
+  </figure>
+</section>
+<section id="type">
+  <h2>타입</h2>
+  <figure>
+    <figcaption>타입 스케일<a href="guidelines/type-scale.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/type-scale.html" style="height:265px" title="타입 스케일"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Weight 규칙<a href="guidelines/type-weights.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/type-weights.html" style="height:125px" title="Weight 규칙"></iframe>
+  </figure>
+  <figure>
+    <figcaption>모노 사용<a href="guidelines/type-mono.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/type-mono.html" style="height:115px" title="모노 사용"></iframe>
+  </figure>
+</section>
+<section id="space">
+  <h2>간격 · 치수</h2>
+  <figure>
+    <figcaption>간격 스케일<a href="guidelines/spacing-scale.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/spacing-scale.html" style="height:125px" title="간격 스케일"></iframe>
+  </figure>
+  <figure>
+    <figcaption>행 리듬<a href="guidelines/spacing-row.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/spacing-row.html" style="height:165px" title="행 리듬"></iframe>
+  </figure>
+  <figure>
+    <figcaption>셸 고정 치수<a href="guidelines/spacing-structure.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="guidelines/spacing-structure.html" style="height:145px" title="셸 고정 치수"></iframe>
+  </figure>
+</section>
+<section id="comp">
+  <h2>컴포넌트</h2>
+  <figure>
+    <figcaption>Core — Button · IconButton · Badge · Input<a href="components/core/core.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/core/core.card.html" style="height:325px" title="Core — Button · IconButton · Badge · Input"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Forms — Select · Checkbox · Toggle · FilterChip<a href="components/forms/forms.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/forms/forms.card.html" style="height:305px" title="Forms — Select · Checkbox · Toggle · FilterChip"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Forms — DropZone<a href="components/forms/dropzone.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/forms/dropzone.card.html" style="height:240px" title="Forms — DropZone"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Layout — Panel · ListRow · SideMenuItem · Handle<a href="components/layout/layout.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/layout/layout.card.html" style="height:335px" title="Layout — Panel · ListRow · SideMenuItem · Handle"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Overlay — Modal · Sheet · Dropdown<a href="components/overlay/overlay.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/overlay/overlay.card.html" style="height:365px" title="Overlay — Modal · Sheet · Dropdown"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Data — KpiTile · ProgressBar<a href="components/data/data.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/data.card.html" style="height:245px" title="Data — KpiTile · ProgressBar"></iframe>
+  </figure>
+  <figure>
+    <figcaption>Navigation — Breadcrumb · TabBar<a href="components/navigation/navigation.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/navigation/navigation.card.html" style="height:215px" title="Navigation — Breadcrumb · TabBar"></iframe>
+  </figure>
+</section>
+<section id="domain">
+  <h2>도메인 컴포넌트</h2>
+  <figure>
+    <figcaption>ChatBubble — 대화 · AI 답변 · 첨부·업무요청<a href="components/data/chatbubble.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/chatbubble.card.html" style="height:420px" title="ChatBubble"></iframe>
+  </figure>
+  <figure>
+    <figcaption>QuestionCard — 에코바디스 문항 카드<a href="components/data/questioncard.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/questioncard.card.html" style="height:330px" title="QuestionCard"></iframe>
+  </figure>
+  <figure>
+    <figcaption>MetaPanel — 파일 메타데이터 정의 목록<a href="components/data/metapanel.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/metapanel.card.html" style="height:320px" title="MetaPanel"></iframe>
+  </figure>
+  <figure>
+    <figcaption>ViewerToolbar — 문서 뷰어 헤더 · 페이저<a href="components/data/viewertoolbar.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/viewertoolbar.card.html" style="height:200px" title="ViewerToolbar"></iframe>
+  </figure>
+  <figure>
+    <figcaption>PipelineFlow — 문서 파이프라인 단계<a href="components/data/pipelineflow.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/pipelineflow.card.html" style="height:210px" title="PipelineFlow"></iframe>
+  </figure>
+  <figure>
+    <figcaption>AdminTable — 관리자 폼·테이블 패턴<a href="components/data/admintable.card.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="components/data/admintable.card.html" style="height:340px" title="AdminTable"></iframe>
+  </figure>
+</section>
+<section id="kit">
+  <h2>콘솔 UI 키트</h2>
+  <figure class="wide">
+    <figcaption>앱 셸 — 메뉴 전환 · 접기 · 파일 선택 (클릭 가능)<a href="ui_kits/console/index.html" target="_blank" title="새 창에서 열기"><span class="msym">open_in_new</span></a></figcaption>
+    <iframe src="ui_kits/console/index.html" style="height:720px" title="앱 셸 — 메뉴 전환 · 접기 · 파일 선택 (클릭 가능)"></iframe>
+  </figure>
+</section>
+  <footer>
+    상세 규칙은 <a href="readme.md">readme.md</a> · 컴포넌트 사용법은 각 <code>components/**/*.prompt.md</code> · 프로덕션 스택 React 19 + Vite + shadcn/ui + Tailwind v4<br>
+    이 페이지는 각 스펙 카드를 프레임으로 불러옵니다. 카드 우측 <span class="msym" style="font-size:13px;vertical-align:-2px">open_in_new</span> 아이콘으로 개별 파일을 새 창에서 열 수 있습니다.
+  </footer>
+</main>
+</body></html>

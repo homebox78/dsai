@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLayerStore } from '@/stores/layer-store'
 import { useAppStore } from '@/stores/app-store'
+import { useLayoutMetrics } from '@/lib/responsive'
 
 /** 에코바디스 증빙자료 — 문항 ↔ 문서 ↔ 페이지 매핑 + 커버리지 패널 */
 
@@ -47,13 +48,14 @@ export function EcoDocsView() {
   const [cat, setCat] = useState('전체')
   const [state, setState] = useState('전체')
   const [query, setQuery] = useState('')
+  const { chatRowMin, contentMin } = useLayoutMetrics()
 
   const rows = ROWS.filter((r) => state === '전체' || r.state === state).filter(
     (r) => !query.trim() || r.no.includes(query.trim()) || r.file.includes(query.trim()),
   )
 
   return (
-    <div className="flex min-h-0 min-w-[1100px] flex-1">
+    <div className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
       {/* 평가 영역 */}
       <div className="flex w-[206px] flex-none flex-col border-r border-ink-200 bg-white">
         <div className="flex h-10 flex-none items-center border-b border-ink-200 px-3.5">
@@ -111,7 +113,7 @@ export function EcoDocsView() {
       </div>
 
       {/* 매핑 테이블 */}
-      <div className="flex min-w-[420px] flex-1 flex-col bg-ink-50">
+      <div className="flex flex-1 flex-col bg-ink-50" style={{ minWidth: contentMin }}>
         <div className="flex flex-none items-center gap-2 border-b border-ink-200 bg-white px-3.5 py-3">
           <div>
             <div className="text-[15px] font-extrabold tracking-[-.01em]">증빙자료 매핑</div>

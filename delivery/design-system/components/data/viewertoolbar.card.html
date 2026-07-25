@@ -1,0 +1,42 @@
+<!-- @dsCard group="Components" viewport="820x150" subtitle="ViewerToolbar — 문서 뷰어 상단 툴바" name="Viewer toolbar" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>ViewerToolbar</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:0;font-family:var(--font-ui);color:var(--text-body);background:#eef2f7;line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased;vertical-align:-2px}
+  .tb{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--border-structure);background:#fff}
+  .tile{flex:none;width:28px;height:28px;border-radius:6px;background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8.7px;font-weight:800;color:var(--slate-600)}
+  .bg{font-size:10.2px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+  .pgr{display:flex;align-items:center;gap:4px;background:var(--border-structure);border-radius:6px;padding:3px 5px}
+  .pgb{width:24px;height:24px;flex:none;padding:0;background:#fff;border:1px solid var(--border-structure);border-radius:5px;color:var(--slate-600);display:inline-flex;align-items:center;justify-content:center}
+  .btn{background:#fff;border:1px solid var(--border-control);border-radius:6px;padding:6px 10px;font-size:12.1px;font-weight:600;color:var(--text-label)}</style></head><body>
+<div style="background:#fff">
+  <div class="tb">
+    <span class="tile">DOCX</span>
+    <div style="min-width:0">
+      <div style="font-size:13.6px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">표준 공급계약서_v3.docx</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+        <span class="bg" style="background:#f0fdf4;color:#15803d">OCR 완료</span>
+        <span class="bg" style="background:#ecfdf3;color:#15803d">RAG 준비 완료</span>
+        <span style="font-size:11.2px;color:#94a3b8;white-space:nowrap">전체 218p</span>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <div class="pgr"><span class="pgb"><span class="msym" style="font-size:17px">chevron_left</span></span><span style="font-size:12.1px;font-weight:700;min-width:76px;text-align:center">47 / 218p</span><span class="pgb"><span class="msym" style="font-size:17px">chevron_right</span></span></div>
+    <button class="btn" style="white-space:nowrap">다운로드</button>
+    <span style="color:#94a3b8;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center"><span class="msym" style="font-size:17.9px">close</span></span>
+  </div>
+  <div style="padding:20px;display:flex;justify-content:center;background:#eef2f7">
+    <div style="width:min(560px,100%);background:#fff;border:1px solid var(--border-structure);padding:34px 40px">
+      <div style="font-family:var(--font-mono);font-size:10.7px;color:#94a3b8;margin-bottom:16px">47p / 표준 공급계약서_v3.docx</div>
+      <div style="border:1px solid #fbbf24;background:#fffbeb;border-radius:6px;padding:12px 14px;font-size:12.6px;line-height:1.8;margin-bottom:16px">
+        <div style="font-size:10.2px;font-weight:800;color:#b45309;letter-spacing:.05em;margin-bottom:5px">AI가 찾은 구절</div>
+        제12조 (계약의 해지) 갑은 을이 다음 각 호의 사유에 해당하는 경우 최고 없이 계약을 해지할 수 있다.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="height:12px;width:92%;background:#f1f5f9;border-radius:2px"></div><div style="height:12px;width:78%;background:#f1f5f9;border-radius:2px"></div><div style="height:12px;width:86%;background:#f1f5f9;border-radius:2px"></div><div style="height:12px;width:60%;background:#f1f5f9;border-radius:2px"></div>
+      </div>
+    </div>
+  </div>
+</div></body></html>

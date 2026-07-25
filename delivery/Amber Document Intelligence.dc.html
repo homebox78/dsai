@@ -26,6 +26,7 @@ body{margin:0;background:#f8fafc;color:#0f172a;font-family:'Pretendard Variable'
 *{box-sizing:border-box}
 a{color:#2563eb}a:hover{color:#1d4ed8}
 input,textarea,button,select{font-family:inherit}
+input[style*="color:#fff"]::placeholder,input[style*="color: #fff"]::placeholder{color:rgba(255,255,255,.72)}
 input:focus,textarea:focus,select:focus{outline:2px solid #2563eb;outline-offset:-1px}
 button{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.35;font-family:inherit;padding-block:0;white-space:nowrap}
 .msym{vertical-align:middle}
@@ -50,10 +51,10 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
     <div style="position:absolute;inset:0;pointer-events:none;opacity:.42">{{ authWave }}</div>
     <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(100% 70% at 15% 8%,rgba(255,255,255,.16),transparent 62%)"></div>
     <div style="display:flex;align-items:center;gap:12px">
-      <img src="assets/amber-logo.png" alt="Amber" style="height:28px;width:auto;display:block">
+      <img src="assets/amber-logo.png" alt="Amber" style="height:30.8px;width:auto;display:block">
       <div style="font-size:17px;font-weight:800;letter-spacing:-.01em">Amber</div>
     </div>
-    <div style="position:relative">
+    <div style="position:relative;margin-top:-100px">
       <div style="font-size:31px;font-weight:800;line-height:1.34;letter-spacing:-.03em;margin-bottom:14px;white-space:nowrap">문서를 읽고 이해하는<br>사내 전용 AI 지식 콘솔</div>
       <div style="font-size:15px;line-height:1.75;color:#c5d8f8">업로드한 문서를 OCR·RAG로 색인하고,<br>키워드가 아닌 <span style="color:#fff;font-weight:600">의미 추론</span>으로 근거를 페이지 단위로 찾아냅니다.</div>
       <div style="display:flex;align-items:center;gap:16px;margin-top:28px">
@@ -72,49 +73,54 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
   </div>
   <div style="flex:1;min-width:400px;display:flex;align-items:center;justify-content:center;padding:36px 32px;overflow:auto">
     <div style="width:100%;max-width:368px">
-      <div style="display:flex;gap:4px;border-bottom:1px solid #e2e8f0;margin-bottom:26px">
+      <div style="display:flex;border-bottom:1px solid #e2e8f0;margin-bottom:24px">
         <sc-for list="{{ authTabs }}" as="at" hint-placeholder-count="4">
-          <button onClick="{{ at.onClick }}" style="background:none;border:none;border-bottom:2px solid {{ at.bd }};padding:8px 12px;font-size:13.6px;font-weight:700;color:{{ at.color }}" style-hover="color:#0f172a">{{ at.label }}</button>
+          <button onClick="{{ at.onClick }}" style="flex:1;background:none;border:none;border-bottom:2px solid {{ at.bd }};padding:9px 4px 11px;font-size:13.1px;font-weight:700;color:{{ at.color }};white-space:nowrap" style-hover="color:#1750d8">{{ at.label }}</button>
         </sc-for>
       </div>
       <div style="font-size:20.4px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px">{{ authTitle }}</div>
       <div style="font-size:13.6px;color:#64748b;margin-bottom:24px">{{ authDesc }}</div>
       <sc-if value="{{ authIs2fa }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;align-items:center;gap:8px;border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc;padding:12px 14px;margin-bottom:16px">
-          <span class="msym" style="font-size:20.4px;color:#1750d8">phonelink_lock</span>
+        <div style="display:flex;align-items:center;gap:9px;border-left:2px solid #1750d8;background:#f8fafc;padding:11px 13px;margin-bottom:18px">
+          <span class="msym" style="font-size:19.4px;color:#1750d8">phonelink_lock</span>
           <div style="flex:1;min-width:0">
-            <div style="font-size:12.6px;font-weight:700">인증 앱 (Authenticator)</div>
-            <div style="font-size:11.6px;color:#64748b;margin-top:1px">hong@evolvailab.com · 등록된 기기 1대</div>
+            <div style="font-size:12.1px;font-weight:700;color:#1345bd;white-space:nowrap">인증 앱 (Authenticator)</div>
+            <div style="font-size:11.6px;color:#475569;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">hong@evolvailab.com · 등록된 기기 1대</div>
           </div>
-          <button style="background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;font-size:11.2px;font-weight:700;color:#334155" style-hover="background:#f1f5f9">변경</button>
+          <button style="flex:none;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;font-size:11.6px;font-weight:700;color:#334155;white-space:nowrap" style-hover="background:#f1f5f9">변경</button>
         </div>
-        <div style="display:flex;gap:8px;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
+          <span style="font-size:12.1px;font-weight:700;color:#334155;white-space:nowrap">인증 코드</span>
+          <span style="font-size:11.2px;color:#94a3b8;white-space:nowrap">6자리</span>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:space-between;margin-bottom:14px">
           <sc-for list="{{ otpCells }}" as="oc" hint-placeholder-count="6">
-            <input value="{{ oc.v }}" onChange="{{ oc.onChange }}" maxLength="1" placeholder="{{ oc.ph }}" style="width:100%;text-align:center;font-size:20.4px;font-weight:700;border:1px solid {{ oc.bd }};border-radius:8px;padding:12px 0;font-family:ui-monospace,Menlo,monospace;background:{{ oc.bg }}">
+            <input value="{{ oc.v }}" onChange="{{ oc.onChange }}" maxLength="1" placeholder="{{ oc.ph }}" style="width:100%;text-align:center;font-size:20.4px;font-weight:700;border:1px solid {{ oc.bd }};border-radius:8px;padding:12px 0;font-family:ui-monospace,Menlo,monospace;background:{{ oc.bg }};outline:none;transition:border-color .12s,box-shadow .12s" style-focus="border-color:#1750d8;box-shadow:0 0 0 3px rgba(23,80,216,.12)">
           </sc-for>
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
           <div style="flex:1;height:4px;background:#f1f5f9;border-radius:999px;overflow:hidden"><div style="width:{{ otpPct }};height:100%;background:{{ otpColor }};border-radius:999px;transition:width 1s linear"></div></div>
           <span style="font-family:ui-monospace,Menlo,monospace;font-size:12.1px;font-weight:700;color:{{ otpColor }}">{{ otpTime }}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
           <span style="font-size:12.1px;color:#64748b;white-space:nowrap">코드가 오지 않나요?</span>
-          <button onClick="{{ otpResend }}" style="background:none;border:none;font-size:12.1px;font-weight:700;color:#1750d8;padding:0">코드 재전송</button>
-          <div style="flex:1"></div>
-          <button style="background:none;border:none;font-size:12.1px;font-weight:600;color:#64748b;padding:0">백업 코드 사용</button>
+          <button onClick="{{ otpResend }}" style="background:none;border:none;font-size:12.1px;font-weight:700;color:#1750d8;padding:0;white-space:nowrap" style-hover="text-decoration:underline">코드 재전송</button>
+          <button style="margin-left:auto;background:none;border:none;font-size:12.1px;font-weight:600;color:#64748b;padding:0;white-space:nowrap" style-hover="color:#1750d8">백업 코드 사용</button>
         </div>
-        <label style="display:flex;align-items:center;gap:8px;margin-bottom:18px;cursor:pointer">
-          <input type="checkbox" style="width:15px;height:15px;accent-color:#1750d8">
-          <span style="font-size:12.1px;color:#334155;white-space:nowrap">이 브라우저는 30일간 신뢰</span>
-        </label>
+        <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-bottom:18px">
+          <button onClick="{{ toggleTrust }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:0;justify-content:flex-start">
+            <span class="msym" style="font-size:19.4px;color:{{ trustColor }}">{{ trustIcon }}</span>
+            <span style="font-size:12.1px;color:#334155;white-space:nowrap">이 브라우저는 30일간 신뢰</span>
+          </button>
+        </div>
       </sc-if>
       <sc-if value="{{ authIsForm }}" hint-placeholder-val="{{ true }}">
         <sc-if value="{{ authIsSignup }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;align-items:center;gap:8px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:9px;padding:12px 14px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:9px;border-left:2px solid #1750d8;background:#f8fafc;padding:11px 13px;margin-bottom:18px">
             <span class="msym" style="font-size:19.4px;color:#1750d8">mail</span>
             <div style="flex:1;min-width:0">
-              <div style="font-size:12.1px;font-weight:700;color:#1345bd">초대받은 계정으로 가입 중</div>
-              <div style="font-size:11.6px;color:#475569;margin-top:1px">Amber Evolution · ESG 전략팀 초대</div>
+              <div style="font-size:12.1px;font-weight:700;color:#1345bd;white-space:nowrap">초대받은 계정으로 가입 중</div>
+              <div style="font-size:11.6px;color:#475569;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Amber Evolution · ESG 전략팀 초대</div>
             </div>
           </div>
         </sc-if>
@@ -124,8 +130,11 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
               <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
                 <span style="font-size:12.1px;font-weight:700;color:#334155;white-space:nowrap">{{ af.label }}</span>
                 <sc-if value="{{ af.hint }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.2px;color:#94a3b8;white-space:nowrap">{{ af.hint }}</span></sc-if>
+                <sc-if value="{{ af.linkLabel }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ af.onLink }}" style="margin-left:auto;background:none;border:none;padding:0;font-size:11.6px;font-weight:700;color:#1750d8;white-space:nowrap" style-hover="text-decoration:underline">{{ af.linkLabel }}</button>
+                </sc-if>
               </div>
-              <input type="{{ af.type }}" value="{{ af.value }}" onChange="{{ af.onChange }}" readOnly="{{ af.readOnly }}" placeholder="{{ af.ph }}" style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;font-size:14.1px;background:{{ af.bg }};color:{{ af.color }}">
+              <input type="{{ af.type }}" value="{{ af.value }}" onChange="{{ af.onChange }}" readOnly="{{ af.readOnly }}" placeholder="{{ af.ph }}" style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;font-size:14.1px;background:{{ af.bg }};color:{{ af.color }};outline:none;transition:border-color .12s,box-shadow .12s" style-focus="border-color:#1750d8;box-shadow:0 0 0 3px rgba(23,80,216,.12)">
               <sc-if value="{{ af.hasMeter }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
                   <div style="flex:1;display:flex;gap:4px">
@@ -147,26 +156,68 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
           </sc-for>
         </div>
         <sc-if value="{{ authIsSignup }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+          <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px">
             <sc-for list="{{ agreeItems }}" as="ag" hint-placeholder-count="3">
-              <button onClick="{{ ag.onClick }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:0;text-align:left;justify-content:flex-start">
+              <button onClick="{{ ag.onClick }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:0;text-align:left;justify-content:flex-start;border-bottom:{{ ag.divider }};padding-bottom:{{ ag.padB }}">
                 <span class="msym" style="font-size:19.4px;color:{{ ag.color }}">{{ ag.icon }}</span>
-                <span style="flex:1;font-size:12.1px;font-weight:{{ ag.weight }};color:#334155">{{ ag.label }}</span>
-                <sc-if value="{{ ag.link }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.2px;color:#94a3b8;text-decoration:underline">보기</span></sc-if>
+                <span style="flex:1;font-size:12.1px;font-weight:{{ ag.weight }};color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ag.label }}</span>
+                <sc-if value="{{ ag.link }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.6px;font-weight:600;color:#1750d8;white-space:nowrap" style-hover="text-decoration:underline">보기</span></sc-if>
               </button>
             </sc-for>
           </div>
         </sc-if>
+        <sc-if value="{{ authIsLogin }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+            <button onClick="{{ toggleRemember }}" style="display:flex;align-items:center;gap:7px;background:none;border:none;padding:0;justify-content:flex-start">
+              <span class="msym" style="font-size:19.4px;color:{{ rememberColor }}">{{ rememberIcon }}</span>
+              <span style="font-size:12.1px;color:#334155;white-space:nowrap">로그인 상태 유지</span>
+            </button>
+            <button onClick="{{ goFind }}" style="margin-left:auto;background:none;border:none;padding:0;font-size:12.1px;font-weight:600;color:#64748b;white-space:nowrap" style-hover="color:#1750d8">계정 찾기</button>
+          </div>
+        </sc-if>
         <sc-if value="{{ authIsFind }}" hint-placeholder-val="{{ false }}">
-          <div style="border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc;padding:12px 14px;margin-bottom:18px;font-size:12.1px;color:#64748b;line-height:1.7">
-            가입한 이메일로 재설정 링크를 보냅니다. 조직 SSO 계정은 관리자에게 문의해 주세요.
+          <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-bottom:18px">
+            <div style="font-size:12.1px;font-weight:700;color:#334155;margin-bottom:9px;white-space:nowrap">재설정 방법</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+              <sc-for list="{{ findMethods }}" as="fm" hint-placeholder-count="2">
+                <button onClick="{{ fm.onClick }}" style="display:flex;align-items:center;gap:9px;background:{{ fm.bg }};border:none;border-left:2px solid {{ fm.bar }};padding:10px 12px;text-align:left;justify-content:flex-start" style-hover="background:#f1f5f9">
+                  <span class="msym" style="font-size:19.4px;color:{{ fm.iconColor }}">{{ fm.icon }}</span>
+                  <span style="flex:1;min-width:0">
+                    <span style="display:block;font-size:12.1px;font-weight:700;color:{{ fm.titleColor }};white-space:nowrap">{{ fm.title }}</span>
+                    <span style="display:block;font-size:11.2px;color:#64748b;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ fm.desc }}</span>
+                  </span>
+                  <sc-if value="{{ fm.on }}" hint-placeholder-val="{{ false }}"><span class="msym" style="font-size:17px;color:#1750d8">check_circle</span></sc-if>
+                </button>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;border-left:2px solid #cbd5e1;background:#f8fafc;padding:10px 12px">
+              <span class="msym" style="font-size:17px;color:#94a3b8">info</span>
+              <span style="flex:1;font-size:11.6px;color:#64748b;line-height:1.65">조직 SSO 계정은 비밀번호가 없습니다. 관리자에게 문의해 주세요.</span>
+            </div>
           </div>
         </sc-if>
       </sc-if>
       <button onClick="{{ authSubmit }}" style="width:100%;background:#1750d8;color:#fff;border:none;border-radius:8px;padding:12px 0;font-size:14.6px;font-weight:700" style-hover="background:#1345bd">{{ authCta }}</button>
-      <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:12.6px;color:#64748b">
-        <span>SSO로 계속하기</span>
-        <span style="color:#2563eb;font-weight:600">도움이 필요하신가요?</span>
+      <sc-if value="{{ authIsFind }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ goLogin }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:none;margin-top:14px;font-size:12.6px;font-weight:600;color:#64748b" style-hover="color:#1750d8">
+          <span class="msym" style="font-size:16px">arrow_back</span><span style="white-space:nowrap">로그인으로 돌아가기</span>
+        </button>
+      </sc-if>
+      <sc-if value="{{ authShowSso }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:10px;margin:18px 0 14px">
+          <span style="flex:1;height:1px;background:#e2e8f0"></span>
+          <span style="font-size:11.6px;color:#94a3b8;white-space:nowrap">또는</span>
+          <span style="flex:1;height:1px;background:#e2e8f0"></span>
+        </div>
+        <button onClick="{{ authSubmit }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:11px 0;font-size:13.6px;font-weight:700;color:#334155" style-hover="background:#f8fafc;border-color:#94a3b8">
+          <span class="msym" style="font-size:18.4px;color:#475569">shield_person</span>조직 SSO로 계속하기
+        </button>
+      </sc-if>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid #e2e8f0">
+        <span style="font-size:11.6px;color:#94a3b8;white-space:nowrap">Private AI · 데이터 외부 유출 없음</span>
+        <button onClick="{{ openHelpFromAuth }}" style="margin-left:auto;display:flex;align-items:center;gap:5px;background:none;border:none;padding:0;font-size:12.1px;font-weight:700;color:#1750d8;white-space:nowrap" style-hover="text-decoration:underline">
+          <span class="msym" style="font-size:16px">help</span>도움이 필요하신가요?
+        </button>
       </div>
     </div>
   </div>
@@ -203,11 +254,14 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
     <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start">
       <!-- 폼 -->
       <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;min-width:0">
-        <div style="padding:18px 22px;border-bottom:1px solid #e2e8f0">
-          <div style="font-size:16px;font-weight:800;letter-spacing:-.01em">{{ obTitle }}</div>
-          <div style="font-size:12.6px;color:#64748b;margin-top:4px">{{ obDesc }}</div>
+        <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:16px;font-weight:800;letter-spacing:-.01em">{{ obTitle }}</span>
+            <span style="margin-left:auto;font-size:11.2px;font-weight:800;color:#94a3b8;white-space:nowrap">{{ obStepLabel }}</span>
+          </div>
+          <div style="font-size:12.6px;color:#64748b;margin-top:4px;line-height:1.65">{{ obDesc }}</div>
         </div>
-        <div style="padding:20px 22px;display:flex;flex-direction:column;gap:16px">
+        <div style="padding:18px;display:flex;flex-direction:column;gap:16px">
           <sc-for list="{{ obFields }}" as="of" hint-placeholder-count="3">
             <div>
               <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
@@ -215,15 +269,16 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
                 <sc-if value="{{ of.req }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.7px;font-weight:800;color:#dc2626">필수</span></sc-if>
               </div>
               <sc-if value="{{ of.isText }}" hint-placeholder-val="{{ true }}">
-                <input value="{{ of.value }}" onChange="{{ of.onChange }}" placeholder="{{ of.ph }}" style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;font-size:14.1px">
+                <input value="{{ of.value }}" onChange="{{ of.onChange }}" placeholder="{{ of.ph }}" style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;font-size:14.1px;outline:none;transition:border-color .12s,box-shadow .12s" style-focus="border-color:#1750d8;box-shadow:0 0 0 3px rgba(23,80,216,.12)">
               </sc-if>
               <sc-if value="{{ of.isCards }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;gap:8px">
                   <sc-for list="{{ of.cards }}" as="cd" hint-placeholder-count="3">
-                    <button onClick="{{ cd.onClick }}" style="flex:1;min-width:0;background:{{ cd.bg }};border:1px solid {{ cd.bd }};border-radius:9px;padding:12px 14px;text-align:left;display:block;justify-content:flex-start" style-hover="border-color:#1750d8">
+                    <button onClick="{{ cd.onClick }}" style="flex:1;min-width:0;background:{{ cd.bg }};border:none;border-left:2px solid {{ cd.bar }};padding:11px 13px;text-align:left;display:block;justify-content:flex-start" style-hover="background:#f1f5f9">
                       <span style="display:flex;align-items:center;gap:6px">
                         <span class="msym" style="font-size:17px;color:{{ cd.icColor }}">{{ cd.icon }}</span>
-                        <span style="font-size:12.6px;font-weight:800;color:{{ cd.titleColor }};white-space:nowrap">{{ cd.title }}</span>
+                        <span style="flex:1;font-size:12.6px;font-weight:800;color:{{ cd.titleColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ cd.title }}</span>
+                        <sc-if value="{{ cd.on }}" hint-placeholder-val="{{ false }}"><span class="msym" style="font-size:16px;color:#1750d8">check_circle</span></sc-if>
                       </span>
                       <span style="display:block;font-size:11.2px;color:#64748b;margin-top:5px;line-height:1.65">{{ cd.desc }}</span>
                     </button>
@@ -241,7 +296,7 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
               </sc-if>
               <sc-if value="{{ of.isInvite }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;gap:6px">
-                  <input value="{{ obInvite }}" onChange="{{ setObInvite }}" onKeyDown="{{ obInviteKey }}" placeholder="이메일 입력 후 Enter" style="flex:1;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;font-size:14.1px">
+                  <input value="{{ obInvite }}" onChange="{{ setObInvite }}" onKeyDown="{{ obInviteKey }}" placeholder="이메일 입력 후 Enter" style="flex:1;min-width:0;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;font-size:14.1px;outline:none;transition:border-color .12s,box-shadow .12s" style-focus="border-color:#1750d8;box-shadow:0 0 0 3px rgba(23,80,216,.12)">
                   <button onClick="{{ addObInvite }}" style="background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:0 14px;font-size:12.1px;font-weight:700;color:#334155;white-space:nowrap" style-hover="background:#f1f5f9">추가</button>
                 </div>
                 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:9px">
@@ -257,17 +312,19 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
             </div>
           </sc-for>
         </div>
-        <div style="padding:15px 22px;border-top:1px solid #e2e8f0;display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:0 0 10px 10px">
-          <span style="font-size:11.6px;color:#94a3b8;white-space:nowrap">{{ obStepLabel }}</span>
-          <div style="flex:1"></div>
-          <button onClick="{{ obBack }}" style="background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:10px 16px;font-size:13.6px;font-weight:600;color:#334155;white-space:nowrap" style-hover="background:#f1f5f9">이전</button>
-          <button onClick="{{ obNext }}" style="background:#1750d8;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13.6px;font-weight:700;white-space:nowrap" style-hover="background:#1345bd">{{ obCta }}</button>
+        <div style="padding:14px 18px;border-top:1px solid #e2e8f0;display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:0 0 10px 10px">
+          <button onClick="{{ obBack }}" disabled="{{ obFirst }}" style="flex:1;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:11px 0;font-size:13.6px;font-weight:600;color:{{ obBackColor }};white-space:nowrap" style-hover="background:#f1f5f9">이전</button>
+          <button onClick="{{ obNext }}" style="flex:1;background:#1750d8;color:#fff;border:none;border-radius:8px;padding:11px 0;font-size:13.6px;font-weight:700;white-space:nowrap" style-hover="background:#1345bd">{{ obCta }}</button>
         </div>
       </div>
       <!-- 데이터 출력 패널 -->
       <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:15px 16px">
-          <div style="font-size:12.1px;font-weight:800;margin-bottom:12px;white-space:nowrap">생성될 계층 구조</div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px">
+          <div style="height:44px;display:flex;align-items:center;gap:7px;padding:0 16px;border-bottom:1px solid #e2e8f0">
+            <span class="msym" style="font-size:17px;color:#94a3b8">account_tree</span>
+            <span style="font-size:12.1px;font-weight:800;white-space:nowrap">생성될 계층 구조</span>
+          </div>
+          <div style="padding:14px 16px">
           <sc-for list="{{ obPreview }}" as="pv" hint-placeholder-count="3">
             <div style="display:flex;gap:8px;padding-left:{{ pv.indent }}">
               <div style="flex:none;display:flex;flex-direction:column;align-items:center;width:22px">
@@ -281,10 +338,14 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
               </div>
             </div>
           </sc-for>
+          </div>
         </div>
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:15px 16px">
-          <div style="font-size:12.1px;font-weight:800;margin-bottom:10px;white-space:nowrap">완료 후 자동 구성</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px">
+          <div style="height:44px;display:flex;align-items:center;gap:7px;padding:0 16px;border-bottom:1px solid #e2e8f0">
+            <span class="msym" style="font-size:17px;color:#94a3b8">playlist_add_check</span>
+            <span style="font-size:12.1px;font-weight:800;white-space:nowrap">완료 후 자동 구성</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px">
             <sc-for list="{{ obAutoItems }}" as="ai" hint-placeholder-count="4">
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="msym" style="font-size:16px;color:#16a34a">check_circle</span>
@@ -293,8 +354,9 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
             </sc-for>
           </div>
         </div>
-        <div style="border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;padding:13px 15px;font-size:11.6px;color:#1345bd;line-height:1.75">
-          조직 생성은 최초 1회성 페이지입니다. 이후 조직&사업부·프로젝트·멤버 추가는 모두 모달로 처리됩니다.
+        <div style="display:flex;gap:9px;border-left:2px solid #1750d8;background:#f8fafc;padding:11px 13px">
+          <span class="msym" style="font-size:17px;color:#1750d8">info</span>
+          <span style="flex:1;font-size:11.6px;color:#475569;line-height:1.7">조직 생성은 최초 1회성 페이지입니다. 이후 조직&사업부·프로젝트·멤버 추가는 모두 모달로 처리됩니다.</span>
         </div>
       </div>
     </div>
@@ -1195,7 +1257,7 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
     </aside>
     </sc-if>
     <div style="position:relative;width:0;flex:none;z-index:55">
-      <button onClick="{{ toggleBot }}" title="{{ botToggleTitle }}" style="position:absolute;top:96px;right:-11px;width:22px;height:22px;padding:0;background:#fff;border:1px solid #cbd5e1;border-radius:999px;box-shadow:0 1px 4px rgba(15,23,42,.14);color:#64748b;transition:border-color .12s ease,color .12s ease,box-shadow .12s ease" style-hover="border-color:#1750d8;color:#1750d8;box-shadow:0 2px 9px rgba(23,80,216,.24)">
+      <button onClick="{{ toggleBot }}" title="{{ botToggleTitle }}" style="position:absolute;top:96px;right:1px;width:22px;height:22px;padding:0;background:#fff;border:1px solid #cbd5e1;border-radius:999px;box-shadow:0 1px 4px rgba(15,23,42,.14);color:#64748b;transition:border-color .12s ease,color .12s ease,box-shadow .12s ease" style-hover="border-color:#1750d8;color:#1750d8;box-shadow:0 2px 9px rgba(23,80,216,.24)">
         <span class="msym" style="font-size:16px">{{ botArrow }}</span>
       </button>
     </div>
@@ -1465,7 +1527,7 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
           <div style="position:relative;flex:none">
             <button onClick="{{ toggleTaskSort }}" style="display:flex;align-items:center;gap:4px;background:#fff;border:1px solid {{ taskSortBd }};border-radius:6px;padding:4px 8px;font-size:11.2px;font-weight:700;color:#334155;white-space:nowrap" style-hover="background:#f8fafc"><span class="msym" style="font-size:15px;color:#94a3b8">swap_vert</span>{{ taskSortLabel }}<span class="msym" style="font-size:14.1px;color:#94a3b8">{{ taskSortCaret }}</span></button>
             <sc-if value="{{ taskSortOpen }}" hint-placeholder-val="{{ false }}">
-              <div style="position:absolute;top:calc(100% + 4px);right:0;z-index:30;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.16);padding:4px;animation:popIn .12s ease">
+              <div style="position:absolute;top:calc(100% + 4px);left:0;right:0;min-width:100%;z-index:30;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.16);padding:4px;animation:popIn .12s ease">
                 <sc-for list="{{ taskSortOpts }}" as="so" hint-placeholder-count="3">
                   <button onClick="{{ so.onClick }}" style="width:100%;display:flex;align-items:center;gap:6px;background:{{ so.bg }};border:none;border-radius:6px;padding:6px 9px;font-size:11.6px;font-weight:{{ so.weight }};color:#0f172a;white-space:nowrap;justify-content:flex-start" style-hover="background:#f1f5f9">
                     <span class="msym" style="font-size:15px;color:{{ so.icColor }}">{{ so.icon }}</span>{{ so.label }}
@@ -1601,6 +1663,19 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
         </div>
       </sc-if>
       <sc-if value="{{ ecoHasFile }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;display:flex;align-items:center;gap:14px;height:44px;padding:0 18px;border-bottom:1px solid #e2e8f0">
+          <span style="font-size:13.1px;font-weight:800;white-space:nowrap">에코바디스 2026 평가</span>
+          <span style="font-size:11.2px;color:#94a3b8;white-space:nowrap">라운드 2 · 제출 마감 2026.08.12</span>
+          <span style="font-size:11.2px;font-weight:800;border-radius:999px;padding:2px 9px;background:#fef2f2;color:#b91c1c;white-space:nowrap">D-18</span>
+          <div style="flex:1"></div>
+          <sc-for list="{{ ecoScores }}" as="sc" hint-placeholder-count="3">
+            <div style="display:flex;align-items:baseline;gap:5px;white-space:nowrap">
+              <span style="font-size:11.2px;color:#94a3b8">{{ sc.label }}</span>
+              <span style="font-size:14px;font-weight:800;letter-spacing:-.01em;color:{{ sc.color }}">{{ sc.value }}</span>
+              <span style="font-size:10.7px;font-weight:700;color:{{ sc.deltaColor }}">{{ sc.delta }}</span>
+            </div>
+          </sc-for>
+        </div>
         <div style="flex:none;display:flex;align-items:stretch;border-bottom:1px solid #e2e8f0">
           <div style="width:340px;flex:none;border-right:1px solid #e2e8f0;padding:14px 18px;display:flex;align-items:center;gap:12px">
             <span style="flex:none;width:34px;height:34px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:8.7px;font-weight:800;color:#475569">PDF</span>
@@ -1634,13 +1709,27 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
             </div>
           </div>
         </div>
+        <div style="flex:none;display:flex;align-items:stretch;border-bottom:1px solid #e2e8f0">
+          <sc-for list="{{ ecoAreas }}" as="ea" hint-placeholder-count="4">
+            <button onClick="{{ ea.onClick }}" style="flex:1;min-width:0;display:block;background:{{ ea.bg }};border:none;border-right:1px solid #e2e8f0;border-top:2px solid {{ ea.bar }};padding:11px 16px;text-align:left;justify-content:flex-start" style-hover="background:#f8fafc">
+              <span style="display:flex;align-items:baseline;gap:6px;margin-bottom:7px">
+                <span style="font-size:12.1px;font-weight:700;white-space:nowrap">{{ ea.label }}</span>
+                <span style="margin-left:auto;font-size:13.1px;font-weight:800;letter-spacing:-.01em;color:{{ ea.pctColor }}">{{ ea.pct }}</span>
+              </span>
+              <span style="display:block;height:5px;background:#f1f5f9;border-radius:999px;overflow:hidden;margin-bottom:6px"><span style="display:block;width:{{ ea.pct }};height:100%;background:{{ ea.barColor }}"></span></span>
+              <span style="display:block;font-size:10.7px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ea.done }}/{{ ea.total }}문항 · 미처리 {{ ea.todo }}</span>
+            </button>
+          </sc-for>
+        </div>
         <div style="display:flex;flex:1;min-height:0">
           <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #e2e8f0">
             <div style="flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-bottom:1px solid #e2e8f0">
               <span style="font-size:12.1px;font-weight:800;white-space:nowrap">질문항 결과</span>
+              <span style="font-size:11.2px;color:#94a3b8;white-space:nowrap">{{ ecoRowCount }}</span>
               <div style="flex:1"></div>
+              <input value="{{ ecoQuery }}" onChange="{{ setEcoQuery }}" placeholder="문항번호·키워드 검색" style="width:158px;border:none;border-bottom:1px solid #cbd5e1;padding:5px 2px;font-size:12.1px;background:none">
               <sc-for list="{{ ecoFilters }}" as="ef" hint-placeholder-count="4">
-                <button onClick="{{ ef.onClick }}" style="background:{{ ef.bg }};border:1px solid {{ ef.bd }};color:{{ ef.color }};border-radius:999px;padding:4px 10px;font-size:11.2px;font-weight:700">{{ ef.label }}</button>
+                <button onClick="{{ ef.onClick }}" style="background:{{ ef.bg }};border:1px solid {{ ef.bd }};color:{{ ef.color }};border-radius:999px;padding:4px 10px;font-size:11.2px;font-weight:700;white-space:nowrap">{{ ef.label }}</button>
               </sc-for>
             </div>
             <div style="flex:1;overflow:auto">
@@ -1668,10 +1757,27 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
             </div>
           </div>
           <div style="width:300px;flex:none;display:flex;flex-direction:column;overflow:hidden">
-            <div style="flex:none;display:flex;flex-direction:column;justify-content:center;height:44px;padding:0 18px;border-bottom:1px solid #e2e8f0">
-              <div style="font-size:12.1px;font-weight:800;white-space:nowrap">요청한 자료 · 진행중</div>
-              <div style="font-size:10.7px;color:#94a3b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">담당자에게 요청한 증빙 현황</div>
+            <div style="flex:none;display:flex;align-items:stretch;height:44px;border-bottom:1px solid #e2e8f0">
+              <sc-for list="{{ ecoAsideTabs }}" as="at" hint-placeholder-count="2">
+                <button onClick="{{ at.onClick }}" style="flex:1;background:none;border:none;border-bottom:2px solid {{ at.bar }};color:{{ at.color }};font-size:12.1px;font-weight:{{ at.weight }};white-space:nowrap" style-hover="background:#f8fafc">{{ at.label }}</button>
+              </sc-for>
             </div>
+            <sc-if value="{{ ecoAsideBlock }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;overflow:auto">
+                <div style="padding:12px 16px;border-bottom:1px solid #e2e8f0;font-size:11.6px;color:#b45309;line-height:1.7;background:#fffbeb">증빙을 찾지 못했거나 담당자 회신을 기다리는 문항입니다. 마감까지 우선 처리하세요.</div>
+                <sc-for list="{{ ecoBlockers }}" as="bk" hint-placeholder-count="4">
+                  <button onClick="{{ bk.onClick }}" style="width:100%;display:block;background:#fff;border:none;border-bottom:1px solid #f1f5f9;border-left:2px solid {{ bk.bar }};padding:12px 14px;text-align:left;justify-content:flex-start" style-hover="background:#f8fafc">
+                    <span style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+                      <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.2px;font-weight:800;color:#475569">{{ bk.no }}</span>
+                      <span style="margin-left:auto;font-size:10.2px;font-weight:800;border-radius:999px;padding:2px 8px;background:{{ bk.bg }};color:{{ bk.fg }};white-space:nowrap">{{ bk.tag }}</span>
+                    </span>
+                    <span style="display:block;font-size:12.1px;font-weight:700;line-height:1.6">{{ bk.q }}</span>
+                    <span style="display:block;font-size:11.2px;color:#64748b;margin-top:4px">{{ bk.hint }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ ecoAsideReq }}" hint-placeholder-val="{{ true }}">
             <div style="flex:1;overflow:auto">
               <sc-for list="{{ ecoReqs }}" as="r" hint-placeholder-count="4">
                 <button onClick="{{ r.onClick }}" style="width:100%;display:block;background:#fff;border:none;border-bottom:1px solid #f1f5f9;border-left:2px solid {{ r.bar }};padding:12px 14px;text-align:left;justify-content:flex-start" style-hover="background:#f8fafc">
@@ -1684,8 +1790,10 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
                 </button>
               </sc-for>
             </div>
-            <div style="flex:none;padding:10px 16px;border-top:1px solid #e2e8f0">
-              <button onClick="{{ openReqSheet }}" style="width:100%;background:#1750d8;color:#fff;border:none;border-radius:6px;padding:8px 0;font-size:12.1px;font-weight:700" style-hover="background:#1345bd">+ 자료 요청 만들기</button>
+            </sc-if>
+            <div style="flex:none;padding:10px 16px;border-top:1px solid #e2e8f0;display:flex;gap:7px">
+              <button onClick="{{ goEcoReq }}" style="flex:none;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font-size:12.1px;font-weight:700;color:#334155;white-space:nowrap" style-hover="background:#f1f5f9">요청 관리</button>
+              <button onClick="{{ openReqSheet }}" style="flex:1;background:#1750d8;color:#fff;border:none;border-radius:6px;padding:8px 0;font-size:12.1px;font-weight:700;white-space:nowrap" style-hover="background:#1345bd">+ 자료 요청</button>
             </div>
           </div>
         </div>
@@ -1862,7 +1970,7 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
       </div>
     </div>
     <div style="position:relative;width:0;flex:none;z-index:54">
-      <button onClick="{{ toggleBot }}" title="{{ botToggleTitle }}" style="position:absolute;top:96px;right:-11px;width:22px;height:22px;padding:0;background:#fff;border:1px solid #cbd5e1;border-radius:999px;box-shadow:0 1px 4px rgba(15,23,42,.14);color:#64748b;transition:border-color .12s ease,color .12s ease,box-shadow .12s ease" style-hover="border-color:#1750d8;color:#1750d8;box-shadow:0 2px 9px rgba(23,80,216,.24)">
+      <button onClick="{{ toggleBot }}" title="{{ botToggleTitle }}" style="position:absolute;top:96px;right:1px;width:22px;height:22px;padding:0;background:#fff;border:1px solid #cbd5e1;border-radius:999px;box-shadow:0 1px 4px rgba(15,23,42,.14);color:#64748b;transition:border-color .12s ease,color .12s ease,box-shadow .12s ease" style-hover="border-color:#1750d8;color:#1750d8;box-shadow:0 2px 9px rgba(23,80,216,.24)">
         <span class="msym" style="font-size:16px">{{ botArrow }}</span>
       </button>
     </div>
@@ -1986,6 +2094,127 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
         · 이 화면 주소에도 해시가 남습니다 — 열기를 누른 뒤 브라우저 주소를 복사하면 그 레이어가 열린 상태로 공유됩니다.
       </div>
     </div>
+  </div>
+  </sc-if>
+
+  <!-- ======= 에코바디스 자료요청 ======= -->
+  <sc-if value="{{ isEcoReq }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="자료요청" style="flex:1;display:flex;min-width:{{ chatRowMin }};min-height:0">
+    <div style="width:206px;flex:none;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column">
+      <div style="flex:none;height:44px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid #e2e8f0"><span style="font-size:10.7px;font-weight:800;color:#94a3b8;letter-spacing:.06em;white-space:nowrap">요청 상태</span></div>
+      <div style="flex:1;overflow:auto;padding:5px 0">
+        <sc-for list="{{ rqStates }}" as="rs" hint-placeholder-count="6">
+          <button onClick="{{ rs.onClick }}" style="width:100%;display:flex;align-items:center;gap:8px;background:{{ rs.bg }};border:none;border-left:2px solid {{ rs.bar }};padding:8px 12px;text-align:left;justify-content:flex-start;color:{{ rs.color }}" style-hover="background:#f1f5f9">
+            <span style="width:6px;height:6px;border-radius:999px;background:{{ rs.dot }};flex:none"></span>
+            <span style="flex:1;font-size:12.6px;font-weight:{{ rs.weight }}">{{ rs.label }}</span>
+            <span style="font-size:11.2px;color:#94a3b8">{{ rs.count }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="flex:none;border-top:1px solid #e2e8f0;padding:12px 14px">
+        <div style="font-size:10.7px;font-weight:800;color:#94a3b8;letter-spacing:.06em;white-space:nowrap;margin-bottom:8px">담당자별 미제출</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ rqOwners }}" as="ro" hint-placeholder-count="3">
+            <button onClick="{{ ro.onClick }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:0;text-align:left;justify-content:flex-start" style-hover="opacity:.7">
+              <span style="width:22px;height:22px;flex:none;border-radius:999px;background:#f1f5f9;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:10.7px;font-weight:800;color:#475569">{{ ro.initial }}</span>
+              <span style="flex:1;min-width:0;font-size:12.1px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ro.name }}</span>
+              <span style="font-size:11.2px;font-weight:800;color:{{ ro.color }}">{{ ro.count }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:{{ contentMin }};display:flex;flex-direction:column;background:#fff">
+      <div style="flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-bottom:1px solid #e2e8f0">
+        <span style="font-size:13.1px;font-weight:800;white-space:nowrap">자료요청</span>
+        <span style="font-size:11.2px;color:#94a3b8;white-space:nowrap">{{ rqTotal }}건 · 기한초과 {{ rqOverdue }}</span>
+        <div style="flex:1"></div>
+        <input value="{{ rqQuery }}" onChange="{{ setRqQuery }}" placeholder="요청 자료·담당자 검색" style="width:184px;border:none;border-bottom:1px solid #cbd5e1;padding:5px 2px;font-size:12.1px;background:none">
+        <button onClick="{{ openReqSheet }}" style="background:#1750d8;color:#fff;border:none;border-radius:6px;padding:6px 11px;font-size:12.1px;font-weight:700;white-space:nowrap" style-hover="background:#1345bd">+ 자료 요청</button>
+      </div>
+      <div style="flex:1;overflow:auto">
+        <div style="overflow-x:auto">
+          <div style="min-width:700px;display:grid;grid-template-columns:88px minmax(180px,1.3fr) 96px 100px 84px 92px;gap:8px;padding:11px 18px;border-bottom:1px solid #e2e8f0;font-size:11.2px;font-weight:800;color:#94a3b8;position:sticky;top:0;background:#fff;z-index:1">
+            <span style="white-space:nowrap">요청번호</span><span style="white-space:nowrap">요청 자료</span><span style="white-space:nowrap">연결 문항</span><span style="white-space:nowrap">담당자</span><span style="white-space:nowrap;text-align:center">기한</span><span style="white-space:nowrap;text-align:center">상태</span>
+          </div>
+          <sc-for list="{{ rqRows }}" as="rq" hint-placeholder-count="6">
+            <button onClick="{{ rq.onClick }}" style="width:100%;min-width:700px;display:grid;grid-template-columns:88px minmax(180px,1.3fr) 96px 100px 84px 92px;gap:8px;align-items:center;background:{{ rq.rowBg }};border:none;border-bottom:1px solid #f1f5f9;border-left:2px solid {{ rq.bar }};padding:11px 18px;text-align:left;justify-content:flex-start" style-hover="background:#f8fafc">
+              <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.7px;font-weight:800;color:#475569;white-space:nowrap">{{ rq.no }}</span>
+              <span style="min-width:0;font-size:12.6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rq.title }}</span>
+              <span style="font-size:11.2px;font-weight:700;color:#1750d8;white-space:nowrap">{{ rq.qno }}</span>
+              <span style="font-size:12.1px;color:#334155;white-space:nowrap">{{ rq.to }}</span>
+              <span style="font-size:11.6px;font-weight:600;color:{{ rq.dueColor }};text-align:center;white-space:nowrap">{{ rq.due }}</span>
+              <span style="text-align:center"><span style="font-size:10.2px;font-weight:800;border-radius:999px;padding:2px 8px;background:{{ rq.stBg }};color:{{ rq.stFg }};white-space:nowrap">{{ rq.status }}</span></span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <aside data-screen-label="자료요청 상세" style="width:326px;flex:none;border-left:1px solid #e2e8f0;display:flex;flex-direction:column;background:#fff;overflow:auto">
+      <div style="flex:none;height:44px;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid #e2e8f0">
+        <span style="font-size:12.6px;font-weight:800;white-space:nowrap">{{ rqCur.no }}</span>
+        <span style="font-size:10.2px;font-weight:800;border-radius:999px;padding:2px 8px;background:{{ rqCur.stBg }};color:{{ rqCur.stFg }};white-space:nowrap">{{ rqCur.status }}</span>
+      </div>
+      <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0">
+        <div style="font-size:14px;font-weight:800;line-height:1.5;margin-bottom:8px">{{ rqCur.title }}</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ rqMeta }}" as="rm" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="width:74px;flex:none;font-size:11.2px;color:#94a3b8;white-space:nowrap">{{ rm.k }}</span>
+              <span style="flex:1;min-width:0;font-size:12.1px;font-weight:600;color:{{ rm.color }}">{{ rm.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="padding:13px 16px;border-bottom:1px solid #e2e8f0">
+        <div style="font-size:10.7px;font-weight:800;color:#94a3b8;letter-spacing:.06em;white-space:nowrap;margin-bottom:8px">요청 사유 · 평가기관 요구</div>
+        <div style="font-size:12.1px;color:#334155;line-height:1.7">{{ rqCur.reason }}</div>
+      </div>
+      <div style="padding:13px 16px;border-bottom:1px solid #e2e8f0">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px">
+          <span style="font-size:10.7px;font-weight:800;color:#94a3b8;letter-spacing:.06em;white-space:nowrap">제출된 자료</span>
+          <span style="margin-left:auto;font-size:11.2px;color:#94a3b8;white-space:nowrap">{{ rqFileCount }}건</span>
+        </div>
+        <sc-if value="{{ rqHasFiles }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <sc-for list="{{ rqFiles }}" as="rf" hint-placeholder-count="2">
+              <button onClick="{{ rf.onClick }}" style="width:100%;display:flex;align-items:center;gap:9px;background:none;border:none;border-left:2px solid #cbd5e1;padding:7px 10px;text-align:left;justify-content:flex-start" style-hover="background:#f8fafc">
+                <span class="msym" style="font-size:18px;color:#64748b">description</span>
+                <span style="flex:1;min-width:0"><span style="display:block;font-size:12.1px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rf.name }}</span><span style="display:block;font-size:10.7px;color:#94a3b8;margin-top:4px">{{ rf.who }} · {{ rf.time }} · {{ rf.size }}</span></span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ rqNoFiles }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 10px;border-left:2px solid #fbbf24;background:#fffbeb">
+            <span class="msym" style="font-size:18px;color:#b45309">pending</span>
+            <span style="font-size:11.6px;color:#b45309;line-height:1.6">아직 제출된 자료가 없습니다. 담당자에게 알림을 보내세요.</span>
+          </div>
+        </sc-if>
+      </div>
+      <div style="padding:13px 16px;border-bottom:1px solid #e2e8f0">
+        <div style="font-size:10.7px;font-weight:800;color:#94a3b8;letter-spacing:.06em;white-space:nowrap;margin-bottom:10px">진행 이력</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <sc-for list="{{ rqHistory }}" as="rh" hint-placeholder-count="3">
+            <div style="display:flex;gap:9px">
+              <span style="flex:none;width:7px;height:7px;border-radius:999px;background:{{ rh.dot }};margin-top:6px"></span>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:11.6px;font-weight:700;white-space:nowrap">{{ rh.who }}</span><span style="font-size:10.2px;color:#94a3b8;white-space:nowrap">{{ rh.time }}</span></div>
+                <div style="font-size:11.6px;color:#334155;line-height:1.7;margin-top:4px">{{ rh.text }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:1"></div>
+      <div style="flex:none;border-top:1px solid #e2e8f0;padding:12px 16px;display:flex;flex-direction:column;gap:7px;background:#f8fafc">
+        <div style="display:flex;gap:7px">
+          <button onClick="{{ rqRemind }}" style="flex:1;background:#fff;border:1px solid #cbd5e1;border-radius:7px;padding:8px 0;font-size:12.1px;font-weight:700;color:#334155;white-space:nowrap" style-hover="background:#f1f5f9">알림 보내기</button>
+          <button onClick="{{ rqOpenChat }}" style="flex:1;background:#fff;border:1px solid #cbd5e1;border-radius:7px;padding:8px 0;font-size:12.1px;font-weight:700;color:#334155;white-space:nowrap" style-hover="background:#f1f5f9">대화로 확인</button>
+        </div>
+        <button onClick="{{ rqApply }}" style="width:100%;background:#1750d8;color:#fff;border:none;border-radius:7px;padding:9px 0;font-size:12.6px;font-weight:700;white-space:nowrap" style-hover="background:#1345bd">{{ rqApplyLabel }}</button>
+      </div>
+    </aside>
   </div>
   </sc-if>
 
@@ -2173,7 +2402,7 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
             <span style="display:flex;justify-content:center;position:relative">
               <button onClick="{{ m.onRole }}" style="display:flex;align-items:center;gap:3px;font-size:10.7px;font-weight:700;border:1px solid {{ m.roleBd }};border-radius:7px;padding:3px 7px;color:#475569;background:#fff;white-space:nowrap" style-hover="border-color:#1750d8;color:#1345bd">{{ m.role }}<span class="msym" style="font-size:14.1px;color:#94a3b8">{{ m.roleCaret }}</span></button>
               <sc-if value="{{ m.roleOpen }}" hint-placeholder-val="{{ false }}">
-                <span style="position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);z-index:30;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.16);padding:4px;display:flex;flex-direction:column;animation:popIn .12s ease">
+                <span style="position:absolute;top:{{ m.roleTop }};bottom:{{ m.roleBottom }};left:0;min-width:100%;z-index:30;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.16);padding:4px;display:flex;flex-direction:column;animation:popIn .12s ease">
                   <sc-for list="{{ m.roleOpts }}" as="ro" hint-placeholder-count="4">
                     <button onClick="{{ ro.onClick }}" style="display:flex;align-items:center;gap:6px;background:{{ ro.bg }};border:none;border-radius:6px;padding:6px 9px;font-size:11.6px;font-weight:{{ ro.weight }};color:#0f172a;white-space:nowrap;justify-content:flex-start" style-hover="background:#f1f5f9">
                       <span class="msym" style="font-size:15px;color:{{ ro.icColor }}">{{ ro.icon }}</span>{{ ro.label }}
@@ -2754,18 +2983,20 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
                     <div style="font-size:11.2px;color:#94a3b8;margin-top:4px;line-height:1.65">{{ sr.desc }}</div>
                   </div>
                   <sc-if value="{{ sr.isToggle }}" hint-placeholder-val="{{ true }}">
+                    <span style="flex:none;width:156px;display:flex;justify-content:flex-end">
                     <button onClick="{{ sr.onToggle }}" style="flex:none;width:38px;height:22px;border-radius:999px;border:none;background:{{ sr.tglBg }};position:relative;display:block;padding:0">
                       <span style="position:absolute;top:2px;left:{{ sr.tglLeft }};width:18px;height:18px;border-radius:999px;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.3)"></span>
                     </button>
+                    </span>
                   </sc-if>
                   <sc-if value="{{ sr.isSelect }}" hint-placeholder-val="{{ false }}">
-                    <div style="flex:none;position:relative">
-                      <button onClick="{{ sr.onToggleDd }}" style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid {{ sr.bd }};border-radius:7px;padding:6px 10px;font-size:12.1px;font-weight:600;color:#334155;white-space:nowrap;min-width:130px" style-hover="background:#f8fafc">
-                        <span style="flex:1;text-align:left">{{ sr.value }}</span>
+                    <div style="flex:none;width:156px;position:relative">
+                      <button onClick="{{ sr.onToggleDd }}" style="width:100%;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid {{ sr.bd }};border-radius:7px;padding:6px 10px;font-size:12.1px;font-weight:600;color:#334155;white-space:nowrap;overflow:hidden" style-hover="background:#f8fafc">
+                        <span style="flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sr.value }}</span>
                         <span class="msym" style="font-size:16px;color:#94a3b8">{{ sr.caret }}</span>
                       </button>
                       <sc-if value="{{ sr.open }}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;top:calc(100% + 4px);right:0;min-width:100%;z-index:30;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.16);padding:4px;animation:popIn .12s ease;max-height:210px;overflow-y:auto">
+                        <div style="position:absolute;top:{{ sr.ddTop }};bottom:{{ sr.ddBottom }};right:0;min-width:100%;z-index:30;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.16);padding:4px;animation:popIn .12s ease;max-height:210px;overflow-y:auto">
                           <sc-for list="{{ sr.options }}" as="op" hint-placeholder-count="3">
                             <button onClick="{{ op.onClick }}" style="width:100%;display:flex;align-items:center;gap:7px;background:{{ op.bg }};border:none;border-radius:6px;padding:7px 9px;font-size:12.1px;font-weight:{{ op.weight }};color:#0f172a;text-align:left;justify-content:flex-start;white-space:nowrap" style-hover="background:#f1f5f9">
                               <span class="msym" style="font-size:16px;color:{{ op.icColor }}">{{ op.icon }}</span>{{ op.label }}
@@ -2776,7 +3007,9 @@ button{cursor:pointer;display:inline-flex;align-items:center;justify-content:cen
                     </div>
                   </sc-if>
                   <sc-if value="{{ sr.isAction }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ sr.onAction }}" style="flex:none;background:#fff;border:1px solid {{ sr.bd }};border-radius:7px;padding:6px 10px;font-size:12.1px;font-weight:700;color:{{ sr.fg }};white-space:nowrap" style-hover="background:#f8fafc">{{ sr.action }}</button>
+                    <div style="flex:none;width:156px;display:flex;justify-content:flex-end">
+                      <button onClick="{{ sr.onAction }}" style="background:#fff;border:1px solid {{ sr.bd }};border-radius:7px;padding:6px 12px;font-size:12.1px;font-weight:700;color:{{ sr.fg }};white-space:nowrap" style-hover="background:#f8fafc">{{ sr.action }}</button>
+                    </div>
                   </sc-if>
                 </div>
               </sc-for>
@@ -3045,6 +3278,7 @@ class Component extends DCLogic {
       obOrg: 'Amber Evolution', obBizNo: '', obPlan: 'ENTERPRISE', obWs: 'ESG 전략팀', obBiz: 'ESG 본부', obWsDesc: '',
       obProj: '에코바디스 2026 대응', obVis: '공개', obInvite: '', obInvites: ['sj.lee@corp.com', 'jw.park@corp.com'],
       ecoQuery: '', ecoReqDone: {}, memberQuery: '', memberFilter: 'all', memberSel: {},
+      rqFilter: '전체', rqQuery: '', rqSel: 'REQ-142', ecoArea: '전체', ecoAside: 'req',
       menuOpen: true, helpOpen: false, userOpen: false, wsPopOpen: false, overlay: false,
       org: 'Amber Evolution', biz: 'ESG 본부', ws: 'ESG 전략팀', proj: '에코바디스 2026 대응', wsExpanded: 'w1',
       folder: 'f2', fileId: null, storeMode: 'list', summaryOpen: true, fileQuery: '', sort: 'recent',
@@ -3273,14 +3507,35 @@ class Component extends DCLogic {
     const authDefs = {
       login: { title: '로그인', desc: '조직 계정으로 로그인하세요', cta: '로그인', fields: [['이메일', 'email', 'name@company.com'], ['비밀번호', 'password', '••••••••']] },
       signup: { title: '회원가입', desc: '초대받은 이메일로 계정을 만드세요', cta: '가입하고 시작하기', fields: [['이름', 'text', '홍길동'], ['이메일', 'email', 'name@company.com', 'invite'], ['비밀번호', 'password', '8자 이상 · 영문/숫자/기호 조합', 'pw'], ['비밀번호 확인', 'password', '한 번 더 입력']] },
-      find: { title: '아이디·비밀번호 찾기', desc: '가입한 이메일로 재설정 링크를 보냅니다', cta: '재설정 링크 받기', fields: [['이메일', 'email', 'name@company.com']] },
+      find: { title: '계정 찾기', desc: '가입한 이메일로 재설정 링크를 보냅니다', cta: s.findMethod === 'admin' ? '관리자에게 요청 보내기' : '재설정 링크 받기', fields: [['이메일', 'email', 'name@company.com']] },
       twofa: { title: '2단계 인증', desc: '보안을 위해 추가 인증이 필요합니다', cta: '인증 완료', fields: [] }
     };
     const ad = authDefs[s.authTab];
     v.authTabs = [['login', '로그인'], ['signup', '회원가입'], ['find', '계정 찾기'], ['twofa', '2단계 인증']].map(([id, label]) => ({
-      label, bd: s.authTab === id ? '#2563eb' : 'transparent', color: s.authTab === id ? '#0f172a' : '#94a3b8',
+      label, bd: s.authTab === id ? '#1750d8' : 'transparent', color: s.authTab === id ? '#1750d8' : '#94a3b8',
       onClick: () => this.setState({ authTab: id })
     }));
+    v.authIsLogin = s.authTab === 'login';
+    v.authShowSso = s.authTab === 'login' || s.authTab === 'find';
+    v.rememberIcon = s.remember ? 'check_box' : 'check_box_outline_blank';
+    v.rememberColor = s.remember ? '#1750d8' : '#cbd5e1';
+    v.toggleRemember = () => this.setState({ remember: !s.remember });
+    v.goFind = () => this.setState({ authTab: 'find' });
+    v.goLogin = () => this.setState({ authTab: 'login' });
+    const fm = s.findMethod || 'email';
+    v.findMethods = [
+      { id: 'email', icon: 'mail', title: '이메일로 재설정 링크 받기', desc: '가입한 주소로 링크를 보냅니다 · 30분 유효' },
+      { id: 'admin', icon: 'support_agent', title: '조직 관리자에게 요청', desc: '마스터가 임시 비밀번호를 발급합니다' }
+    ].map(m => {
+      const on = m.id === fm;
+      return { ...m, on, bg: on ? '#eff6ff' : '#f8fafc', bar: on ? '#1750d8' : '#e2e8f0',
+        iconColor: on ? '#1750d8' : '#94a3b8', titleColor: on ? '#1345bd' : '#334155',
+        onClick: () => this.setState({ findMethod: m.id }) };
+    });
+    v.trustIcon = s.trustDevice ? 'check_box' : 'check_box_outline_blank';
+    v.trustColor = s.trustDevice ? '#1750d8' : '#cbd5e1';
+    v.toggleTrust = () => this.setState({ trustDevice: !s.trustDevice });
+    v.openHelpFromAuth = () => this.setState({ authTab: 'find' });
     v.authTitle = ad.title; v.authDesc = ad.desc; v.authCta = ad.cta;
     v.authIs2fa = s.authTab === 'twofa'; v.authIsForm = s.authTab !== 'twofa';
     v.authIsSignup = s.authTab === 'signup'; v.authIsFind = s.authTab === 'find';
@@ -3290,6 +3545,8 @@ class Component extends DCLogic {
       value: flag === 'invite' ? 'hong@evolvailab.com' : (flag === 'pw' ? (s.pw || '') : ''),
       onChange: flag === 'pw' ? (e => this.setState({ pw: e.target.value })) : (() => {}),
       readOnly: flag === 'invite', hasMeter: flag === 'pw',
+      linkLabel: (s.authTab === 'login' && label === '비밀번호') ? '비밀번호 재설정' : '',
+      onLink: () => this.setState({ authTab: 'find' }),
       bg: flag === 'invite' ? '#f8fafc' : '#fff', color: flag === 'invite' ? '#64748b' : '#0f172a'
     }));
     // 비밀번호 강도
@@ -3317,7 +3574,8 @@ class Component extends DCLogic {
       { id: 'mkt', label: '(선택) 제품 업데이트 소식 수신', weight: 500, link: false }
     ].map(a => {
       const on = a.id === 'all' ? ['tos', 'priv', 'mkt'].every(k => agree[k]) : !!agree[a.id];
-      return { ...a, icon: on ? 'check_circle' : 'radio_button_unchecked', color: on ? '#16a34a' : '#cbd5e1',
+      return { ...a, icon: on ? 'check_box' : 'check_box_outline_blank', color: on ? '#1750d8' : '#cbd5e1',
+        divider: a.id === 'all' ? '1px solid #e2e8f0' : 'none', padB: a.id === 'all' ? '10px' : '0',
         onClick: () => {
           if (a.id === 'all') { const v2 = !on; return this.setState({ agree: { tos: v2, priv: v2, mkt: v2 } }); }
           this.setState({ agree: { ...agree, [a.id]: !agree[a.id] } });
@@ -3413,7 +3671,7 @@ class Component extends DCLogic {
       onChange: f.key ? setOb(f.key) : (() => {}),
       cards: (f.cards || []).map(c => {
         const on = c.id === obPlan;
-        return { ...c, bg: on ? '#eff6ff' : '#fff', bd: on ? '#1750d8' : '#e2e8f0',
+        return { ...c, on, bg: on ? '#eff6ff' : '#f8fafc', bar: on ? '#1750d8' : '#e2e8f0',
           icColor: on ? '#1750d8' : '#94a3b8', titleColor: on ? '#1345bd' : '#334155',
           onClick: () => this.setState({ obPlan: c.id }) };
       }),
@@ -3452,6 +3710,8 @@ class Component extends DCLogic {
       { label: '에코바디스 평가 공간' },
       { label: '관리자 권한 · 마스터 지정' }
     ];
+    v.obFirst = s.obStep === 0;
+    v.obBackColor = s.obStep === 0 ? '#cbd5e1' : '#334155';
     v.obBack = () => this.setState({ obStep: Math.max(0, s.obStep - 1) });
     v.obNext = () => s.obStep < 2 ? this.setState({ obStep: s.obStep + 1 }) : this.setState({ view: 'app', screen: 'dash' });
 
@@ -3520,7 +3780,7 @@ class Component extends DCLogic {
     v.taskAlert = myOpen.length;
 
     // ---------- breadcrumb ----------
-    const screenNames = { index: '작업 목록', dash: '대시보드', members: '멤버', store: '문서 저장소', chat: '채팅', task: '업무 관리', ecoSum: '에코바디스 요약', ecoWork: '에코바디스 문항', ecoDocs: '증빙자료' };
+    const screenNames = { index: '작업 목록', dash: '대시보드', members: '멤버', store: '문서 저장소', chat: '채팅', task: '업무 관리', ecoSum: '에코바디스 요약', ecoWork: '에코바디스 문항', ecoDocs: '증빙자료', ecoReq: '자료요청' };
     const crumbList = [
       { label: s.org, onClick: () => this.setState({ wsPopOpen: true, wsPopFrom: 'header' }) },
       { label: s.ws, onClick: () => this.setState({ wsPopOpen: true }) },
@@ -3583,7 +3843,7 @@ class Component extends DCLogic {
             if (target === 'editor') return this.setState({ screen: 'store', storeMode: 'editor' });
             if (target === 'settings') return this.openModal('settings');
             if (target === 'ecoDocs') return this.go('ecoDocs');
-            if (target === 'ecoReq') return this.setState({ screen: 'task', taskFilter: 'mine' });
+            if (target === 'ecoReq') return this.go('ecoReq');
             this.go(target);
           }
         };
@@ -3643,6 +3903,85 @@ class Component extends DCLogic {
     v.isTask = s.screen === 'task'; v.isEcoSum = s.screen === 'ecoSum'; v.isEcoWork = s.screen === 'ecoWork';
     v.isMembers = s.screen === 'members';
     v.isEcoDocs = s.screen === 'ecoDocs';
+
+    // ---------- 자료요청 ----------
+    v.isEcoReq = s.screen === 'ecoReq';
+    const RQST = {
+      '요청됨': { bg: '#f1f5f9', fg: '#475569', bar: '#cbd5e1', dot: '#94a3b8' },
+      '진행중': { bg: '#eff6ff', fg: '#1345bd', bar: '#1750d8', dot: '#1750d8' },
+      '제출됨': { bg: '#fffbeb', fg: '#b45309', bar: '#f59e0b', dot: '#f59e0b' },
+      '반영완료': { bg: '#f0fdf4', fg: '#15803d', bar: '#16a34a', dot: '#16a34a' },
+      '기한초과': { bg: '#fef2f2', fg: '#b91c1c', bar: '#ef4444', dot: '#ef4444' }
+    };
+    const RQ = [
+      { no: 'REQ-142', title: '안전보건 교육 이수 내역 2025', qno: 'LAB 3.1', to: '최민호', due: '07.28', status: '요청됨', overdue: false,
+        reason: '평가기관은 최근 12개월 내 실시한 안전보건 교육의 대상·일시·이수율이 확인되는 문서를 요구합니다. 서명 또는 승인 흔적이 포함된 원문이 필요합니다.',
+        files: [], history: [['나', '07.24 10:12', '자료 요청을 생성했습니다. 기한 07.28.', '#1750d8'], ['시스템', '07.24 10:12', '최민호에게 알림이 발송되었습니다.', '#cbd5e1']] },
+      { no: 'REQ-139', title: '공급업체 서명 현황 집계', qno: 'SUP 1.3', to: '김대성', due: '07.25', status: '진행중', overdue: false,
+        reason: '행동강령 서명 확보율 산정 근거로 대상 업체 수와 서명 완료 업체 수 집계표가 필요합니다.',
+        files: [['공급업체_서명현황_2026Q2.xlsx', '김대성', '07.24 16:40', '412KB']],
+        history: [['나', '07.22 09:30', '자료 요청을 생성했습니다.', '#1750d8'], ['김대성', '07.24 16:40', '1차 집계표를 올렸습니다. 미서명 업체는 확인 중입니다.', '#94a3b8']] },
+      { no: 'REQ-137', title: '폐기물 위탁처리 계약서 최신본', qno: 'ENV 4.2', to: '박지원', due: '07.22', status: '기한초과', overdue: true,
+        reason: '기존 계약서가 2025년판으로 만료되었습니다. 갱신 계약서 원문(양측 서명본)이 필요합니다.',
+        files: [], history: [['나', '07.15 14:02', '자료 요청을 생성했습니다.', '#1750d8'], ['시스템', '07.22 09:00', '기한이 지났습니다. 재알림이 발송되었습니다.', '#ef4444']] },
+      { no: 'REQ-134', title: '고충처리 채널 운영 실적', qno: 'ETH 2.2', to: '이수진', due: '07.20', status: '제출됨', overdue: false,
+        reason: '신고채널 접수·처리 건수와 처리 기간이 확인되는 운영 보고가 필요합니다.',
+        files: [['고충처리 및 신고채널 운영보고.docx', '이수진', '07.19 11:20', '680KB'], ['접수처리_로그_2026H1.xlsx', '이수진', '07.19 11:22', '256KB']],
+        history: [['나', '07.14 11:00', '자료 요청을 생성했습니다.', '#1750d8'], ['이수진', '07.19 11:22', '운영보고와 로그 2건을 제출했습니다.', '#f59e0b']] },
+      { no: 'REQ-130', title: '온실가스 검증 의견서', qno: 'ENV 2.4', to: '박지원', due: '07.16', status: '반영완료', overdue: false,
+        reason: '제3자 검증기관의 검증 의견서 원문이 필요합니다.',
+        files: [['온실가스 검증의견서_2025.pdf', '박지원', '07.15 09:10', '1.8MB']],
+        history: [['나', '07.10 10:00', '자료 요청을 생성했습니다.', '#1750d8'], ['박지원', '07.15 09:10', '검증 의견서를 제출했습니다.', '#94a3b8'], ['나', '07.16 13:30', 'ENV 2.4 증빙으로 반영하고 요청을 종료했습니다.', '#16a34a']] },
+      { no: 'REQ-128', title: '협력사 ESG 실사 결과 요약', qno: 'SUP 2.1', to: '김대성', due: '07.30', status: '요청됨', overdue: false,
+        reason: '실사 대상·수행 시점·주요 지적사항이 정리된 요약본이 필요합니다.',
+        files: [], history: [['나', '07.23 15:40', '자료 요청을 생성했습니다. 기한 07.30.', '#1750d8']] }
+    ];
+    const rqFilter = s.rqFilter || '전체', rqQ = (s.rqQuery || '').trim();
+    let rqList = RQ.filter(r => (rqFilter === '전체' || r.status === rqFilter) && (!rqQ || r.title.includes(rqQ) || r.to.includes(rqQ) || r.no.includes(rqQ) || r.qno.includes(rqQ)));
+    v.rqQuery = s.rqQuery || '';
+    v.setRqQuery = e => this.setState({ rqQuery: e.target.value });
+    v.rqTotal = rqList.length;
+    v.rqOverdue = RQ.filter(r => r.status === '기한초과').length + '건';
+    v.rqStates = ['전체', '요청됨', '진행중', '제출됨', '반영완료', '기한초과'].map(label => {
+      const on = label === rqFilter;
+      return { label, count: label === '전체' ? RQ.length : RQ.filter(r => r.status === label).length,
+        dot: label === '전체' ? '#94a3b8' : RQST[label].dot,
+        bg: on ? '#eff6ff' : 'transparent', bar: on ? '#1750d8' : 'transparent', color: on ? '#1345bd' : '#334155', weight: on ? 700 : 500,
+        onClick: () => this.setState({ rqFilter: label }) };
+    });
+    v.rqOwners = ['최민호', '김대성', '박지원', '이수진'].map(name => {
+      const open = RQ.filter(r => r.to === name && r.status !== '반영완료').length;
+      return { name, initial: name[0], count: open, color: open > 1 ? '#b91c1c' : '#475569',
+        onClick: () => this.setState({ rqQuery: name, rqFilter: '전체' }) };
+    });
+    const rqSelId = s.rqSel && RQ.some(r => r.no === s.rqSel) ? s.rqSel : (rqList[0] ? rqList[0].no : RQ[0].no);
+    v.rqRows = rqList.map(r => {
+      const st = RQST[r.status];
+      return { no: r.no, title: r.title, qno: r.qno, to: r.to, due: r.due, status: r.status,
+        stBg: st.bg, stFg: st.fg, bar: r.no === rqSelId ? '#1750d8' : 'transparent',
+        rowBg: r.no === rqSelId ? '#eff6ff' : '#fff',
+        dueColor: r.overdue ? '#b91c1c' : '#64748b',
+        onClick: () => this.setState({ rqSel: r.no }) };
+    });
+    const cur = RQ.find(r => r.no === rqSelId) || RQ[0];
+    const curSt = RQST[cur.status];
+    v.rqCur = { no: cur.no, title: cur.title, status: cur.status, reason: cur.reason, stBg: curSt.bg, stFg: curSt.fg };
+    v.rqMeta = [
+      { k: '연결 문항', v: cur.qno, color: '#1750d8' },
+      { k: '담당자', v: cur.to, color: '#0f172a' },
+      { k: '기한', v: cur.due + (cur.overdue ? ' (초과)' : ''), color: cur.overdue ? '#b91c1c' : '#0f172a' },
+      { k: '요청자', v: '홍길동 · 성과 리드', color: '#0f172a' }
+    ];
+    v.rqFiles = cur.files.map(([name, who, time, size]) => ({ name, who, time, size,
+      onClick: () => this.setState({ screen: 'store', folder: 'f5', storeMode: 'list' }) }));
+    v.rqFileCount = cur.files.length;
+    v.rqHasFiles = cur.files.length > 0;
+    v.rqNoFiles = cur.files.length === 0;
+    v.rqHistory = cur.history.map(([who, time, text, dot]) => ({ who, time, text, dot }));
+    v.rqRemind = () => this.openSheet('task');
+    v.rqOpenChat = () => this.setState({ screen: 'chat', room: 'r1' });
+    v.rqApplyLabel = cur.files.length ? '증빙으로 반영하고 요청 종료' : '담당자에게 재요청';
+    v.rqApply = () => cur.files.length ? this.setState({ screen: 'ecoDocs', evState: '전체' }) : this.openSheet('req');
     v.isIndex = s.screen === 'index';
 
     // ---------- 작업 목록 (검수 인덱스) ----------
@@ -3659,12 +3998,13 @@ class Component extends DCLogic {
     const IDX = [
       { g: '인증 · 초기 셋업', icon: 'login', items: [
         { page: 'p7', name: '로그인', kind: '화면', desc: '블루 컨셉 · AI 파형 애니메이션 배경', state: '완료', st: { view: 'auth', authTab: 'login' } },
-        { page: 'p7', name: '회원가입', kind: '화면', desc: '초대 배너 · 비밀번호 강도 · 약관 동의', state: '완료', st: { view: 'auth', authTab: 'signup' } },
-        { page: 'p7', name: '아이디·비밀번호 찾기', kind: '화면', desc: '재설정 링크 발송 · SSO 안내', state: '완료', st: { view: 'auth', authTab: 'find' } },
+        { page: 'p7', name: '회원가입', kind: '화면', desc: '초대 배너 · 비밀번호 강도 미터 · 약관 전체 동의', state: '완료', st: { view: 'auth', authTab: 'signup' } },
+        { page: 'p7', name: '계정 찾기', kind: '화면', desc: '재설정 방법 2종 선택(이메일·관리자) · SSO 안내', state: '완료', st: { view: 'auth', authTab: 'find' } },
         { page: 'p7', name: '2단계 인증(2FA)', kind: '화면', desc: 'OTP 6칸 · 카운트다운 · 백업 코드', state: '완료', st: { view: 'auth', authTab: 'twofa' } },
-        { page: 'p23', name: '초기 셋업 1 · 조직 생성', kind: '화면', desc: '플랜 카드 선택 + 계층 미리보기', state: '완료', st: { view: 'onboard', obStep: 0 } },
+        { page: 'p23', name: '초기 셋업 1 · 조직 생성', kind: '화면', desc: '플랜 선택(액센트 라인) · 사업자번호 · STEP 표기', state: '완료', st: { view: 'onboard', obStep: 0 } },
         { page: 'p24', name: '초기 셋업 2 · 조직&사업부', kind: '화면', desc: '상위 사업부·설명 · 향후 모달 대체', state: '완료', st: { view: 'onboard', obStep: 1 } },
-        { page: 'p25', name: '초기 셋업 3 · 프로젝트', kind: '화면', desc: '공개 범위 · 멤버 초대 칩 · 완료 구성', state: '완료', st: { view: 'onboard', obStep: 2 } },
+        { page: 'p25', name: '초기 셋업 3 · 프로젝트', kind: '화면', desc: '공개 범위 칩 · 멤버 초대 칩(Enter 추가·삭제)', state: '완료', st: { view: 'onboard', obStep: 2 } },
+        { page: 'p23', name: '셋업 · 완료 후 자동 구성 패널', kind: '패널', desc: '기본 폴더·공지 채널·에코바디스 공간·마스터 권한', state: '완료', st: { view: 'onboard', obStep: 2 } },
         { page: 'p23', name: '셋업 · 계층 데이터 출력 패널', kind: '패널', desc: '입력값이 조직→조직&사업부→프로젝트 트리에 실시간 반영', state: '완료', st: { view: 'onboard', obStep: 1 } }
       ] },
       { g: '공통 셸 · 헤더 (형태1)', icon: 'view_sidebar', items: [
@@ -3720,7 +4060,7 @@ class Component extends DCLogic {
         { page: '-', name: '챗봇 근거 → 뷰어 페이지 점프', kind: '패널', desc: 'p.47 근거 선택 상태 · 뷰어에 구절 하이라이트', state: '완료', st: { view: 'app', screen: 'store', bot: true, botTab: 'chat', viewer: true, hitDemo: true } },
         { page: '-', name: '파일 삭제 확인 모달', kind: '모달', desc: 'RAG 색인 영향 경고', state: '완료', st: { view: 'app', screen: 'store', storeMode: 'detail', fileId: 'c1', folder: 'f4', modal: 'delete' } },
         { page: '-', name: '파일 목록 · 정렬 전환', kind: '패널', desc: '최신순 / 이름순 / 용량순', state: '완료', st: { view: 'app', screen: 'store', storeMode: 'list', folder: 'f2', sort: 'name' } },
-        { page: '-', name: '입력 · 셀렉트 드롭다운 규칙', kind: '드롭다운', desc: '전 화면 셀렉트 = 옵션 목록 + 체크 표시 (네이티브 select 미사용)', state: '완료', st: { view: 'app', modal: 'newfile', ddOpen: 'mf:newfile:1' } },
+        { page: '-', name: '입력 · 셀렉트 드롭다운 규칙', kind: '드롭다운', desc: '전 화면 셀렉트 = 옵션 목록 + 체크 표시 · 트리거와 동일 폭 · 하단 행은 위로 열림 (네이티브 select 미사용)', state: '완료', st: { view: 'app', modal: 'newfile', ddOpen: 'mf:newfile:1' } },
         { page: '-', name: '폴더 트리 · 검색 필터', kind: '패널', desc: '폴더명 검색으로 트리 축약', state: '완료', st: { view: 'app', screen: 'store', storeMode: 'list', folderQuery: '증빙' } }
       ] },
       { g: '협업공간 (채팅 + 업무)', icon: 'forum', items: [
@@ -3762,8 +4102,14 @@ class Component extends DCLogic {
         { page: '-', name: '증빙자료 매핑', kind: '화면', desc: '문항↔문서↔페이지 · 커버리지', state: '완료', st: { view: 'app', screen: 'ecoDocs', evCat: '전체', evState: '전체' } },
         { page: '-', name: '증빙자료 · 미연결 필터', kind: '화면', desc: '자료 요청으로 연결', state: '완료', st: { view: 'app', screen: 'ecoDocs', evState: '미연결' } },
         { page: 'p58', name: '증빙 팩 내보내기 모달', kind: '모달', desc: '결과를 1개 파일로 다운로드', state: '완료', st: { view: 'app', screen: 'ecoDocs', modal: 'evpack' } },
+        { page: 'p59', name: '자료요청 · 요청 목록', kind: '화면', desc: '요청번호·연결문항·담당자·기한·상태 + 상세', state: '완료', st: { view: 'app', screen: 'ecoReq', rqFilter: '전체', rqSel: 'REQ-142' } },
+        { page: '-', name: '자료요청 · 기한초과 필터', kind: '화면', desc: '상태 필터 + 담당자별 미제출 요약', state: '완료', st: { view: 'app', screen: 'ecoReq', rqFilter: '기한초과' } },
+        { page: '-', name: '자료요청 · 제출 자료 확인', kind: '패널', desc: '제출 파일·진행 이력 → 증빙 반영', state: '완료', st: { view: 'app', screen: 'ecoReq', rqFilter: '전체', rqSel: 'REQ-134' } },
         { page: '-', name: '증빙자료 · 유효기한 임박', kind: '화면', desc: '커버리지 알림 클릭 → 만료임박 필터', state: '완료', st: { view: 'app', screen: 'ecoDocs', evState: '만료임박' } },
-        { page: 'p57', name: '요약 · 상태별 필터·페이징', kind: '패널', desc: '답변완료/AI초안/미처리 + 38페이지', state: '완료', st: { view: 'app', screen: 'ecoSum', ecoFilter: 'AI 초안', ecoPage: 2 } }
+        { page: 'p57', name: '요약 · 상태별 필터·페이징', kind: '패널', desc: '답변완료/AI초안/미처리 + 38페이지', state: '완료', st: { view: 'app', screen: 'ecoSum', ecoFilter: 'AI 초안', ecoPage: 2 } },
+        { page: '-', name: '요약 · 평가 영역별 진행', kind: '패널', desc: '환경/노동·인권/윤리/조달 진행률 · 클릭 시 필터', state: '완료', st: { view: 'app', screen: 'ecoSum', ecoArea: '지속가능한 조달', ecoQuery: '지속가능한 조달' } },
+        { page: '-', name: '요약 · 병목 문항 탭', kind: '패널', desc: '증빙 없음·기한초과·검토 필요 문항', state: '완료', st: { view: 'app', screen: 'ecoSum', ecoAside: 'block' } },
+        { page: '-', name: '요약 · 문항 검색', kind: '패널', desc: '문항번호·키워드 검색 + 표시 건수', state: '완료', st: { view: 'app', screen: 'ecoSum', ecoQuery: '온실가스' } }
       ] },
       { g: '대시보드 · 관리자', icon: 'space_dashboard', items: [
         { page: 'p59', name: '대시보드 4섹션 + 우측 위젯', kind: '화면', desc: 'KPI · 업무 · 파이프라인 · AI 상태', state: '완료', st: { view: 'app', screen: 'dash' } },
@@ -4413,6 +4759,38 @@ class Component extends DCLogic {
       rowBg: s.qId === x.id ? '#eff6ff' : '#fff',
       onClick: () => this.setState({ screen: 'ecoWork', qId: x.id, ecoSearch: 'idle', qEdit: false })
     }));
+    v.ecoRowCount = ecoFiltered.length + '건 표시' + (s.ecoArea && s.ecoArea !== '전체' ? ' · ' + s.ecoArea : '');
+    v.ecoScores = [
+      { label: '예상 점수', value: '68', delta: '', color: '#0f172a', deltaColor: '#94a3b8' },
+      { label: '전년', value: '61', delta: '+7', color: '#475569', deltaColor: '#15803d' },
+      { label: '업종 평균', value: '54', delta: '', color: '#475569', deltaColor: '#94a3b8' }
+    ];
+    v.ecoAreas = [
+      { label: '환경', total: 96, done: 81, pct: '84%', barColor: '#16a34a' },
+      { label: '노동·인권', total: 84, done: 52, pct: '62%', barColor: '#f59e0b' },
+      { label: '윤리', total: 62, done: 48, pct: '78%', barColor: '#16a34a' },
+      { label: '지속가능한 조달', total: 58, done: 30, pct: '51%', barColor: '#ef4444' }
+    ].map(a => {
+      const on = s.ecoArea === a.label;
+      return { ...a, todo: a.total - a.done + '건',
+        pctColor: a.barColor === '#ef4444' ? '#b91c1c' : (a.barColor === '#f59e0b' ? '#b45309' : '#15803d'),
+        bg: on ? '#eff6ff' : '#fff', bar: on ? '#1750d8' : 'transparent',
+        onClick: () => this.setState({ ecoArea: on ? '전체' : a.label, ecoQuery: on ? '' : a.label }) };
+    });
+    v.ecoAsideTabs = [['req', '요청한 자료'], ['block', '병목 문항']].map(([id, label]) => {
+      const on = (s.ecoAside || 'req') === id;
+      return { label, bar: on ? '#1750d8' : 'transparent', color: on ? '#1345bd' : '#64748b', weight: on ? 800 : 600,
+        onClick: () => this.setState({ ecoAside: id }) };
+    });
+    v.ecoAsideReq = (s.ecoAside || 'req') === 'req';
+    v.ecoAsideBlock = (s.ecoAside || 'req') === 'block';
+    v.ecoBlockers = [
+      { no: 'LAB 3.1', q: '안전보건 교육 실시 기록', tag: '증빙 없음', hint: '자료요청 REQ-142 · 최민호 회신 대기', bg: '#fef2f2', fg: '#b91c1c', bar: '#ef4444' },
+      { no: 'SUP 2.1', q: '공급업체 ESG 실사 수행', tag: '증빙 없음', hint: '요청 미생성 · 담당자 지정 필요', bg: '#fef2f2', fg: '#b91c1c', bar: '#ef4444' },
+      { no: 'ENV 4.2', q: '폐기물 위탁처리 계약 현황', tag: '기한초과', hint: '자료요청 REQ-137 · 07.22 초과', bg: '#fff7ed', fg: '#c2410c', bar: '#fb923c' },
+      { no: 'ETH 3.4', q: '이해상충 관리 절차 운영', tag: '검토 필요', hint: 'AI 초안 신뢰도 54% · 근거 재확인', bg: '#fffbeb', fg: '#b45309', bar: '#f59e0b' }
+    ].map(b => ({ ...b, onClick: () => this.setState({ screen: 'ecoWork', ecoSearch: 'idle', qEdit: false }) }));
+    v.goEcoReq = () => this.go('ecoReq');
     v.ecoPages = [['chevron_left', true], ['1'], ['2'], ['3'], ['…'], ['38'], ['chevron_right', true]].map(([label, isIcon]) => {
       const on = label === String(s.ecoPage);
       return { label, isIcon: !!isIcon, isText: !isIcon,
@@ -4523,8 +4901,10 @@ class Component extends DCLogic {
     v.bulkRole = () => this.openModal('member');
     v.bulkRemove = () => this.setState({ memberSel: {} });
     const roleOv = s.roleOverride || {};
-    v.memberRows = listM.map(m => ({
+    v.memberRows = listM.map((m, mIdx) => ({
       ...m, initial: m.name[0], role: roleOv[m.id] || m.perm,
+      roleTop: mIdx >= listM.length - 2 ? 'auto' : 'calc(100% + 4px)',
+      roleBottom: mIdx >= listM.length - 2 ? 'calc(100% + 4px)' : 'auto',
       isMaster: m.perm === '마스터', isGuest: m.dept === '외부 협업자',
       projects: m.dept === '외부 협업자' ? '에코바디스 2026' : (m.perm === '마스터' ? '전체 3개' : '에코바디스 2026'),
       rowBg: sel[m.id] ? '#eff6ff' : '#fff',
@@ -4631,7 +5011,7 @@ class Component extends DCLogic {
       { title: '프로젝트', icon: 'space_dashboard', items: [['대시보드', 'space_dashboard', () => this.go('dash'), 0], ['멤버', 'group', () => this.go('members'), 0], ['채널 관리', 'forum', () => this.setState({ overlay: false, screen: 'members', sysTab: 'channel' }), 0], ['프로젝트 설정', 'settings', () => this.openModal('proj'), 0]] },
       { title: '협업공간', icon: 'forum', items: [['채팅룸 전체', 'forum', () => this.go('chat'), 4], ['업무 관리', 'task_alt', () => this.go('task'), myOpen.length], ['업무 요청 만들기', 'add_task', () => this.openSheet('req'), 0], ['채팅방 초대', 'person_add', () => this.openModal('invite'), 0], ['내가 보낸 요청', 'send', () => this.setState({ overlay: false, screen: 'task', taskFilter: 'sent' }), 0]] },
       { title: '문서', icon: 'folder_open', items: [['문서 저장소', 'folder_open', () => this.go('store'), 0], ['문서 작성', 'edit_document', () => this.setState({ screen: 'store', storeMode: 'editor', overlay: false }), 0], ['폴더 추가', 'create_new_folder', () => this.openModal('folder'), 0], ['파일 업로드', 'upload', () => this.openModal('upload'), 0], ['문서 뷰어', 'visibility', () => this.setState({ overlay: false, screen: 'store', storeMode: 'detail', folder: 'f4', fileId: 'c1', viewer: true }), 0]] },
-      { title: '에코바디스', icon: 'checklist', items: [['요약 · 결과보기', 'monitoring', () => this.go('ecoSum'), 0], ['문항 처리', 'checklist', () => this.go('ecoWork'), 300], ['증빙자료', 'verified_user', () => this.go('ecoDocs'), 54], ['자료요청', 'move_to_inbox', () => this.setState({ screen: 'task', taskFilter: 'sent', overlay: false }), 2], ['증빙 팩 내보내기', 'download', () => this.setState({ overlay: false, screen: 'ecoDocs', modal: 'evpack' }), 0]] },
+      { title: '에코바디스', icon: 'checklist', items: [['요약 · 결과보기', 'monitoring', () => this.go('ecoSum'), 0], ['문항 처리', 'checklist', () => this.go('ecoWork'), 300], ['증빙자료', 'verified_user', () => this.go('ecoDocs'), 54], ['자료요청', 'move_to_inbox', () => this.go('ecoReq'), 3], ['자료 요청 만들기', 'add_task', () => this.openSheet('req'), 0], ['증빙 팩 내보내기', 'download', () => this.setState({ overlay: false, screen: 'ecoDocs', modal: 'evpack' }), 0]] },
       { title: '조직 · 계정', icon: 'apartment', items: [['조직 만들기', 'apartment', () => this.openModal('org'), 0], ['조직&사업부 만들기', 'account_tree', () => this.openModal('ws'), 0], ['멤버 추가', 'person_add', () => this.openModal('member'), 0], ['내 계정 · 보안', 'shield_person', () => this.openModal('settings'), 0], ['알림 설정', 'notifications', () => this.setState({ overlay: false, modal: 'settings', settingTab: 'noti' }), 0]] }
     ];
     v.overlayGroups = ogDefs.map(g => ({
@@ -4837,6 +5217,15 @@ class Component extends DCLogic {
         { label: '방해 금지 시간', desc: '이 시간에는 알림을 모아서 전달', ...cyc('dnd', ['22:00 ~ 08:00', '사용 안 함']) }
       ]
     }[s.settingTab] || [];
+    { // 하단 행의 셀렉트는 위로 열어 모달 스크롤 영역 밖으로 잘리지 않게
+      const _sr = v.settingRows, _n = _sr.length;
+      _sr.forEach((row, ri) => {
+        if (!row || !row.isSelect) return;
+        const up = ri >= _n - 2;
+        row.ddTop = up ? 'auto' : 'calc(100% + 4px)';
+        row.ddBottom = up ? 'calc(100% + 4px)' : 'auto';
+      });
+    }
 
     // ---------- upload ----------
     const PH = {

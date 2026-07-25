@@ -42,6 +42,7 @@ interface AppState {
   room: string
   /** 업무 */
   taskId: string
+  taskFilter: string
   /** 에코바디스 */
   qId: string
   /** 시스템 탭 */
@@ -59,6 +60,9 @@ interface AppState {
   setStoreMode: (m: StoreMode) => void
   setRoom: (id: string) => void
   setTaskId: (id: string) => void
+  setTaskFilter: (f: string) => void
+  /** 시안: 자료요청 / 내가 보낸 요청 진입 — 업무 관리 화면 + 필터 지정 */
+  goTask: (filter: string) => void
   setQId: (id: string) => void
   setSysTab: (t: 'member' | 'channel') => void
 }
@@ -78,6 +82,7 @@ export const useAppStore = create<AppState>((set) => ({
   storeMode: 'list',
   room: 'r1',
   taskId: 't1',
+  taskFilter: 'all',
   qId: 'q3',
   sysTab: 'member',
 
@@ -95,6 +100,8 @@ export const useAppStore = create<AppState>((set) => ({
   setStoreMode: (storeMode) => set({ storeMode }),
   setRoom: (room) => set({ room, screen: 'chat' }),
   setTaskId: (taskId) => set({ taskId }),
+  setTaskFilter: (taskFilter) => set({ taskFilter }),
+  goTask: (taskFilter) => set({ screen: 'task', taskFilter, overlay: false }),
   setQId: (qId) => set({ qId }),
   setSysTab: (sysTab) => set({ sysTab }),
 }))

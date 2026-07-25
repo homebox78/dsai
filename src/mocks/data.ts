@@ -288,3 +288,138 @@ export const taskStatusTone: Record<TaskStatus, { bg: string; fg: string; dot: s
   완료: { bg: '#f0fdf4', fg: '#15803d', dot: '#16a34a', bar: '#16a34a' },
   반려: { bg: '#fef2f2', fg: '#b91c1c', dot: '#ef4444', bar: '#ef4444' },
 }
+
+/* ── 자료요청 (시안 RQ / RQST) ─────────────────────── */
+
+export type ReqStatus = '요청됨' | '진행중' | '제출됨' | '반영완료' | '기한초과'
+
+export interface ReqFile {
+  name: string
+  who: string
+  time: string
+  size: string
+}
+
+export interface ReqHistory {
+  who: string
+  time: string
+  text: string
+  dot: string
+}
+
+export interface ReqRow {
+  no: string
+  title: string
+  qno: string
+  to: string
+  due: string
+  status: ReqStatus
+  overdue: boolean
+  reason: string
+  files: ReqFile[]
+  history: ReqHistory[]
+}
+
+export const reqs: ReqRow[] = [
+  {
+    no: 'REQ-142',
+    title: '안전보건 교육 이수 내역 2025',
+    qno: 'LAB 3.1',
+    to: '최민호',
+    due: '07.28',
+    status: '요청됨',
+    overdue: false,
+    reason:
+      '평가기관은 최근 12개월 내 실시한 안전보건 교육의 대상·일시·이수율이 확인되는 문서를 요구합니다. 서명 또는 승인 흔적이 포함된 원문이 필요합니다.',
+    files: [],
+    history: [
+      { who: '나', time: '07.24 10:12', text: '자료 요청을 생성했습니다. 기한 07.28.', dot: '#1750d8' },
+      { who: '시스템', time: '07.24 10:12', text: '최민호에게 알림이 발송되었습니다.', dot: '#cbd5e1' },
+    ],
+  },
+  {
+    no: 'REQ-139',
+    title: '공급업체 서명 현황 집계',
+    qno: 'SUP 1.3',
+    to: '김대성',
+    due: '07.25',
+    status: '진행중',
+    overdue: false,
+    reason: '행동강령 서명 확보율 산정 근거로 대상 업체 수와 서명 완료 업체 수 집계표가 필요합니다.',
+    files: [{ name: '공급업체_서명현황_2026Q2.xlsx', who: '김대성', time: '07.24 16:40', size: '412KB' }],
+    history: [
+      { who: '나', time: '07.22 09:30', text: '자료 요청을 생성했습니다.', dot: '#1750d8' },
+      { who: '김대성', time: '07.24 16:40', text: '1차 집계표를 올렸습니다. 미서명 업체는 확인 중입니다.', dot: '#94a3b8' },
+    ],
+  },
+  {
+    no: 'REQ-137',
+    title: '폐기물 위탁처리 계약서 최신본',
+    qno: 'ENV 4.2',
+    to: '박지원',
+    due: '07.22',
+    status: '기한초과',
+    overdue: true,
+    reason: '기존 계약서가 2025년판으로 만료되었습니다. 갱신 계약서 원문(양측 서명본)이 필요합니다.',
+    files: [],
+    history: [
+      { who: '나', time: '07.15 14:02', text: '자료 요청을 생성했습니다.', dot: '#1750d8' },
+      { who: '시스템', time: '07.22 09:00', text: '기한이 지났습니다. 재알림이 발송되었습니다.', dot: '#ef4444' },
+    ],
+  },
+  {
+    no: 'REQ-134',
+    title: '고충처리 채널 운영 실적',
+    qno: 'ETH 2.2',
+    to: '이수진',
+    due: '07.20',
+    status: '제출됨',
+    overdue: false,
+    reason: '신고채널 접수·처리 건수와 처리 기간이 확인되는 운영 보고가 필요합니다.',
+    files: [
+      { name: '고충처리 및 신고채널 운영보고.docx', who: '이수진', time: '07.19 11:20', size: '680KB' },
+      { name: '접수처리_로그_2026H1.xlsx', who: '이수진', time: '07.19 11:22', size: '256KB' },
+    ],
+    history: [
+      { who: '나', time: '07.14 11:00', text: '자료 요청을 생성했습니다.', dot: '#1750d8' },
+      { who: '이수진', time: '07.19 11:22', text: '운영보고와 로그 2건을 제출했습니다.', dot: '#f59e0b' },
+    ],
+  },
+  {
+    no: 'REQ-130',
+    title: '온실가스 검증 의견서',
+    qno: 'ENV 2.4',
+    to: '박지원',
+    due: '07.16',
+    status: '반영완료',
+    overdue: false,
+    reason: '제3자 검증기관의 검증 의견서 원문이 필요합니다.',
+    files: [{ name: '온실가스 검증의견서_2025.pdf', who: '박지원', time: '07.15 09:10', size: '1.8MB' }],
+    history: [
+      { who: '나', time: '07.10 10:00', text: '자료 요청을 생성했습니다.', dot: '#1750d8' },
+      { who: '박지원', time: '07.15 09:10', text: '검증 의견서를 제출했습니다.', dot: '#94a3b8' },
+      { who: '나', time: '07.16 13:30', text: 'ENV 2.4 증빙으로 반영하고 요청을 종료했습니다.', dot: '#16a34a' },
+    ],
+  },
+  {
+    no: 'REQ-128',
+    title: '협력사 ESG 실사 결과 요약',
+    qno: 'SUP 2.1',
+    to: '김대성',
+    due: '07.30',
+    status: '요청됨',
+    overdue: false,
+    reason: '실사 대상·수행 시점·주요 지적사항이 정리된 요약본이 필요합니다.',
+    files: [],
+    history: [{ who: '나', time: '07.23 15:40', text: '자료 요청을 생성했습니다. 기한 07.30.', dot: '#1750d8' }],
+  },
+]
+
+/** 자료요청 상태 배지 색 (시안 RQST) */
+export const reqStatusTone: Record<ReqStatus, { bg: string; fg: string; bar: string; dot: string }> = {
+  요청됨: { bg: '#f1f5f9', fg: '#475569', bar: '#cbd5e1', dot: '#94a3b8' },
+  진행중: { bg: '#eff6ff', fg: '#1345bd', bar: '#1750d8', dot: '#1750d8' },
+  제출됨: { bg: '#fffbeb', fg: '#b45309', bar: '#f59e0b', dot: '#f59e0b' },
+  반영완료: { bg: '#f0fdf4', fg: '#15803d', bar: '#16a34a', dot: '#16a34a' },
+  기한초과: { bg: '#fef2f2', fg: '#b91c1c', bar: '#ef4444', dot: '#ef4444' },
+}

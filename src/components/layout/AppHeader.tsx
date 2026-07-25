@@ -2,6 +2,7 @@ import { Icon } from '@/components/common/icon'
 import { ctx } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { useLayoutMetrics } from '@/lib/responsive'
 import { NotiDropdown } from './dropdowns/NotiDropdown'
 import { HelpDropdown } from './dropdowns/HelpDropdown'
 import { UserDropdown } from './dropdowns/UserDropdown'
@@ -10,6 +11,7 @@ import { UserDropdown } from './dropdowns/UserDropdown'
 export function AppHeader() {
   const { notiOpen, helpOpen, userOpen, setDropdown, wsPopOpen } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
+  const { searchWide, searchW, profileWide } = useLayoutMetrics()
 
   const iconBtn =
     'flex size-[30px] flex-none items-center justify-center rounded-md border border-white/24 bg-white/10 hover:bg-white/20'
@@ -35,10 +37,11 @@ export function AppHeader() {
       {/* 검색 */}
       <button
         onClick={() => openLayer('search')}
-        className="flex w-[300px] flex-none items-center gap-2 overflow-hidden whitespace-nowrap rounded-[7px] border border-white/22 bg-white/14 px-2.5 py-1.5 text-body text-white/78"
+        style={{ width: searchW }}
+        className="flex flex-none items-center gap-2 overflow-hidden whitespace-nowrap rounded-[7px] border border-white/22 bg-white/14 px-2.5 py-1.5 text-body text-white/78"
       >
         <Icon name="search" size={17} className="text-white/85" />
-        <span className="truncate">문서·대화·Task 추론 검색</span>
+        {searchWide && <span className="truncate">문서·대화·Task 추론 검색</span>}
       </button>
 
       {/* 조직&사업부 전환 (N) */}
@@ -95,11 +98,15 @@ export function AppHeader() {
           <span className="flex size-7 flex-none items-center justify-center rounded-full border border-white/40 bg-white text-sm2 font-extrabold text-brand">
             {ctx.me.initial}
           </span>
-          <span className="flex-none whitespace-nowrap text-left">
-            <span className="block text-label font-bold leading-[1.5] text-white">{ctx.me.name}</span>
-            <span className="block text-xs2 leading-[1.5] text-white/72">{ctx.me.title}</span>
-          </span>
-          <Icon name="expand_more" size={16} className="text-white/75" />
+          {profileWide && (
+            <>
+              <span className="flex-none whitespace-nowrap text-left">
+                <span className="block text-label font-bold leading-[1.5] text-white">{ctx.me.name}</span>
+                <span className="block text-xs2 leading-[1.5] text-white/72">{ctx.me.title}</span>
+              </span>
+              <Icon name="expand_more" size={16} className="text-white/75" />
+            </>
+          )}
         </button>
         {userOpen && <UserDropdown />}
       </div>

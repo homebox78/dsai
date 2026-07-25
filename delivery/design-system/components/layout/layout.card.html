@@ -1,0 +1,59 @@
+<!-- @dsCard group="Components" viewport="700x330" subtitle="Panel · ListRow · SideMenuItem · 경계 핸들" name="Layout" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Layout</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1.35;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;line-height:1.35;white-space:nowrap;cursor:pointer}
+  .pri{background:var(--surface-brand);color:#fff;border:1px solid var(--surface-brand);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:700}
+  .sec{background:#fff;color:var(--text-label);border:1px solid var(--border-control);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .ghost{background:transparent;color:var(--text-label);border:1px solid transparent;border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .dgr{background:#fff;color:var(--state-alert-fg);border:1px solid var(--red-200);border-radius:var(--r-lg);padding:9px 14px;font-size:12.6px;font-weight:600}
+  .lnk{background:none;border:none;color:var(--text-link);font-size:12.6px;font-weight:600;padding:0}
+  .ib{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-md);color:var(--slate-600);position:relative}
+  .ibb{position:absolute;top:-3px;right:-3px;background:var(--red-600);color:#fff;border-radius:999px;font-size:9px;font-weight:800;padding:1px 4px}
+  .bdg{display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800;white-space:nowrap}
+  .inp{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-control);border-radius:var(--r-md);padding:9px 11px;font-size:13.6px;color:var(--text-body)}
+  .und{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-structure);padding:6px 2px;font-size:12.6px;color:var(--text-meta)}
+  .lab{font-size:12.1px;font-weight:700;color:var(--text-label);margin-bottom:6px;display:flex;gap:6px;align-items:baseline}
+  .req{font-size:10.7px;font-weight:800;color:var(--red-600)}
+  .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 11px;font-size:12.1px;font-weight:700;background:#fff;border:1px solid var(--border-control);color:var(--text-label)}
+  .chip.on{background:var(--surface-brand);border-color:var(--surface-brand);color:#fff}
+  .panel{background:#fff;border:1px solid var(--border-structure);border-radius:var(--r-2xl);overflow:hidden}
+  .ph{height:44px;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid var(--border-structure);font-size:12.1px;font-weight:800}
+  .lr{display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border-hairline);background:#fff}
+  .lr.sel{background:var(--surface-selected);border-left:2px solid var(--border-brand)}
+  .lr.hov{background:var(--surface-row-hover)}
+  .tile{width:28px;height:28px;border-radius:var(--r-md);background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;font-weight:800;color:var(--slate-600);flex:none}
+  .nm{font-size:13.6px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt{font-size:11.6px;color:var(--text-meta);margin-top:4px;white-space:nowrap}
+  .tg{width:38px;height:22px;border-radius:999px;background:var(--slate-300);position:relative;flex:none}
+  .tg.on{background:var(--surface-brand)}
+  .tg i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:999px;background:#fff;box-shadow:var(--shadow-handle)}
+  .tg.on i{left:18px}
+  .bar{height:5px;background:var(--slate-100);border-radius:999px;overflow:hidden;display:flex}
+  .lbl{font-size:10.7px;font-weight:800;color:var(--text-meta);letter-spacing:.05em}</style></head><body>
+<div style="display:flex;background:var(--surface-canvas);margin:-18px;height:330px">
+  <aside style="width:190px;flex:none;background:var(--surface-side);border-right:1px solid var(--border-structure);padding-top:10px">
+    <div style="padding:0 12px 6px" class="lbl">문서</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:6.4px 12px;background:var(--surface-selected);border-left:2px solid var(--border-brand);color:var(--text-accent)"><span class="msym" style="font-size:18.4px">folder_open</span><span style="flex:1;font-size:13.6px;font-weight:700">문서 저장소</span></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:6.4px 12px"><span class="msym" style="font-size:18.4px">description</span><span style="flex:1;font-size:13.6px;font-weight:600">문서</span></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:6.4px 12px"><span class="msym" style="font-size:18.4px">task_alt</span><span style="flex:1;font-size:13.6px;font-weight:600">업무</span><span style="border-radius:999px;padding:1px 7px;font-size:10.7px;font-weight:800;background:var(--state-alert-bg);color:var(--state-alert-fg);border:1px solid var(--red-200)">2</span></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:6.4px 12px"><span class="msym" style="font-size:18.4px">checklist</span><span style="flex:1;font-size:13.6px;font-weight:600">문항</span><span style="border-radius:999px;padding:1px 7px;font-size:10.7px;font-weight:800;background:#fff;color:var(--text-sub);border:1px solid var(--border-structure)">300</span></div>
+  </aside>
+  <div style="position:relative;width:0;flex:none;z-index:5">
+    <span style="position:absolute;top:32px;left:-3px;width:6px;height:38px;background:var(--surface-canvas)"></span>
+    <span style="position:absolute;top:40px;left:-11px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--border-control);border-radius:999px;box-shadow:var(--shadow-handle)"><span class="msym" style="font-size:16px;color:var(--slate-600)">chevron_left</span></span>
+  </div>
+  <div style="flex:1;min-width:0;padding:14px">
+    <div class="panel">
+      <div class="ph"><span class="msym" style="font-size:17px;color:var(--text-meta)">folder</span>폴더내 파일 목록<span style="font-size:11.6px;color:var(--text-meta);font-weight:400">12건</span><button class="btn lnk" style="margin-left:auto">전체<span class="msym" style="font-size:15px">chevron_right</span></button></div>
+      <div class="lr sel"><span class="tile">PDF</span><span style="flex:1;min-width:0"><span class="nm">ISO 14001 인증서_2026.pdf</span><span class="mt">2.4MB · 07.23 · 홍길동</span></span><span class="bdg" style="background:var(--state-done-bg);color:var(--state-done-fg)">색인 완료</span></div>
+      <div class="lr hov"><span class="tile">XLSX</span><span style="flex:1;min-width:0"><span class="nm">에너지 사용 실적_월별.xlsx</span><span class="mt">1.1MB · 07.22 · 박지원</span></span><span class="bdg" style="background:var(--state-wait-bg);color:var(--state-wait-fg)">OCR 62%</span></div>
+      <div class="lr" style="border-left:2px solid var(--state-idle-bar)"><span class="tile">DOCX</span><span style="flex:1;min-width:0"><span class="nm">고충처리 및 신고채널 운영보고.docx</span><span class="mt">740KB · 07.20 · 이수진</span></span><span class="bdg" style="background:var(--state-idle-bg);color:var(--state-idle-fg)">대기</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

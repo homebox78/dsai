@@ -1,0 +1,17 @@
+<!-- @dsCard group="Colors" viewport="700x110" subtitle="배지에 쓰이는 bg/fg 고정 페어" name="State badge pairs" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;padding:16px 18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+.msym{font-family:'Material Symbols Rounded';display:inline-block;line-height:1.35}
+.g{display:flex;gap:10px;flex-wrap:wrap}
+.sw{width:104px}
+.chip{height:40px;border-radius:var(--r-md);border:1px solid var(--border-structure)}
+.n{font-size:10.7px;font-weight:800;margin-top:6px;white-space:nowrap}
+.v{font-family:var(--font-mono);font-size:10px;color:var(--text-meta);white-space:nowrap}
+.lbl{font-size:10.7px;font-weight:800;color:var(--text-meta);letter-spacing:.05em;margin-bottom:8px}
+table{border-collapse:collapse;width:100%}
+td{padding:6px 0;vertical-align:baseline}
+
+</style></head><body><div class="g"><span style="background:var(--state-done-bg);color:var(--state-done-fg);border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800">완료 · 검증완료</span><span style="background:var(--state-wait-bg);color:var(--state-wait-fg);border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800">검토대기</span><span style="background:var(--state-soon-bg);color:var(--state-soon-fg);border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800">만료임박</span><span style="background:var(--state-alert-bg);color:var(--state-alert-fg);border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800">미연결 · 기한초과</span><span style="background:var(--state-idle-bg);color:var(--state-idle-fg);border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800">중립</span><span style="background:var(--surface-selected);color:var(--text-accent);border-radius:999px;padding:2px 8px;font-size:10.2px;font-weight:800">선택</span></div>
+<div style="margin-top:14px" class="v">--state-*-bg / --state-*-fg · 톤 매핑은 시스템 전체에서 고정</div></body></html>

@@ -5,6 +5,7 @@ import { PanelHandle } from '@/components/layout/PanelHandle'
 import { ecoQuestions, ecoStatusTone, folders } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { useLayoutMetrics } from '@/lib/responsive'
 
 /**
  * 에코바디스 처리부 (p58)
@@ -32,7 +33,9 @@ const ANSWER_ACTIONS = ['AI 초안 삽입', '유사 문항 답변 참조']
 type SearchState = 'idle' | 'searching' | 'hit' | 'miss'
 
 export function EcoWorkView() {
-  const { qId, setQId, botOpen, toggleBot } = useAppStore()
+  const { qId, setQId, botOpen: botPref, toggleBot } = useAppStore()
+  const { contentMin, autoHideBot } = useLayoutMetrics()
+  const botOpen = botPref && !autoHideBot
   const openLayer = useLayerStore((s) => s.open)
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('전체')
@@ -138,7 +141,7 @@ export function EcoWorkView() {
       </div>
 
       {/* 처리부 */}
-      <div className="flex min-w-[420px] flex-1 flex-col overflow-auto bg-ink-50">
+      <div className="flex flex-1 flex-col overflow-auto bg-ink-50" style={{ minWidth: contentMin }}>
         {/* 질문 상세 + OCR 수정 */}
         <div className="flex-none border-b border-ink-200 bg-white px-3.5 py-3">
           <div className="mb-2 flex items-center gap-2">

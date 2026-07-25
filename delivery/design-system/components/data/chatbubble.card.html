@@ -1,0 +1,47 @@
+<!-- @dsCard group="Components" viewport="700x430" subtitle="ChatBubble — 대화 · 리액션 · 첨부 · 업무요청" name="Chat bubble" -->
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>ChatBubble</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body{margin:0;padding:18px;font-family:var(--font-ui);color:var(--text-body);background:var(--white);line-height:var(--lh-body);letter-spacing:var(--ls-body)}
+  *{box-sizing:border-box}
+  .msym{font-family:'Material Symbols Rounded';font-weight:400;line-height:1;display:inline-block;white-space:nowrap;flex:none;-webkit-font-smoothing:antialiased;vertical-align:-2px}
+  .col{display:flex;flex-direction:column;gap:16px}
+  .hd{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;white-space:nowrap}
+  .nm{font-size:11.6px;font-weight:700}
+  .tm{font-size:10.7px;color:var(--text-meta)}
+  .bub{max-width:520px;border-radius:8px;padding:8px 12px;font-size:13.6px;line-height:1.7}
+  .recv{background:#f1f5f9;color:#0f172a}
+  .send{background:#1750d8;color:#fff}
+  .act{display:flex;align-items:center;gap:4px;padding-bottom:2px;color:var(--slate-300)}
+  .act .msym{font-size:16px}
+  .rd{font-size:10.2px;font-weight:700;color:var(--text-meta);white-space:nowrap}
+  .rx{display:flex;gap:4px;margin-top:5px}
+  .rxc{display:flex;align-items:center;gap:4px;background:var(--surface-footer);border:1px solid var(--border-structure);border-radius:999px;padding:2px 8px;font-size:11.2px;font-weight:700;color:var(--slate-600)}
+  .file{display:flex;align-items:center;gap:8px;margin-top:6px;background:#fff;border-left:2px solid var(--border-control);padding:8px 12px}
+  .tile{flex:none;width:26px;height:26px;border-radius:6px;background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8.2px;font-weight:800;color:var(--slate-600)}
+  .task{margin-top:6px;width:330px;background:#fff;border-left:2px solid var(--state-wait-bar);border-top:1px solid var(--border-structure);border-bottom:1px solid var(--border-structure);padding:12px 14px}</style></head><body>
+<div class="col">
+  <div style="display:flex;flex-direction:column;align-items:flex-start">
+    <div class="hd"><span class="nm">이수진</span><span class="tm">오후 2:14</span></div>
+    <div style="display:flex;align-items:flex-end;gap:8px"><div class="bub recv">공급업체 행동강령 서명본 확인 부탁드립니다.</div><div class="act"><span class="msym">reply</span><span class="msym">push_pin</span><span class="msym">task_alt</span></div></div>
+    <button style="border:none;cursor:pointer;font-family:inherit" class="file"><span class="tile">PDF</span><span style="text-align:left"><span style="display:block;font-size:12.6px;font-weight:700">공급업체 행동강령_서명본.pdf</span><span style="display:block;font-size:10.7px;color:var(--text-meta)">2.4MB · 문서 저장소에서 열기</span></span></button>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end">
+    <div class="hd"><span class="nm">나</span><span class="tm">오후 2:16</span></div>
+    <div style="display:flex;align-items:flex-end;gap:8px;flex-direction:row-reverse"><div class="bub send">확인했습니다. 오늘 중 회신하겠습니다.</div><div class="act"><span class="rd">읽음 3</span><span class="msym">reply</span><span class="msym">push_pin</span><span class="msym">task_alt</span></div></div>
+    <div class="rx"><span class="rxc"><span class="msym" style="font-size:14px;color:#1750d8">thumb_up</span>2</span></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-start">
+    <div class="hd"><span class="nm">Amber AI</span><span class="tm">오후 2:17</span></div>
+    <div style="display:flex;align-items:flex-end;gap:8px"><div class="bub recv">인증 유효기간은 2026년 9월 14일까지입니다.<div class="rx" style="margin-top:8px"><span style="display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--border-structure);color:var(--text-link);border-radius:999px;padding:3px 9px;font-size:10.7px;font-weight:700"><span class="msym" style="font-size:13px">description</span>근거 p.2</span></div></div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end">
+    <div class="hd"><span class="nm">나</span><span class="tm">오후 2:20</span></div>
+    <button style="border:none;cursor:pointer;font-family:inherit;text-align:left" class="task">
+      <span style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="font-size:10.2px;font-weight:800;color:var(--slate-600);letter-spacing:.05em;white-space:nowrap">업무 요청</span><span style="margin-left:auto;font-size:10.2px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--state-wait-bg);color:var(--state-wait-fg);white-space:nowrap">요청됨</span></span>
+      <span style="display:block;font-size:13.6px;font-weight:700">안전보건 교육 이수 내역 요청</span>
+      <span style="display:block;font-size:11.2px;color:var(--slate-600);margin-top:4px">담당 박지원 · 기한 ~07.28</span>
+      <span style="display:flex;align-items:center;gap:3px;font-size:11.6px;font-weight:700;color:var(--text-link);margin-top:7px">빠른 처리 열기<span class="msym" style="font-size:15px">open_in_new</span></span>
+    </button>
+  </div>
+</div></body></html>

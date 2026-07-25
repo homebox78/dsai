@@ -1,0 +1,24 @@
+:root {
+  --sp-1: 4px;
+  --sp-2: 6px;
+  --sp-3: 8px;
+  --sp-4: 11px;
+  --sp-5: 14px;
+  --sp-6: 18px;   /* 표준 가로 패딩 (행·패널·모달 본문) */
+  --sp-7: 22px;
+  --sp-8: 28px;
+
+  /* 구조 치수 — 셸 레이아웃의 고정값 */
+  --header-h: 52px;        /* 앱 헤더 (딥블루) */
+  --crumb-h: 44px;         /* 경로 영역 */
+  --panel-header-h: 44px;  /* 패널·테이블 헤더 라인 */
+  --row-py: 11px;          /* 테이블·목록 행 상하 패딩 */
+  --row-px: 18px;          /* 행 좌우 패딩 */
+  --menu-w: 234px;         /* 사이드 메뉴 펼침 */
+  --menu-w-collapsed: 48px;
+  --subpanel-w: 264px;     /* 서브 목록 열 */
+  --aside-w: 330px;        /* 챗봇·업무 영역 */
+  --handle-size: 22px;     /* 경계 접기 핸들 */
+  --control-h: 30px;       /* 아이콘 버튼 · 헤더 컨트롤 */
+  --touch-min: 44px;
+}
