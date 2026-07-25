@@ -63,7 +63,7 @@
 |---|---|---|
 | 프레임워크 | **React 19 + Vite 7** | 지정 스택 |
 | 스타일 | **Tailwind v4 + shadcn/ui** | 지정 스택. 블루 컨셉 토큰을 `@theme`로 정의 |
-| 라우팅 | react-router v7 (declarative) | 화면 40여 종 — 딥링크(`?modal=`, `?tab=`) 카운팅으로 검수 동선 단축 |
+| 라우팅 | react-router v7 — **최소 라우트**(`/auth/*`, `/setup`, `/` 앱 셸) | ⚠️ 클라이언트 지시(07-25): **페이지 다수 생성 금지, 한 화면 안에서 동선 운영.** 메뉴 선택은 셸 내 컨텐츠 영역 교체, 상세·설정·요청은 모달/Sheet/패널 레이어로. 딥링크(`?view=`·`?modal=`·`?tab=`)는 같은 셸 위에 레이어를 여는 방식으로 유지(검수 동선용) |
 | 상태 | **zustand** (스토어 소수) + 컴포넌트 로컬 상태 | 목업이라 서버상태 라이브러리 불필요 |
 | 목업 데이터 | `src/mocks/*.ts` 정적 픽스처 + zustand 갱신 (선택적으로 localStorage persist) | DB 없음. CRUD는 메모리에서 실제로 반영돼 "동작하는 느낌" |
 | AI 연출 | 타이핑 스트리밍 유틸(setInterval), 처리 단계 진행률 시뮬레이터 | p61 AI 처리 상태 카드·챗봇 응답 연출 |
@@ -89,18 +89,13 @@ dsai/
 │  │  ├── layout/        # AppHeader, Breadcrumb, SideMenu, SubMenu, ChatbotPanel, AppShell(형태1/2)
 │  │  ├── common/        # StatusBadge, ProgressCard, EmptyState, AiTyping, FileIcon …
 │  │  └── modals/        # 조직/워크스페이스/멤버초대/폴더추가/파일업로드/새파일 …
-│  ├── pages/
+│  ├── pages/            # 라우트 = auth / setup / 앱 셸 뿐. 나머지는 셸 안에서 교체되는 "뷰"
 │  │  ├── auth/          # Login, Signup, FindAccount, TwoFactor
-│  │  ├── setup/         # OrgSetup, WorkspaceSetup, ProjectSetup
-│  │  ├── dashboard/
-│  │  ├── files/         # FilesHome, FolderView, FileDetail, FileEditor
-│  │  ├── chat/          # ChatRooms, ChatRoom(+TaskZone)
-│  │  ├── tasks/         # TaskBoard(목록+상세+스트림)
-│  │  ├── ecovadis/      # Summary, Questions(결과보기), Processing(처리부), Requests
-│  │  ├── admin/         # Users, Workspaces, Members, Channels
-│  │  └── account/       # Profile, Security
+│  │  ├── setup/         # OrgSetup, WorkspaceSetup, ProjectSetup (1회성 셋업만 별도 페이지 — 스토리보드 명시)
+│  │  └── AppShell.tsx   # 단일 셸 — 아래 views/를 컨텐츠 영역에 스왑
+│  ├── views/            # 셸 내부 뷰(페이지 아님): dashboard, files, chat, tasks, ecovadis, admin, account
 │  ├── mocks/            # org.ts, users.ts, files.ts, chats.ts, tasks.ts, ecovadis.ts, notifications.ts
-│  ├── stores/           # useAppStore(조직/WS/프로젝트 컨텍스트), useFilesStore, useChatStore, useTaskStore, useEcoStore
+│  ├── stores/           # useAppStore(컨텍스트+현재 뷰), useLayerStore(모달/Sheet/패널 스택), useFilesStore, useChatStore, useTaskStore, useEcoStore
 │  ├── lib/              # aiSimulator.ts(스트리밍/진행률), format.ts
 │  └── styles/
 └── docs/                # 본 계획서, 화면 체크리스트
