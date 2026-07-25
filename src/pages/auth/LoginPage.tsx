@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Icon } from '@/components/common/icon'
+import { DotCube } from '@/components/common/DotCube'
 
 /** 인증 (p7) — 로그인 / 회원가입 / 아이디·비밀번호 찾기 / 2FA. 블루 컨셉 + AI 파형 배경 */
 
@@ -20,11 +21,11 @@ const STEPS = [
 const inputCls =
   'w-full rounded-[9px] border border-ink-300 px-3.5 py-2.5 text-body outline-none focus:border-brand-link'
 
-/** AI 파형 배경 (시안 authWave) */
+/** AI 파형 배경 (시안 authWave) — 큐브 하단에 낮게 깔아 바닥선 역할 */
 function Wave() {
   return (
-    <div className="pointer-events-none absolute inset-0 opacity-[.42]">
-      <div className="absolute bottom-0 left-0 flex h-[220px] w-[200%] items-end gap-1.5">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 opacity-[.22]">
+      <div className="flex h-[140px] w-[200%] items-end gap-1.5">
         {Array.from({ length: 90 }).map((_, i) => (
           <span
             key={i}
@@ -62,10 +63,13 @@ export function LoginPage() {
   return (
     <div className="flex h-screen min-h-0">
       {/* 좌측 브랜드 패널 */}
+      {/* 좁아지면 패널도 같이 줄어든다(숨기지 않는다). 640px 미만에서만 접어 폼에 자리를 내준다 */}
       <div
-        className="relative flex w-[46%] min-w-[392px] flex-none flex-col justify-between overflow-hidden px-11 py-[52px] text-white"
+        className="relative hidden w-[46%] min-w-[300px] flex-none flex-col justify-between overflow-hidden px-11 py-[52px] text-white min-[640px]:flex"
         style={{ background: 'linear-gradient(160deg,#1750d8 0%,#123fae 55%,#0d2f80 100%)' }}
       >
+        {/* 입체 격자 큐브 — 패널 전체를 덮고, 큐브 자체는 상단(헤드라인 위)에 앉는다 */}
+        <DotCube className="pointer-events-none absolute inset-0 h-full w-full opacity-[.8]" />
         <Wave />
         <div
           className="pointer-events-none absolute inset-0"
@@ -104,7 +108,7 @@ export function LoginPage() {
       </div>
 
       {/* 우측 폼 */}
-      <div className="flex min-w-[400px] flex-1 items-center justify-center overflow-auto px-8 py-9">
+      <div className="flex min-w-0 flex-1 items-center justify-center overflow-auto px-6 py-9 sm:px-8">
         <div className="w-full max-w-[368px]">
           <div className="mb-[26px] flex gap-1 border-b border-ink-200">
             {TABS.map((t) => {
