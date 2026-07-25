@@ -1,0 +1,195 @@
+# Amber Document Intelligence — Front Office 개발 계획
+
+> 기준 문서: 「Amber UIX 설계서 V0.1 (2026.07.19)」 Storyboard(front Office) V1.1, 작성자 Aiden
+> 납품 범위: **DB 없는 프론트엔드 목업** — 실제 서비스처럼 동작하는 느낌(화면 전환·상태 변화·AI 응답 연출)까지. 백엔드/실 AI 연동 없음.
+
+---
+
+## 1. 스토리보드 분석 요약
+
+### 1.1 제품 개요
+- **Amber Document Intelligence** — Private AI for Enterprise Knowledge (기업 문서 지식 AI 콘솔)
+- 데이터 계층: **Organization → Workspace → Project** (Prisma 계층, 각 단계 id가 다음 단계의 부모 키)
+- Project 안에 Store/File/ChatRoom/Task/AiLog가 생성됨
+- 컨셉 컬러: **블루** (인풋/버튼 색·구성은 p3 시안 참고, 블루-그레이 구성)
+
+### 1.2 공통 레이아웃 (UIX Layout)
+- **형태1**: 헤더 / 경로(breadcrumb) / [①메뉴 | ②서브메뉴 | 컨텐츠 | ③컨텐츠&챗봇] 4단
+  - ①②③ 모두 **숨기기/펼치기** 필요. 숨김 시 메뉴는 아이콘만, 축소 시 확대 아이콘 노출
+  - Layer 영역 구분은 카드가 아닌 **라인(divider) 형태**
+- **형태2**: 헤더 / breadcrumb / [메뉴 | 컨텐츠 | 컨텐츠] 3단
+- 경로 영역: breadcrumb + 배지(파일수·RAG% 등) + 우측 액션 버튼(Upload files 등)
+- 헤더: 로고+ENTERPRISE 배지 | N(워크스페이스 스위처) · ?(도움말) · ⚙(설정→페이지 이동) · ✦(AI→Sheet 슬라이드) · 🔔(알림) · 프로필 — 전부 드롭다운/시트
+- 조직/워크스페이스/회원추가는 전부 **modal**
+- 워크스페이스 → 표기는 "조직&사업부"로 치환
+
+### 1.3 화면 인벤토리 (스토리보드 페이지 → 화면)
+
+| 구역 | 화면 | 비고(스토리보드 p) |
+|---|---|---|
+| Auth | 로그인·회원가입·아이디/비번 찾기·2FA | p7, 블루 컨셉 |
+| 초기 셋업 | 조직 생성(1회성) → 워크스페이스 생성 → 프로젝트 생성 | p23~25, 모달 아님·별도 페이지 3단계, 향후 모달 대체 |
+| 헤더 계열 | 워크스페이스 스위처 드롭다운(+전체보기·설정 모달 5탭), 도움말 드롭다운, 알림 드롭다운, 프로필 드롭다운, 조직/워크스페이스 생성·멤버 초대 모달 | p9~14, p28~34 |
+| 계정 | 내 정보, 보안 및 로그인(2FA·로그인 기록) | p15~16 |
+| AI Sheet | 챗 클릭 시 우측 슬라이드 AI 검색 시트 | p17 |
+| 관리자 | 사용자관리·워크스페이스·멤버관리·채널관리 | p19~22 |
+| 프로젝트 메뉴 | PROJECT(Dashboard·member) / 협업공간(채팅1~3·업무) / 문서(저장소·문서) / EcoVadis(요약·문항·증빙자료·자료요청) / SYSTEM(멤버등록) + 워크스페이스/프로젝트 전환 패널 | p26~28 |
+| 파일관리 | 초기 진입·폴더 선택(목록 2종)·파일 상세(요약+뷰어+챗봇)·폴더 추가 모달·파일 업로드 모달·새 파일 모달(doc/hwp/md)·파일 작성기(목차+AI 어시스턴트) | p35~45 |
+| 채팅+Task | 룸 목록·룸 상세·Task 존(탭 전환)·외부 협업자 초대(이메일/링크)·업무요청 Sheet·대화방 정보 모달·Task 미리보기 모달(미리보기/버전/활동)·대화방 나가기 모달 | p46~54 |
+| Task 관리 | Task 목록(워크플로 상태)·상세(타임라인·증빙업로드·스레드)·Active Task Stream | p55~56 |
+| EcoVadis | 결과보기(질문항 목록+컨텐츠 영역)·처리부(OCR 질문·AI 증빙검색·진행 프로세스·챗봇/Task 탭·결과 다운로드) | p57~58 |
+| 대시보드 | 4섹션 서머리(Workspace/Projects&Tasks/Document Pipeline/AI Workspace) | p59 |
+| 전체 메뉴 | 헤더 드롭다운 → 풀스크린 메가메뉴(전 메뉴+할 일 현황) | p60 |
+| 우측 패널 위젯 | AI 처리 상태 카드(진행률 단계)·외부 협업자·최근 활동·스토리지 | p61~63 |
+
+### 1.4 범위 제외 (발주자 Aiden이 직접 제작한다고 명시)
+- 도움말 드롭다운의 **상세 페이지 4종** (#manual/#helpdoc/#terms/#help — 드롭다운까지만 구현, p12)
+- 파일 작성 **목차 편집 페이지** (p44 "이 페이지는 제가 만들어요")
+
+### 1.5 특이 요구사항 (놓치기 쉬운 것)
+- EcoVadis 처리부: 진행률 = AI 초안/미처리/답변완료 3상태 합산으로 100% 산정, OCR 결과는 **수정 가능**해야 함, 결과는 1개 파일로 다운로드
+- 파일 목록이 **2종 겹칠 수 있음**(용도 다름 — 퍼블리싱에서 2개 다 구성, 개발에서 분리 사용 예정)
+- 채팅 Task: 채팅↔Task 탭 전환, Task는 완료되면 종료(계속 파일 전송 X), 1영역에 [task][채팅]/[대화방정보][채팅] 전환 버튼
+- AI 답변 삽입 드롭다운: 현재 커서/새 문단/선택 문단 아래/선택 영역 교체/문서 끝/제목/표 삽입 (p45)
+- 업무요청·목차 등 슬라이드 패널은 **shadcn Sheet** 사용 명시(p49 링크)
+- 파일 상세 뷰어: react-pdf + 이미지 프리뷰 예정, PDF 편집기는 참고 영상만 제시 → **목업 단계에선 뷰어+툴바 목업으로 대체**
+- 알림 펼침·읽음 처리, 모달·드롭다운·시트 인터랙션이 실제처럼 동작해야 "실구현 느낌"
+
+---
+
+## 2. 기술 스택 & 아키텍처
+
+| 항목 | 선택 | 이유 |
+|---|---|---|
+| 프레임워크 | **React 19 + Vite 7** | 지정 스택 |
+| 스타일 | **Tailwind v4 + shadcn/ui** | 지정 스택. 블루 컨셉 토큰을 `@theme`로 정의 |
+| 라우팅 | react-router v7 (declarative) | 화면 40여 종 — 딥링크(`?modal=`, `?tab=`) 카운팅으로 검수 동선 단축 |
+| 상태 | **zustand** (스토어 소수) + 컴포넌트 로컬 상태 | 목업이라 서버상태 라이브러리 불필요 |
+| 목업 데이터 | `src/mocks/*.ts` 정적 픽스처 + zustand 갱신 (선택적으로 localStorage persist) | DB 없음. CRUD는 메모리에서 실제로 반영돼 "동작하는 느낌" |
+| AI 연출 | 타이핑 스트리밍 유틸(setInterval), 처리 단계 진행률 시뮬레이터 | p61 AI 처리 상태 카드·챗봇 응답 연출 |
+| PDF/이미지 뷰어 | **react-pdf** + `<img>` 프리뷰 | 스토리보드 명시 |
+| 문서 작성기 | 1차: contentEditable 기반 경량 목업(목차·AI 삽입 드롭다운 포함) / TipTap 도입은 옵션 | 편집기 본격 구현은 개발 단계 몫 — 목업은 흐름 재현이 목적 |
+| 폰트 | Pretendard (+ 코드/ID용 JetBrains Mono) | 시안 스크린샷 톤과 일치 |
+| 아이콘 | lucide-react (shadcn 기본) | |
+
+### 원칙 (myDev 규칙 적용)
+- **디자인 토큰 단일 진리원**: `src/styles/` Tailwind `@theme` — primary 블루 계열·그레이·상태색·틴트. 화면에 hex 하드코딩 금지
+- **네이티브 select 금지** — shadcn Select/DropdownMenu로 통일
+- 같은 줄 컨트롤 높이 통일 (h-9 기준 실측 검증)
+- 모달/시트는 body 포털 + 명시적 z-index 체계
+- 인증 가드 리다이렉트는 `<Navigate>` 컴포넌트 (렌더 중 navigate() 금지)
+
+### 폴더 구조
+
+```
+dsai/
+├── src/
+│  ├── components/
+│  │  ├── ui/            # shadcn 생성분
+│  │  ├── layout/        # AppHeader, Breadcrumb, SideMenu, SubMenu, ChatbotPanel, AppShell(형태1/2)
+│  │  ├── common/        # StatusBadge, ProgressCard, EmptyState, AiTyping, FileIcon …
+│  │  └── modals/        # 조직/워크스페이스/멤버초대/폴더추가/파일업로드/새파일 …
+│  ├── pages/
+│  │  ├── auth/          # Login, Signup, FindAccount, TwoFactor
+│  │  ├── setup/         # OrgSetup, WorkspaceSetup, ProjectSetup
+│  │  ├── dashboard/
+│  │  ├── files/         # FilesHome, FolderView, FileDetail, FileEditor
+│  │  ├── chat/          # ChatRooms, ChatRoom(+TaskZone)
+│  │  ├── tasks/         # TaskBoard(목록+상세+스트림)
+│  │  ├── ecovadis/      # Summary, Questions(결과보기), Processing(처리부), Requests
+│  │  ├── admin/         # Users, Workspaces, Members, Channels
+│  │  └── account/       # Profile, Security
+│  ├── mocks/            # org.ts, users.ts, files.ts, chats.ts, tasks.ts, ecovadis.ts, notifications.ts
+│  ├── stores/           # useAppStore(조직/WS/프로젝트 컨텍스트), useFilesStore, useChatStore, useTaskStore, useEcoStore
+│  ├── lib/              # aiSimulator.ts(스트리밍/진행률), format.ts
+│  └── styles/
+└── docs/                # 본 계획서, 화면 체크리스트
+```
+
+---
+
+## 3. 단계별 개발 계획
+
+> 목업 특성상 "공통 셸 → 헤더 생태계 → 도메인 화면" 순서. 각 Phase 종료마다 커밋 + 브라우저 실측 검증.
+
+### Phase 0 — 프로젝트 셋업 (0.5일)
+- Vite + React 19 + Tailwind v4 + shadcn 초기화, Pretendard, 라우터 골격, 디자인 토큰(블루 컨셉) 정의
+- 목업 데이터 스키마 정의(Org/WS/Project/File/Chat/Task/EcoVadis 질문) — **시안의 데이터 출력부(p3 Organization data output 등)와 필드명 일치**
+
+### Phase 1 — 공통 레이아웃 셸 (1.5일)
+- AppShell 형태1(4단)·형태2(3단), 각 패널 **접기/펼치기**(메뉴→아이콘만, 챗봇 패널 축소 시 확대 아이콘)
+- 헤더(로고+ENTERPRISE 배지+아이콘 6종 자리), breadcrumb 바(배지·우측 버튼 슬롯)
+- 라인 기반 영역 구분(카드 아님) — p4 특이사항
+
+### Phase 2 — Auth + 초기 셋업 (1.5일)
+- 로그인/회원가입/아이디·비번 찾기/2FA (블루 컨셉 풀스크린)
+- 조직→워크스페이스→프로젝트 3단계 셋업 페이지 (좌측 스텝 레일 + 우측 폼 + 데이터 출력 패널, p23~25 시안 재현)
+- 로그인 → 셋업(최초) → 대시보드 흐름을 mock 플래그로 분기
+
+### Phase 3 — 헤더 생태계 (2일)
+- 드롭다운 4종: 워크스페이스 스위처(현재 WS·크레딧·내 워크스페이스 검색·내 프로젝트 펼침·생성/초대/로그아웃), 도움말(4링크 — 링크만), 알림(전체/안읽음/멘션 탭·모두읽음·읽음처리), 프로필(내정보/보안/결제수단/로그아웃)
+- 모달: 워크스페이스 생성, 멤버 초대(행 추가형), 조직 등록, 워크스페이스 설정 5탭(변경/사용자/요금제·결제/관리이력/삭제, p29~34)
+- AI Sheet(우측 슬라이드, 추천 질문 칩 + 입력창)
+- 내 정보 / 보안 및 로그인 페이지 (2FA 토글·로그인 기록 테이블)
+
+### Phase 4 — 파일관리 (3일) ★ 최대 볼륨
+- 초기 진입(검색·폴더추가·업로드·새 파일) / 폴더 선택 뷰(폴더 트리 + **파일 목록 2종** + 파일 요약 하단 패널, p39 ①~⑤ 구조)
+- 파일 상세: AI 요약(hide/show)·상태 배지·액션 버튼(다운로드/삭제/뷰어/수정) + react-pdf/이미지 뷰어 + 문서 챗봇(파일 내용 질문 연출)
+- 모달: 폴더 추가(접근권한), 파일 업로드(드래그&드롭·AI 인덱싱 토글), 새 파일(이름+유형 doc/hwp/md)
+- 파일 작성기: 섹션 목차 바·에디터 영역·Writing Assistant 패널(AI 초안 카드 + **삽입 위치 드롭다운 7종** + INSERT/APPEND)
+- OCR/Metadata/Chunking/RAG Index 진행률 연출(aiSimulator)
+
+### Phase 5 — 협업공간: 채팅 + Task 존 (2.5일)
+- 룸 목록(검색·필터 칩·고정공지·팀/외부/DM 그룹), 룸 상세(메시지·파일 첨부 말풍선·입력기)
+- 우측 Task 존: 채팅↔Task **탭 전환**, 업무요청 목록→상세(상태 타임라인·증빙 업로드·스레드)→1:1 채팅, [task][채팅]/[대화방정보][채팅] 전환 버튼
+- 모달/시트: 외부 협업자 초대(이메일/초대링크 탭 — 링크 만료·기본 권한), 새 업무요청 Sheet(담당자 지정·기한·참고파일), 대화방 정보, Task 미리보기(미리보기/버전 히스토리/활동 로그 3탭 + 댓글·채팅), 대화방 나가기 확인
+- 멤버 클릭 → 정보보기/채팅하기/업무요청 팝오버
+
+### Phase 6 — Task 관리 (1.5일)
+- 3컬럼: 워크플로 상태(Requested/In Progress/Review/Completed + 퀵필터) | Task List(우선순위·기한) | 선택 Task 상세(설명·타임라인·첨부·코멘트 스레드)
+- 우측 Active Task Stream(실시간 피드 연출) — 향후 Sheet 슬라이드 전환 대비 컴포넌트 분리
+- EcoVadis·채팅 Task 존에서 **재사용 가능한 구조**로 (p57 특이사항: "task 메뉴의 부분을 떼다가 재구성")
+
+### Phase 7 — EcoVadis (2.5일) ★ 도메인 핵심
+- 결과보기: 질문지 업로드 바(파일정보·OCR 진행률·답변서 내보내기) + 질문항 목록(필터 탭 ALL/OCR/SEARCHING/FOUND/FAILED·상태 배지·페이징) + 우측 컨텐츠 영역(Task 재구성)
+- 처리부: 질문 목록 | 질문 상세(OCR 결과 confidence·**수정 가능**) | 카테고리/Find ESG Evidence | AI 증빙 검색 콘솔(터미널풍 로그 + 매칭 파일·페이지·confidence·Open/Attach) | 진행 프로세스+답변 영역 | 챗봇(Task 탭 겸용)
+- 진행률 = AI 초안/미처리/답변완료 합산 게이지, 답변서 내보내기 버튼(다운로드 연출)
+
+### Phase 8 — 대시보드 + 전체 메뉴 + 관리자 (2일)
+- 대시보드 4섹션(Workspace Summary/Projects&Tasks/Document Pipeline/AI Workspace) — My Action Items·파이프라인·RAG 인덱스·Task Summary·알림 카드
+- 헤더 메뉴 드롭다운 → **풀스크린 메가메뉴**(워크스페이스→프로젝트 트리→프로젝트 메뉴 4컬럼 + 할 일)
+- 관리자 4화면: 사용자관리(추가 폼+목록), 워크스페이스(생성+목록), 멤버 관리, 채널 관리 — 공통 "폼+테이블" 패턴 재사용
+- 우측 위젯: AI 처리 상태 카드 4단계, 외부 협업자(관리 모달), 최근 활동(전체 모달), 스토리지 게이지
+
+### Phase 9 — 마감 QA (1.5일)
+- 시안 1:1 대조 스윕(색·간격·배지·아이콘·버튼 상태), 접기/펼치기·모달 z-index·딥링크 전수 확인
+- 목업 데이터 일관성(같은 인물·프로젝트명이 전 화면 관통 — "Evolve AI Lab / ESG Strategy Team / ESG Evaluation 2026 / 홍길동" 세계관 통일)
+- 콘솔 에러 0, 화면 체크리스트 문서(docs/SCREENS.md) 최종화
+
+**총 예상: 약 18~19 작업일** (검수 라운드 별도)
+
+---
+
+## 4. 목업 데이터 전략
+
+- **세계관 고정**: Evolve AI Lab(조직) › ESG Strategy Team(워크스페이스) › ESG Evaluation 2026(프로젝트), 인물 6~8명(홍길동/김마케터/이대리/박매니저…) — 스토리보드 등장 데이터 그대로 픽스처화
+- 파일 1,284개 카운트·RAG 92% 등 **시안 수치 재현**, 상세 데이터는 대표 10~20건만 실데이터화
+- CRUD는 zustand에서 실반영(폴더 추가하면 목록에 생김, 업무요청 보내면 Task 목록에 쌓임) → "실구현된 느낌"의 핵심
+- AI 응답: 질문별 canned 답변 + 타이핑 스트리밍 + 출처 칩(p.12·3 citations 등) 연출. 파일 업로드 시 OCR→Metadata→Chunking→RAG 진행률 시뮬레이션
+- 새로고침 유지가 필요하면 zustand persist(localStorage) 옵션만 켜면 됨 — 기본은 메모리
+
+## 5. 리스크 / 결정 대기
+
+| 항목 | 내용 | 제안 |
+|---|---|---|
+| 문서 작성기 깊이 | p43~45 편집기+AI 삽입은 실개발 수준으로 가면 목업 범위 초과 | contentEditable 경량 목업(섹션 블록+삽입 드롭다운 동작)으로 흐름만 재현, TipTap은 개발 단계 |
+| PDF 편집기 | 참고 영상 2개(react-pdf 편집) | 목업은 뷰어+주석 툴바 UI만 |
+| hwp 유형 | 새 파일 유형에 hwp 포함 | 유형 선택지로만 존재(생성 시 md 에디터로 열림) |
+| 반응형 | 스토리보드에 모바일 언급 없음 | **데스크톱 1920 기준**, 1280까지 안전 축소만 — 착수 전 확인 필요 |
+| 시안 화질 | 스토리보드 캡처가 저해상 — 정확한 px/hex 없음 | 토큰 기반 자체 정합 + 발주자 시안 캡처 수신 시 1:1 보정 라운드 |
+| 다국어 | 화면에 EN/KO 혼재 | 목업은 시안 표기 그대로(혼재 유지) |
+
+## 6. 검수 동선
+
+- `/work-list` 성격의 화면 목록 페이지(또는 docs/SCREENS.md)에 전 화면·모달 딥링크 정리 — 발주자가 클릭 한 번으로 각 화면 확인
+- 모달/탭은 `?modal=`·`?tab=` 쿼리 딥링크로 직접 진입 가능하게
