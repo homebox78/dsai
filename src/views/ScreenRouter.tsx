@@ -1,29 +1,41 @@
 import { useAppStore } from '@/stores/app-store'
-import { Icon } from '@/components/common/icon'
 import { DashboardView } from './dashboard/DashboardView'
+import { StoreView } from './store/StoreView'
+import { ChatView } from './chat/ChatView'
+import { TaskView } from './task/TaskView'
+import { EcoSummaryView } from './eco/EcoSummaryView'
+import { EcoWorkView } from './eco/EcoWorkView'
+import { EcoDocsView } from './eco/EcoDocsView'
+import { EcoReqView } from './eco/EcoReqView'
+import { MembersView } from './members/MembersView'
+import { IndexView } from './index/IndexView'
 
 /** 셸 컨텐츠 영역 — screen 값에 따라 뷰를 교체한다(페이지 이동 아님). */
 export function ScreenRouter() {
   const screen = useAppStore((s) => s.screen)
 
   switch (screen) {
+    case 'index':
+      return <IndexView />
     case 'dash':
       return <DashboardView />
+    case 'store':
+      return <StoreView />
+    case 'chat':
+      return <ChatView />
+    case 'task':
+      return <TaskView />
+    case 'ecoSum':
+      return <EcoSummaryView />
+    case 'ecoWork':
+      return <EcoWorkView />
+    case 'ecoDocs':
+      return <EcoDocsView />
+    case 'ecoReq':
+      return <EcoReqView />
+    case 'members':
+      return <MembersView />
     default:
-      return <Placeholder />
+      return <DashboardView />
   }
-}
-
-function Placeholder() {
-  const screen = useAppStore((s) => s.screen)
-  return (
-    <div className="flex min-w-0 flex-1 items-center justify-center bg-ink-50">
-      <div className="text-center">
-        <Icon name="construction" size={40} className="text-ink-300" />
-        <p className="mt-2 text-body text-ink-400">
-          <span className="font-bold text-ink-600">{screen}</span> 화면 — 구현 예정
-        </p>
-      </div>
-    </div>
-  )
 }

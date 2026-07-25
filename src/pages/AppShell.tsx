@@ -3,6 +3,8 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { SideMenu } from '@/components/layout/SideMenu'
 import { PanelHandle } from '@/components/layout/PanelHandle'
 import { WsPopover } from '@/components/layout/WsPopover'
+import { MegaMenu } from '@/components/layout/MegaMenu'
+import { LayerHost } from '@/components/layers/LayerHost'
 import { useAppStore } from '@/stores/app-store'
 import { ScreenRouter } from '@/views/ScreenRouter'
 
@@ -32,6 +34,8 @@ export function AppShell() {
       </div>
 
       {wsPopOpen && <WsPopover />}
+      <MegaMenu />
+      <LayerHost />
 
       {/* 드롭다운 바깥 클릭 닫기 */}
       {anyDropdown && <div className="fixed inset-0 z-[55]" onClick={closeDropdowns} />}
