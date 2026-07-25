@@ -17,8 +17,8 @@ function mi(name: string, defaultSize = 16) {
     return (
       <span
         aria-hidden="true"
-        className={cn('mi shrink-0', className)}
-        style={{ fontSize: size, width: size, height: size, ...style } as CSSProperties}
+        className={cn('msym', className)}
+        style={{ fontSize: size, ...style } as CSSProperties}
       >
         {name}
       </span>

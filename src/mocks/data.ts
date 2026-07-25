@@ -1,636 +1,290 @@
 /**
- * 목업 픽스처 — 전 화면이 공유하는 하나의 세계관.
- * 이볼브AI랩(조직) › ESG 전략팀(조직&사업부) › ESG 평가 2026(프로젝트)
- * 스토리보드 등장 데이터를 한글로 번안해 구성했다.
+ * 목업 픽스처 — 전부 완성 시안 `delivery/Amber Document Intelligence.dc.html` 의 데이터를 그대로 옮긴 것.
+ * 세계관: Amber Evolution(조직) › ESG 본부 › ESG 전략팀(조직&사업부) › 에코바디스 2026 대응(프로젝트)
+ * ⚠️ 값을 임의로 바꾸지 말 것 — 시안이 진리원.
  */
-import type {
-  ActivityLog,
-  AppNotification,
-  ChatMessage,
-  ChatRoom,
-  DocFile,
-  DocFolder,
-  DocStore,
-  EcoQuestion,
-  Organization,
-  Project,
-  Task,
-  User,
-  Workspace,
-} from './types'
 
-/* ── 사용자 ───────────────────────────────────────── */
+/* ── 컨텍스트 ─────────────────────────────────────── */
 
-export const users: User[] = [
-  { id: 'u_hong', name: '홍길동', email: 'hong@evolveai.kr', title: '성과 리드', role: '마스터', status: '활성', department: 'ESG 전략팀', initials: '홍', color: '#2563eb', online: true },
-  { id: 'u_kim', name: '김지원', email: 'jiwon.kim@evolveai.kr', title: 'PM', role: '관리자', status: '활성', department: 'ESG 전략팀', initials: '김', color: '#7c5cff', online: true },
-  { id: 'u_lee', name: '이대리', email: 'daeri.lee@evolveai.kr', title: '분석', role: '편집자', status: '활성', department: '데이터분석팀', initials: '이', color: '#12a150', online: true },
-  { id: 'u_park', name: '박매니저', email: 'manager.park@evolveai.kr', title: '매니저', role: '편집자', status: '활성', department: '운영팀', initials: '박', color: '#d97706', online: false },
-  { id: 'u_choi', name: '최기획', email: 'plan.choi@evolveai.kr', title: '기획', role: '뷰어', status: '초대 대기', department: '전략기획팀', initials: '최', color: '#6b7a90', online: false },
-  { id: 'u_seo', name: '서준호', email: 'junho.seo@evolveai.kr', title: '품질', role: '편집자', status: '활성', department: '품질보증팀', initials: '서', color: '#e5484d', online: false },
-  { id: 'x_design', name: '박디자이너', email: 'park.designer@partner.kr', title: '디자인', role: '파트너', status: '활성', initials: '박', color: '#f0566a', external: true, externalTag: '디자인 · 5개 프로젝트', online: true },
-  { id: 'x_edit', name: '최편집자', email: 'choi.edit@partner.kr', title: '영상 편집', role: '파트너', status: '활성', initials: '최', color: '#3b7ff6', external: true, externalTag: '영상 · 3개 프로젝트', online: true },
-  { id: 'x_web', name: '정외부', email: 'jung.web@partner.kr', title: '웹/그래픽', role: '파트너', status: '활성', initials: '정', color: '#12a150', external: true, externalTag: '웹/그래픽 · 2개 프로젝트', online: false },
-]
-
-export const userById = (id: string) => users.find((u) => u.id === id)!
-
-/* ── 계층 ─────────────────────────────────────────── */
-
-export const organization: Organization = {
-  id: 'org_01H_AMBER',
-  name: '이볼브AI랩',
-  slug: 'evolve-ai-lab',
-  type: '엔터프라이즈',
-  industry: 'ESG · 연구개발 · 제조',
-  bizRegNo: '123-45-67890',
-  country: '대한민국',
-  timezone: 'Asia/Seoul',
-  language: '한국어',
-  ownerId: 'u_hong',
-  region: 'KR / 서울',
-  policy: { private: true, auditEnabled: true },
-  logoText: '이볼브AI랩',
+export const ctx = {
+  org: 'Amber Evolution',
+  orgPlan: 'ENTERPRISE',
+  biz: 'ESG 본부',
+  ws: 'ESG 전략팀',
+  wsInitial: 'E',
+  proj: '에코바디스 2026 대응',
+  projVis: '공개',
+  projMembers: 6,
+  wsStores: 8,
+  wsFiles: '1,284',
+  wsChannels: 8,
+  credit: '1,000 Credit',
+  me: { name: '홍길동', title: '성과 리드', email: 'hong@evolvailab.com', initial: '홍' },
 }
 
-export const workspaces: Workspace[] = [
+/** 조직&사업부 트리 (전환 팝오버) */
+export const wsTree = [
   {
-    id: 'ws_esg_strategy',
-    organizationId: organization.id,
+    id: 'w1',
     name: 'ESG 전략팀',
-    slug: 'esg-strategy-team',
-    visibility: 'private',
-    purpose: 'ESG 평가 · 증빙 관리',
-    managerId: 'u_hong',
-    memberIds: ['u_hong', 'u_kim', 'u_lee', 'u_park', 'u_choi', 'u_seo'],
-    defaultRole: '편집자',
-    guestPolicy: '관리자 승인 필요',
-    createdAt: '2026-04-02',
+    initial: 'E',
+    role: '마스터',
+    meta: '프로젝트 3',
+    projects: [
+      { id: 'p1', name: '에코바디스 2026 대응', members: 6, files: 284, vis: '공개' },
+      { id: 'p2', name: '지속가능경영보고서', members: 4, files: 132, vis: '비공개' },
+      { id: 'p3', name: '공급망 실사 2026', members: 5, files: 96, vis: '공개' },
+    ],
   },
   {
-    id: 'ws_rnd',
-    organizationId: organization.id,
-    name: '연구개발본부',
-    slug: 'rnd-center',
-    visibility: 'private',
-    purpose: '연구 문서 지식화',
-    managerId: 'u_kim',
-    memberIds: ['u_kim', 'u_lee'],
-    defaultRole: '뷰어',
-    guestPolicy: '초대 전용',
-    createdAt: '2026-04-20',
-  },
-  {
-    id: 'ws_compliance',
-    organizationId: organization.id,
-    name: '준법감시실',
-    slug: 'compliance',
-    visibility: 'private',
-    purpose: '규제 대응',
-    managerId: 'u_seo',
-    memberIds: ['u_seo', 'u_hong'],
-    defaultRole: '뷰어',
-    guestPolicy: '초대 전용',
-    createdAt: '2026-05-11',
+    id: 'w2',
+    name: '법무팀',
+    initial: 'L',
+    role: '멤버',
+    meta: '프로젝트 2',
+    projects: [
+      { id: 'p4', name: '표준계약 개정', members: 3, files: 218, vis: '비공개' },
+      { id: 'p5', name: '규제 대응', members: 2, files: 64, vis: '비공개' },
+    ],
   },
 ]
 
-export const projects: Project[] = [
-  {
-    id: 'prj_esg_2026',
-    workspaceId: 'ws_esg_strategy',
-    name: 'ESG 평가 2026',
-    code: 'ESG-2026-EVAL',
-    type: 'ESG / 에코바디스',
-    status: '진행중',
-    ownerId: 'u_hong',
-    memberIds: ['u_hong', 'u_kim', 'u_lee', 'u_park', 'u_choi', 'u_seo', 'x_design', 'x_edit'],
-    visibility: '비공개',
-    defaultStoreIds: ['st_eco', 'st_env'],
-    counts: { members: 24, channels: 8, stores: 8, files: 1284 },
-    createdAt: '2026-04-02',
-  },
-  {
-    id: 'prj_supplier',
-    workspaceId: 'ws_esg_strategy',
-    name: '협력사 ESG 실사',
-    code: 'ESG-2026-SUP',
-    type: 'ESG / 실사',
-    status: '진행중',
-    ownerId: 'u_seo',
-    memberIds: ['u_seo', 'u_park'],
-    visibility: '비공개',
-    defaultStoreIds: ['st_sup'],
-    counts: { members: 12, channels: 3, stores: 2, files: 214 },
-    createdAt: '2026-05-18',
-  },
-  {
-    id: 'prj_sustain',
-    workspaceId: 'ws_esg_strategy',
-    name: '지속가능경영 보고서',
-    code: 'ESG-2026-REP',
-    type: '보고서 발간',
-    status: '보류',
-    ownerId: 'u_kim',
-    memberIds: ['u_kim', 'u_lee', 'x_design'],
-    visibility: '공개',
-    defaultStoreIds: [],
-    counts: { members: 16, channels: 2, stores: 1, files: 96 },
-    createdAt: '2026-06-01',
-  },
-]
+/* ── 아이콘 (시안 ICON 맵) ────────────────────────── */
+
+export const ICON = {
+  dash: 'space_dashboard',
+  user: 'group',
+  chat: 'forum',
+  task: 'task_alt',
+  folder: 'folder_open',
+  doc: 'description',
+  chart: 'monitoring',
+  list: 'checklist',
+  shield: 'verified_user',
+  inbox: 'move_to_inbox',
+  gear: 'settings',
+} as const
 
 /* ── 문서 ─────────────────────────────────────────── */
 
-export const stores: DocStore[] = [
-  { id: 'st_eco', projectId: 'prj_esg_2026', name: '에코바디스 증빙', fileCount: 326, description: '평가 답변용 증빙 원본' },
-  { id: 'st_env', projectId: 'prj_esg_2026', name: '환경 인증서', fileCount: 102, description: 'ISO·인증 문서' },
-  { id: 'st_sup', projectId: 'prj_esg_2026', name: '협력사 실사', fileCount: 214 },
-  { id: 'st_rnd', projectId: 'prj_esg_2026', name: '연구개발 제안서', fileCount: 842 },
+export interface Folder {
+  id: string
+  name: string
+  depth: number
+  count: number
+}
+
+export const folders: Folder[] = [
+  { id: 'f1', name: 'ESG 정책 문서', depth: 0, count: 42 },
+  { id: 'f2', name: '환경 인증·실적', depth: 1, count: 23 },
+  { id: 'f3', name: '노동·인권', depth: 1, count: 19 },
+  { id: 'f4', name: '계약·법무', depth: 0, count: 34 },
+  { id: 'f5', name: '에코바디스 증빙', depth: 0, count: 47 },
+  { id: 'f6', name: '2026 제출본', depth: 1, count: 21 },
+  { id: 'f7', name: '공급망 실사', depth: 0, count: 26 },
 ]
 
-export const folders: DocFolder[] = [
-  { id: 'fd_main', storeId: 'st_eco', name: '주요 증빙', fileCount: 12, access: '팀만' },
-  { id: 'fd_report', storeId: 'st_eco', name: '보고서', fileCount: 8, access: '전체 공개' },
-  { id: 'fd_archive', storeId: 'st_eco', name: '메타데이터 보관', fileCount: 42, access: '비공개' },
-]
+export type FileStatus = 'RAG 색인 완료' | 'OCR 처리중' | '색인 대기'
 
-export const files: DocFile[] = [
-  {
-    id: 'fl_esg_report',
-    folderId: 'fd_report',
-    name: '2026 ESG 성과보고서.pdf',
-    format: 'pdf',
-    sizeMb: 24.8,
-    pages: 84,
-    uploaderId: 'u_lee',
-    uploadedAt: '2026-07-01 10:24',
-    version: 3,
-    states: ['RAG 준비', 'OCR 완료'],
-    summary:
-      '2026년 이볼브AI랩의 ESG 성과 데이터와 안전·인권 정책을 담은 보고서입니다. 환경 성과, 안전교육 실적, 공급망 ESG 평가 결과를 포함하며 에코바디스 답변 증빙으로 활용할 수 있습니다.',
-    progress: { ocr: 100, metadata: 96, chunking: 100, ragIndex: 92 },
-    metadata: [
-      { key: '저장소', value: '에코바디스 증빙' },
-      { key: '담당자', value: '이대리' },
-      { key: '버전', value: 'v3' },
-      { key: '접근 권한', value: '조직&사업부 멤버' },
-      { key: '최근 AI 조회', value: '12분 전' },
-    ],
-    relations: [
-      { label: '에코바디스 증빙', sub: '증빙 4건 연결' },
-      { label: '업무 첨부', sub: '업무 2건에서 참조' },
-    ],
-    lastQueriedAt: '12분 전',
-    thumbnailPage: 12,
-  },
-  {
-    id: 'fl_q3_env',
-    folderId: 'fd_report',
-    name: '3분기_환경성과_보고서_v2.pdf',
-    format: 'pdf',
-    sizeMb: 2.4,
-    pages: 18,
-    uploaderId: 'u_park',
-    uploadedAt: '2026-06-12 09:10',
-    version: 2,
-    states: ['OCR 완료', 'RAG 준비', '메타 추출'],
-    summary: '3분기 온실가스 배출량과 에너지 사용량 추이를 정리한 보고서입니다. 스코프 1·2 데이터가 표로 정리되어 있습니다.',
-    progress: { ocr: 100, metadata: 100, chunking: 100, ragIndex: 100 },
-    metadata: [
-      { key: '연도', value: '2026' },
-      { key: '중요도', value: '높음' },
-      { key: '기밀', value: '예' },
-    ],
-    relations: [{ label: '에코바디스 증빙', sub: '증빙 2건 연결' }],
-  },
-  {
-    id: 'fl_pledge',
-    folderId: 'fd_report',
-    name: '지속가능경영_서약서_2025.docx',
-    format: 'docx',
-    sizeMb: 1.1,
-    uploaderId: 'u_kim',
-    uploadedAt: '2026-06-10 14:02',
-    version: 1,
-    states: ['RAG 준비', '메타 추출'],
-    summary: '경영진 서약과 지속가능경영 추진 방향을 담은 문서입니다.',
-    progress: { ocr: 0, metadata: 100, chunking: 100, ragIndex: 88 },
-    metadata: [{ key: '작성 부서', value: 'ESG 전략팀' }],
-    relations: [],
-  },
-  {
-    id: 'fl_self_assess',
-    folderId: 'fd_report',
-    name: '에코바디스_자가진단_최종.md',
-    format: 'md',
-    sizeMb: 0.08,
-    uploaderId: 'u_hong',
-    uploadedAt: '2026-07-18 17:40',
-    version: 5,
-    states: ['색인 완료', 'RAG 준비'],
-    summary: '에코바디스 자가진단 결과를 정리한 작업 문서입니다. 환경·노동인권·윤리·지속가능한 조달 4개 영역으로 구성됩니다.',
-    progress: { ocr: 0, metadata: 100, chunking: 100, ragIndex: 100 },
-    metadata: [{ key: '상태', value: '작성 중' }],
-    relations: [],
-  },
-  {
-    id: 'fl_supplier',
-    folderId: 'fd_main',
-    name: '협력사_실사결과.xlsx',
-    format: 'xlsx',
-    sizeMb: 3.2,
-    uploaderId: 'u_seo',
-    uploadedAt: '2026-06-30 11:20',
-    version: 1,
-    states: ['메타 추출'],
-    summary: '1차 협력사 120곳의 ESG 실사 결과 요약표입니다.',
-    progress: { ocr: 0, metadata: 100, chunking: 60, ragIndex: 42 },
-    metadata: [{ key: '대상', value: '1차 협력사 120곳' }],
-    relations: [],
-  },
-  {
-    id: 'fl_iso',
-    folderId: 'fd_main',
-    name: 'ISO14001_인증서.pdf',
-    format: 'pdf',
-    sizeMb: 0.9,
-    pages: 2,
-    uploaderId: 'u_park',
-    uploadedAt: '2026-05-22 16:05',
-    version: 1,
-    states: ['OCR 완료'],
-    summary: '환경경영시스템 ISO 14001 인증서입니다. 유효기간 2027년 5월까지.',
-    progress: { ocr: 100, metadata: 100, chunking: 100, ragIndex: 100 },
-    metadata: [{ key: '유효기간', value: '2027-05-21' }],
-    relations: [{ label: '에코바디스 증빙', sub: '증빙 1건 연결' }],
-  },
-  {
-    id: 'fl_human',
-    folderId: 'fd_main',
-    name: '인권정책_전문.pdf',
-    format: 'pdf',
-    sizeMb: 1.4,
-    pages: 11,
-    uploaderId: 'u_hong',
-    uploadedAt: '2026-05-02 09:31',
-    version: 2,
-    states: ['OCR 완료', 'RAG 준비'],
-    summary: '아동노동·강제노동 금지 등 인권 보호 정책을 규정한 문서입니다.',
-    progress: { ocr: 100, metadata: 100, chunking: 100, ragIndex: 100 },
-    metadata: [{ key: '개정일', value: '2026-05-02' }],
-    relations: [{ label: '에코바디스 증빙', sub: '증빙 3건 연결' }],
-  },
-  {
-    id: 'fl_safety',
-    folderId: 'fd_main',
-    name: '안전보건교육_실시기록_2025.pdf',
-    format: 'pdf',
-    sizeMb: 5.6,
-    pages: 34,
-    uploaderId: 'u_seo',
-    uploadedAt: '2026-04-28 13:44',
-    version: 1,
-    states: ['OCR 대기'],
-    summary: '2025년 전 임직원 대상 안전보건 교육 실시 기록입니다.',
-    progress: { ocr: 38, metadata: 0, chunking: 0, ragIndex: 0 },
-    metadata: [],
-    relations: [],
-  },
-  {
-    id: 'fl_carbon',
-    folderId: 'fd_archive',
-    name: '탄소배출_데이터_2025.csv',
-    format: 'csv',
-    sizeMb: 0.4,
-    uploaderId: 'u_lee',
-    uploadedAt: '2026-04-15 08:12',
-    version: 1,
-    states: ['색인 완료'],
-    summary: '2025년 월별 탄소배출량 원시 데이터입니다.',
-    progress: { ocr: 0, metadata: 100, chunking: 100, ragIndex: 100 },
-    metadata: [],
-    relations: [],
-  },
-]
+export interface DocFile {
+  id: string
+  name: string
+  ext: string
+  size: string
+  pages: number
+  owner: string
+  date: string
+  status: FileStatus
+  summary: string
+  tags: string[]
+}
 
-/* ── 협업 ─────────────────────────────────────────── */
+export const filesByFolder: Record<string, DocFile[]> = {
+  f2: [
+    { id: 'a1', name: 'ISO 14001 인증서_2026.pdf', ext: 'PDF', size: '2.1MB', pages: 12, owner: '박지원', date: '07.20', status: 'RAG 색인 완료', summary: '환경경영시스템 인증서 · 유효기간 2029년까지', tags: ['환경', '인증서', '2026'] },
+    { id: 'a2', name: '온실가스 배출량 보고서_2025.pdf', ext: 'PDF', size: '6.4MB', pages: 218, owner: '이수진', date: '07.18', status: 'RAG 색인 완료', summary: 'Scope 1·2·3 배출량 산정 결과 및 검증 의견', tags: ['온실가스', '검증', 'Scope3'] },
+    { id: 'a3', name: '에너지 사용 실적_월별.xlsx', ext: 'XLSX', size: '450KB', pages: 24, owner: '박지원', date: '07.15', status: 'OCR 처리중', summary: '사업장별 월간 전력·가스 사용량 집계', tags: ['에너지', '월별'] },
+    { id: 'a4', name: '환경정책 선언문_국문영문.pdf', ext: 'PDF', size: '1.1MB', pages: 6, owner: '이수진', date: '07.11', status: 'RAG 색인 완료', summary: '대표이사 서명 환경경영 방침 선언문', tags: ['정책', '선언문'] },
+    { id: 'a5', name: '폐기물 처리 위탁계약_2026.pdf', ext: 'PDF', size: '3.2MB', pages: 41, owner: '최민호', date: '07.08', status: '색인 대기', summary: '지정폐기물 처리업체 위탁 계약 및 허가증 사본', tags: ['폐기물', '계약'] },
+    { id: 'a6', name: '용수 사용 및 재이용 실적.docx', ext: 'DOCX', size: '820KB', pages: 18, owner: '박지원', date: '07.02', status: 'RAG 색인 완료', summary: '취수량·방류량·재이용률 3개년 추이', tags: ['용수', '재이용'] },
+  ],
+  f3: [
+    { id: 'b1', name: '윤리경영 행동강령_v2.pdf', ext: 'PDF', size: '890KB', pages: 34, owner: '김대성', date: '07.19', status: 'RAG 색인 완료', summary: '아동·강제노동 금지 및 차별금지 조항 포함', tags: ['행동강령', '인권'] },
+    { id: 'b2', name: '안전보건 교육 이수 내역_2025.xlsx', ext: 'XLSX', size: '1.4MB', pages: 52, owner: '최민호', date: '07.14', status: 'RAG 색인 완료', summary: '전 사업장 법정 교육 이수율 98.2%', tags: ['안전보건', '교육'] },
+    { id: 'b3', name: '고충처리 및 신고채널 운영보고.docx', ext: 'DOCX', size: '640KB', pages: 22, owner: '이수진', date: '07.05', status: 'RAG 색인 완료', summary: '내부 신고 채널 접수 12건 처리 결과', tags: ['신고채널', '고충처리'] },
+  ],
+  f4: [
+    { id: 'c1', name: '표준 공급계약서_v3.docx', ext: 'DOCX', size: '1.2MB', pages: 218, owner: '김대성', date: '07.21', status: 'RAG 색인 완료', summary: '법무 검토 완료 · 해지·손해배상 조항 개정본', tags: ['계약', '법무', 'v3'] },
+    { id: 'c2', name: '공급업체 행동강령_서명본.pdf', ext: 'PDF', size: '2.4MB', pages: 28, owner: '우덕성', date: '07.16', status: 'RAG 색인 완료', summary: '주요 협력사 128개사 서명 완료 현황 포함', tags: ['공급망', '서명본'] },
+    { id: 'c3', name: 'NDA 표준양식_2026.pdf', ext: 'PDF', size: '320KB', pages: 8, owner: '김대성', date: '07.03', status: 'RAG 색인 완료', summary: '3자 비밀유지계약 표준 양식', tags: ['NDA', '양식'] },
+  ],
+}
 
-export const chatRooms: ChatRoom[] = [
-  { id: 'cr_notice', projectId: 'prj_esg_2026', name: '전사 공지', kind: '팀', group: '고정됨', memberIds: users.map((u) => u.id), unread: 0, pinned: true, lastMessage: '5월 평가 일정 공유합니다', lastAt: '10:32', createdAt: '2026-04-02', createdBy: 'u_hong', messageCount: 42 },
-  { id: 'cr_eco_tf', projectId: 'prj_esg_2026', name: '에코바디스 대응 TF', kind: '팀', group: '팀', memberIds: ['u_hong', 'u_kim', 'u_lee', 'u_park', 'x_design', 'x_edit'], unread: 3, lastMessage: '문항 시안 v3 확인 부탁드려요', lastAt: '11:40', description: '2026 에코바디스 평가 대응 협업방', createdAt: '2026-04-11', createdBy: 'u_kim', messageCount: 142 },
-  { id: 'cr_env', projectId: 'prj_esg_2026', name: '환경 성과 데이터', kind: '팀', group: '팀', memberIds: ['u_lee', 'u_park', 'u_seo'], unread: 2, lastMessage: '3분기 리포트 PDF 첨부', lastAt: '10:05', createdAt: '2026-04-18', createdBy: 'u_lee', messageCount: 88 },
-  { id: 'cr_supply', projectId: 'prj_esg_2026', name: '공급망 실사', kind: '팀', group: '팀', memberIds: ['u_seo', 'u_park'], unread: 0, lastMessage: '협력사 리스트 갱신했습니다', lastAt: '09:14', createdAt: '2026-05-02', createdBy: 'u_seo', messageCount: 51 },
-  { id: 'cr_ext_design', projectId: 'prj_esg_2026', name: '박디자이너', kind: '외부 협업', group: '외부 협업자', memberIds: ['u_hong', 'x_design'], unread: 2, lastMessage: '보고서 표지 시안 전달', lastAt: '11:48', createdAt: '2026-06-01', createdBy: 'u_hong', messageCount: 24 },
-  { id: 'cr_ext_edit', projectId: 'prj_esg_2026', name: '최편집자', kind: '외부 협업', group: '외부 협업자', memberIds: ['u_kim', 'x_edit'], unread: 0, lastMessage: '영상 1차 편집본 올렸습니다', lastAt: '어제', createdAt: '2026-06-14', createdBy: 'u_kim', messageCount: 17 },
-  { id: 'cr_dm_park', projectId: 'prj_esg_2026', name: '박매니저', kind: 'DM', group: 'DM', memberIds: ['u_hong', 'u_park'], unread: 0, lastMessage: '오후에 잠깐 보실까요', lastAt: '10:40', createdAt: '2026-06-20', createdBy: 'u_hong', messageCount: 33 },
-  { id: 'cr_dm_lee', projectId: 'prj_esg_2026', name: '이대리', kind: 'DM', group: 'DM', memberIds: ['u_hong', 'u_lee'], unread: 0, lastMessage: '자료 검토 끝났습니다', lastAt: '09:55', createdAt: '2026-06-22', createdBy: 'u_lee', messageCount: 12 },
-]
+export const allFiles = Object.values(filesByFolder).flat()
+export const findFile = (id: string) => allFiles.find((f) => f.id === id)
 
-export const chatMessages: ChatMessage[] = [
-  { id: 'm1', roomId: 'cr_eco_tf', senderId: 'x_design', body: '문항 요약 카드 디자인 초안 올렸습니다. 두 가지 색상 시안 같이 보내드릴게요.', at: '10:24' },
-  { id: 'm2', roomId: 'cr_eco_tf', senderId: 'u_kim', body: '감사합니다! 톤은 우리 브랜드 가이드와 잘 맞는 것 같아요. 본부장님 컨펌 받아둘게요.', at: '10:31' },
-  { id: 'm3', roomId: 'cr_eco_tf', senderId: 'x_design', body: '움직임 있는 시안도 한 번 보내요. 오후 3시쯤 1차본 드릴게요.', at: '10:48' },
-  { id: 'm4', roomId: 'cr_eco_tf', senderId: 'u_park', body: '문항 답변 초안 중 2건은 증빙이 부족합니다. 추가 자료 요청 드려도 될까요?', at: '11:12' },
-  { id: 'm5', roomId: 'cr_eco_tf', senderId: 'u_hong', body: '네, 업무 요청으로 남겨주세요. 담당자 지정해서 처리하겠습니다.', at: '11:30' },
-  { id: 'm6', roomId: 'cr_eco_tf', senderId: 'u_lee', body: '3분기 환경 성과 리포트 공유합니다. 최근 배출량 데이터 반영했어요.', at: '11:38', attachments: [{ name: '3분기_환경성과_보고서_v2.pdf', sizeMb: 2.4, format: 'pdf' }] },
-  { id: 'm7', roomId: 'cr_eco_tf', senderId: 'u_hong', body: '확인했습니다. 증빙 목록에 바로 연결해두겠습니다.', at: '11:40', mine: true },
+/** 상태 배지 색 (시안 ST) */
+export const fileStatusTone: Record<FileStatus, { bg: string; fg: string }> = {
+  'RAG 색인 완료': { bg: '#ecfdf3', fg: '#15803d' },
+  'OCR 처리중': { bg: '#fffbeb', fg: '#b45309' },
+  '색인 대기': { bg: '#e2e8f0', fg: '#334155' },
+}
+
+/* ── 멤버 ─────────────────────────────────────────── */
+
+export interface Member {
+  id: string
+  name: string
+  role: string
+  dept: string
+  email: string
+  perm: string
+  on: boolean
+  state: string
+  last: string
+}
+
+export const members: Member[] = [
+  { id: 'm1', name: '김대성', role: '법무팀 · 매니저', dept: '법무팀', email: 'ds.kim@corp.com', perm: '편집 가능', on: true, state: '활성', last: '방금 전' },
+  { id: 'm2', name: '이수진', role: 'ESG팀 · 리드', dept: 'ESG팀', email: 'sj.lee@corp.com', perm: '편집 가능', on: true, state: '활성', last: '12분 전' },
+  { id: 'm3', name: '박지원', role: '환경안전팀', dept: '환경안전팀', email: 'jw.park@corp.com', perm: '댓글 가능', on: false, state: '활성', last: '2시간 전' },
+  { id: 'm4', name: '최민호', role: '구매팀', dept: '구매팀', email: 'mh.choi@corp.com', perm: '보기 전용', on: false, state: '초대 대기', last: '-' },
 ]
 
 /* ── 업무 ─────────────────────────────────────────── */
 
-export const tasks: Task[] = [
-  {
-    id: 'tk_204',
-    code: 'TSK-204',
-    projectId: 'prj_esg_2026',
-    roomId: 'cr_eco_tf',
-    title: 'ESG 보고서 최신 데이터 반영',
-    description:
-      '2분기 제조 실사 데이터를 반영해 환경·사회·지배구조 보고서를 갱신해 주세요. 탄소집약도 지표와 폐기물 감축 항목을 중점으로 확인하고, 다음 주 IR 자료에 쓸 수 있도록 RAG 색인까지 완료되어야 합니다.',
-    requesterId: 'u_kim',
-    assigneeId: 'u_lee',
-    reviewerId: 'u_hong',
-    status: '진행중',
-    priority: '긴급',
-    dueAt: '2026-07-28',
-    createdAt: '2026-07-20 11:05',
-    attachments: [
-      { name: '2분기_실사_원데이터.xlsx', sizeMb: 12, format: 'xlsx', state: '색인됨' },
-      { name: '제조_인증서.jpg', sizeMb: 0.45, format: 'image', state: 'OCR 완료' },
-    ],
-    comments: [
-      { id: 'c1', authorId: 'u_kim', body: '@이대리 네바다 사업장 태양광 절감분도 포함 부탁드립니다.', at: '09:12' },
-      { id: 'c2', authorId: 'u_lee', body: '확인했습니다. 원데이터 업로드했고 지금 수치 검토 중입니다.', at: '10:45' },
-    ],
-    timeline: [
-      { status: '요청됨', at: '2026-07-20 11:05', byId: 'u_kim', done: true },
-      { status: '수락됨', at: '2026-07-20 13:20', byId: 'u_lee', done: true },
-      { status: '진행중', at: '2026-07-21 09:00', byId: 'u_lee', done: true },
-      { status: '검토', at: '', byId: 'u_hong', done: false },
-      { status: '완료', at: '', byId: 'u_hong', done: false },
-    ],
-  },
-  {
-    id: 'tk_189',
-    code: 'TSK-189',
-    projectId: 'prj_esg_2026',
-    title: '안전보건 교육 증빙 제출',
-    description: '2025년 안전보건 교육 이수 기록과 서명부를 제출해 주세요.',
-    requesterId: 'u_hong',
-    assigneeId: 'u_seo',
-    status: '요청됨',
-    priority: '보통',
-    dueAt: '2026-07-26',
-    createdAt: '2026-07-22 15:31',
-    attachments: [],
-    comments: [{ id: 'c3', authorId: 'u_seo', body: '2026년 인증서 원본이 필요합니다. 승인용으로 필수 서류라 확인 부탁드려요.', at: '15:40' }],
-    timeline: [
-      { status: '요청됨', at: '2026-07-22 15:31', byId: 'u_hong', done: true },
-      { status: '수락됨', at: '', byId: 'u_seo', done: false },
-      { status: '진행중', at: '', byId: 'u_seo', done: false },
-      { status: '완료', at: '', byId: 'u_hong', done: false },
-    ],
-  },
-  {
-    id: 'tk_201',
-    code: 'TSK-201',
-    projectId: 'prj_esg_2026',
-    title: '2분기 재무 요약 정리',
-    description: 'OCR로 추출한 14개 항목을 검증하고 최종 요약본을 만들어 주세요.',
-    requesterId: 'u_kim',
-    assigneeId: 'u_park',
-    status: '완료',
-    priority: '낮음',
-    dueAt: '2026-07-12',
-    createdAt: '2026-07-05 10:00',
-    attachments: [{ name: '요약_최종.pdf', sizeMb: 1.2, format: 'pdf' }],
-    comments: [],
-    timeline: [
-      { status: '요청됨', at: '2026-07-05 10:00', byId: 'u_kim', done: true },
-      { status: '진행중', at: '2026-07-06 09:20', byId: 'u_park', done: true },
-      { status: '완료', at: '2026-07-11 18:02', byId: 'u_kim', done: true },
-    ],
-  },
-  {
-    id: 'tk_215',
-    code: 'TSK-215',
-    projectId: 'prj_esg_2026',
-    title: '공급망 중단 리스크 점검',
-    description: '1차 협력사 중 실사 미완료 업체를 확인하고 리스크 등급을 부여해 주세요.',
-    requesterId: 'u_hong',
-    assigneeId: 'u_park',
-    status: '검토',
-    priority: '긴급',
-    dueAt: '2026-07-25',
-    createdAt: '2026-07-18 09:40',
-    attachments: [],
-    comments: [],
-    timeline: [
-      { status: '요청됨', at: '2026-07-18 09:40', byId: 'u_hong', done: true },
-      { status: '진행중', at: '2026-07-19 10:10', byId: 'u_park', done: true },
-      { status: '검토', at: '2026-07-23 16:00', byId: 'u_hong', done: true },
-      { status: '완료', at: '', byId: 'u_hong', done: false },
-    ],
-  },
-]
+export type TaskStatus = '요청됨' | '진행중' | '검토대기' | '완료' | '반려'
 
-/* ── EcoVadis ─────────────────────────────────────── */
-
-export const ecoQuestions: EcoQuestion[] = [
-  {
-    id: 'eq_12',
-    code: 'Q12',
-    category: '환경',
-    theme: '에너지 및 온실가스',
-    title: '에너지 소비와 온실가스 배출에 관한 공식 정책을 보유하고 있습니까?',
-    ocrText: '귀사는 에너지 소비 및 온실가스 배출과 관련한 공식적인 정책을 보유하고 있습니까?',
-    ocrConfidence: 98.4,
-    ocrVerified: true,
-    state: '검색중',
-    evidences: [
-      { fileId: 'fl_q3_env', fileName: '3분기_환경성과_보고서_v2.pdf', page: 4, confidence: 94, excerpt: '2030년까지 그룹 차원의 환경정책 체계에 따라 온실가스 배출량을 30% 감축하기로 약속하였다.', attached: false },
-    ],
-    assigneeId: 'u_lee',
-  },
-  {
-    id: 'eq_13',
-    code: 'Q13',
-    category: '환경',
-    theme: '에너지 및 온실가스',
-    title: '에너지 소비를 줄이기 위해 시행 중인 구체적 조치가 있습니까?',
-    ocrText: '에너지 소비를 줄이기 위해 시행 중인 구체적인 조치가 있습니까?',
-    ocrConfidence: 96.2,
-    ocrVerified: false,
-    state: '검색중',
-    evidences: [],
-    assigneeId: 'u_lee',
-  },
-  {
-    id: 'eq_14',
-    code: 'Q14',
-    category: '환경',
-    theme: '재생에너지',
-    title: '외부에서 조달한 재생에너지 비율은 얼마입니까?',
-    ocrText: '외부에서 조달한 재생에너지의 비율은 얼마입니까?',
-    ocrConfidence: 91.5,
-    ocrVerified: false,
-    state: '증빙없음',
-    evidences: [],
-  },
-  {
-    id: 'eq_15',
-    code: 'Q15',
-    category: '환경',
-    theme: '온실가스',
-    title: '사업활동과 관련된 스코프 3 배출량을 상세히 산정하고 있습니까?',
-    ocrText: '사업활동과 관련된 스코프 3 배출량의 상세 내역을 산정하고 있습니까?',
-    ocrConfidence: 89.7,
-    ocrVerified: false,
-    state: 'OCR 확인',
-    evidences: [],
-  },
-  {
-    id: 'eq_env_11',
-    code: 'ENV 1.1',
-    category: '환경',
-    theme: '환경 · 정책',
-    title: '환경 이슈에 대한 공식 정책을 보유하고 있습니까?',
-    ocrText: '환경 이슈에 대한 공식 정책을 보유하고 있습니까?',
-    ocrConfidence: 99.1,
-    ocrVerified: true,
-    state: '답변완료',
-    answer:
-      '당사는 환경경영방침을 제정·공표하고 있으며, ISO 14001 인증을 통해 환경경영시스템을 운영하고 있습니다. 관련 정책 문서는 증빙자료로 첨부하였습니다.',
-    evidences: [{ fileId: 'fl_iso', fileName: 'ISO14001_인증서.pdf', page: 1, confidence: 97, excerpt: '환경경영시스템 ISO 14001:2015 인증 (유효기간 2027-05-21)', attached: true }],
-    assigneeId: 'u_park',
-  },
-  {
-    id: 'eq_env_24',
-    code: 'ENV 2.4',
-    category: '환경',
-    theme: '환경 · 실행',
-    title: '에너지 소비 및 온실가스 배출을 모니터링하는 체계가 있습니까?',
-    ocrText: '에너지 소비 및 온실가스 배출을 모니터링하는 체계가 있습니까?',
-    ocrConfidence: 97.8,
-    ocrVerified: true,
-    state: '답변완료',
-    answer: '전사 에너지 관리 시스템을 통해 월 단위로 사용량과 배출량을 집계하고 있으며, 분기별 환경성과 보고서로 공개합니다.',
-    evidences: [{ fileId: 'fl_q3_env', fileName: '3분기_환경성과_보고서_v2.pdf', page: 7, confidence: 95, excerpt: '월별 에너지 사용량 및 스코프 1·2 배출량 집계표', attached: true }],
-    assigneeId: 'u_lee',
-  },
-  {
-    id: 'eq_lab_12',
-    code: 'LAB 1.2',
-    category: '노동·인권',
-    theme: '노동인권 · 정책',
-    title: '아동노동 및 강제노동 금지에 관한 정책 문서를 제출하십시오.',
-    ocrText: '아동노동 및 강제노동 금지에 관한 정책 문서를 제출하십시오.',
-    ocrConfidence: 98.9,
-    ocrVerified: true,
-    state: 'AI 초안',
-    answer: '당사는 인권정책 전문에 아동노동과 강제노동을 전면 금지하는 조항을 명시하고 있으며, 전 협력사에 동일 기준 준수를 요구하고 있습니다.',
-    evidences: [{ fileId: 'fl_human', fileName: '인권정책_전문.pdf', page: 3, confidence: 96, excerpt: '당사는 아동노동, 강제노동, 현대판 노예제를 일절 금지한다.', attached: true }],
-    assigneeId: 'u_hong',
-  },
-  {
-    id: 'eq_lab_31',
-    code: 'LAB 3.1',
-    category: '노동·인권',
-    theme: '노동인권 · 실행',
-    title: '임직원 안전보건 교육 실시 기록이 있습니까?',
-    ocrText: '임직원 안전보건 교육 실시 기록이 있습니까?',
-    ocrConfidence: 95.4,
-    ocrVerified: true,
-    state: 'AI 초안',
-    answer: '2025년 전 임직원을 대상으로 정기 안전보건 교육을 실시하였으며, 교육 이수 기록을 보관하고 있습니다.',
-    evidences: [{ fileId: 'fl_safety', fileName: '안전보건교육_실시기록_2025.pdf', page: 1, confidence: 88, excerpt: '2025년 정기 안전보건 교육 이수 현황 (전 임직원 대상)', attached: false }],
-    assigneeId: 'u_seo',
-    requestedTaskId: 'tk_189',
-  },
-  {
-    id: 'eq_eth_11',
-    code: 'ETH 1.1',
-    category: '윤리',
-    theme: '윤리 · 정책',
-    title: '반부패 및 뇌물수수 방지 정책을 보유하고 있습니까?',
-    ocrText: '반부패 및 뇌물수수 방지 정책을 보유하고 있습니까?',
-    ocrConfidence: 97.2,
-    ocrVerified: true,
-    state: '답변완료',
-    answer: '윤리강령과 반부패 규정을 제정하여 운영 중이며, 연 1회 전 임직원 서약을 받고 있습니다.',
-    evidences: [],
-    assigneeId: 'u_hong',
-  },
-  {
-    id: 'eq_eth_22',
-    code: 'ETH 2.2',
-    category: '윤리',
-    theme: '윤리 · 실행',
-    title: '내부 신고 제도(휘슬블로잉) 운영 현황을 설명하십시오.',
-    ocrText: '내부 신고 제도(휘슬블로잉) 운영 현황을 설명하십시오.',
-    ocrConfidence: 93.1,
-    ocrVerified: false,
-    state: '미처리',
-    evidences: [],
-  },
-  {
-    id: 'eq_sup_13',
-    code: 'SUP 1.3',
-    category: '지속가능한 조달',
-    theme: '조달 · 정책',
-    title: '공급업체 행동강령을 배포하고 서명을 받고 있습니까?',
-    ocrText: '공급업체 행동강령을 배포하고 서명을 받고 있습니까?',
-    ocrConfidence: 94.8,
-    ocrVerified: false,
-    state: '미처리',
-    evidences: [],
-  },
-  {
-    id: 'eq_sup_21',
-    code: 'SUP 2.1',
-    category: '지속가능한 조달',
-    theme: '조달 · 실행',
-    title: '주요 공급업체에 대한 ESG 실사를 수행합니까?',
-    ocrText: '주요 공급업체에 대한 ESG 실사를 수행합니까?',
-    ocrConfidence: 96.0,
-    ocrVerified: true,
-    state: 'AI 초안',
-    answer: '1차 협력사 120곳을 대상으로 연 1회 ESG 실사를 수행하고 있으며, 결과에 따라 등급을 부여합니다.',
-    evidences: [{ fileId: 'fl_supplier', fileName: '협력사_실사결과.xlsx', page: 1, confidence: 91, excerpt: '1차 협력사 120곳 ESG 실사 결과 요약', attached: true }],
-    assigneeId: 'u_seo',
-  },
-]
-
-/** 스토리보드 p57 수치 — 전체 356문항 중 표본만 실데이터화 */
-export const ecoSummary = {
-  fileName: '에코바디스_2026_질문지.pdf',
-  totalQuestions: 356,
-  ocrDone: 356,
-  searching: 154,
-  found: 120,
-  failed: 30,
-  answered: 214,
-  aiDraft: 41,
-  untouched: 45,
-  progressPercent: 71,
+export interface Task {
+  id: string
+  no: string
+  title: string
+  from: string
+  to: string
+  due: string
+  status: TaskStatus
+  room: string
+  files: number
 }
 
-/* ── 알림 · 활동 ──────────────────────────────────── */
-
-export const notifications: AppNotification[] = [
-  { id: 'n1', kind: '메시지', title: '이대리님으로부터 새로운 메시지가 있습니다', body: '"3분기 환경성과 보고서 PDF 첨부드려요."', at: '2분 전', read: false },
-  { id: 'n2', kind: '경고', title: '증빙 검색 실패율 급등', body: '에코바디스 문항 30건에서 증빙을 찾지 못했습니다 (3시간 전 대비)', at: '방금 전', read: false },
-  { id: 'n3', kind: '멘션', title: '박디자이너님이 멘션했어요', body: '"@김지원 문항 카드 시안 컨펌 부탁드립니다"', at: '5분 전', read: false, mention: true },
-  { id: 'n4', kind: '리포트', title: '주간 리포트 생성 완료', body: '"ESG 평가 2026 주간 분석" — 답변 완료율 71% (+18%p)', at: '22분 전', read: false },
-  { id: 'n5', kind: '워크플로', title: '새 업무 요청 발행', body: '"안전보건 교육 증빙 제출" — 박매니저 발행', at: '1시간 전', read: true },
+export const tasks: Task[] = [
+  { id: 't1', no: '142', title: '안전보건 교육 이수 내역 2025년 원본 전달', from: '이수진', to: '나', due: '07.28', status: '요청됨', room: 'ESG 전략 TF', files: 0 },
+  { id: 't2', no: '141', title: '폐기물 처리업체 허가증 최신본 업로드', from: '나', to: '최민호', due: '07.26', status: '진행중', room: '최민호', files: 1 },
+  { id: 't3', no: '139', title: '공급업체 행동강령 서명 현황 집계', from: '김대성', to: '나', due: '07.25', status: '진행중', room: '김대성', files: 2 },
+  { id: 't4', no: '136', title: '용수 재이용률 산정 근거 자료 요청', from: '나', to: '박지원', due: '07.22', status: '검토대기', room: 'ESG 전략 TF', files: 3 },
+  { id: 't5', no: '131', title: '표준계약서 개정본 법무 검토 회신', from: '나', to: '김대성', due: '07.18', status: '완료', room: '김대성', files: 2 },
+  { id: 't6', no: '128', title: '전년도 감사보고서 원본 제공', from: '최민호', to: '나', due: '07.15', status: '반려', room: '최민호', files: 0 },
 ]
 
-export const activities: ActivityLog[] = [
-  { id: 'a1', actorId: 'u_kim', action: '문항 답변을 컨펌했습니다', target: 'ENV 1.1 환경 정책', at: '2시간 전', icon: 'task_alt' },
-  { id: 'a2', actorId: 'x_design', action: '새 시안을 업로드했습니다', target: '보고서 표지 v3', at: '3시간 전', icon: 'upload_file' },
-  { id: 'a3', actorId: 'u_park', action: '코멘트를 남겼습니다', target: '에코바디스 대응 TF', at: '5시간 전', icon: 'chat_bubble' },
-  { id: 'a4', actorId: 'u_lee', action: '3분기 리포트를 발행했습니다', target: '3분기 환경성과 보고서', at: '2주 전', icon: 'rocket_launch' },
+export interface TaskHistory {
+  who: string
+  time: string
+  text: string
+  tag?: string
+  file?: string
+  fileExt?: string
+}
+
+export const taskHistory: Record<string, TaskHistory[]> = {
+  t1: [
+    { who: '이수진', time: '07.24 09:12', text: '에코바디스 노동·인권 섹션에 필요한 2025년 안전보건 교육 이수 내역 원본이 필요합니다. 사업장별로 구분된 파일이면 좋겠습니다.', tag: '업무 요청' },
+    { who: '시스템', time: '07.24 09:12', text: 'Task가 생성되어 담당자에게 알림이 발송되었습니다.', tag: '자동' },
+  ],
+  t3: [
+    { who: '김대성', time: '07.22 14:30', text: '공급업체 행동강령 서명 현황 집계 부탁드립니다. 미서명 업체 리스트도 함께 필요합니다.', tag: '업무 요청' },
+    { who: '나', time: '07.23 11:05', text: '128개사 중 119개사 서명 완료 확인했습니다. 미서명 9개사 목록 첨부합니다.', file: '공급업체 행동강령_서명본.pdf', fileExt: 'PDF' },
+    { who: '김대성', time: '07.23 16:40', text: '확인했습니다. 미서명 업체는 구매팀과 협의해서 이번 주 내로 마무리하겠습니다.', tag: '코멘트' },
+  ],
+}
+
+/* ── 채팅 ─────────────────────────────────────────── */
+
+export interface Room {
+  id: string
+  name: string
+  type: string
+  time: string
+  unread: number
+  last: string
+}
+
+export const rooms: Room[] = [
+  { id: 'r1', name: 'ESG 전략 TF', type: '그룹 · 5명', time: '10:42', unread: 3, last: '업무 요청: 안전보건 교육 이수 내역 전달' },
+  { id: 'r2', name: '김대성', type: '1:1', time: '09:18', unread: 0, last: '미서명 업체는 구매팀과 협의하겠습니다' },
+  { id: 'r3', name: '최민호', type: '1:1', time: '어제', unread: 1, last: '허가증 스캔본 확인 부탁드립니다' },
+  { id: 'r4', name: '법무 검토 채널', type: '그룹 · 4명', time: '07.22', unread: 0, last: '표준계약서 v3 최종 승인되었습니다' },
 ]
 
-export const storage = { usedGb: 42.6, totalGb: 100, breakdown: [{ label: '문서', gb: 18.2 }, { label: '이미지', gb: 21.4 }, { label: '기타', gb: 3.0 }] }
+export interface Msg {
+  who: string
+  mine: boolean
+  time: string
+  text?: string
+  task?: string
+  file?: string
+  fileExt?: string
+  fileSize?: string
+}
+
+export const msgs: Record<string, Msg[]> = {
+  r1: [
+    { who: '이수진', mine: false, time: '09:08', text: '에코바디스 노동·인권 섹션 증빙이 아직 부족합니다. 교육 이수 내역이 필수 항목이에요.' },
+    { who: '나', mine: true, time: '09:10', text: '2025년 자료는 구매팀 쪽에 원본이 있을 것 같습니다. 확인해서 올려두겠습니다.' },
+    { who: '이수진', mine: false, time: '09:12', task: 't1' },
+    { who: '박지원', mine: false, time: '10:36', text: '환경 섹션 쪽은 인증서까지 색인 완료했습니다.' },
+    { who: '박지원', mine: false, time: '10:42', file: 'ISO 14001 인증서_2026.pdf', fileExt: 'PDF', fileSize: '2.1MB' },
+  ],
+  r2: [
+    { who: '김대성', mine: false, time: '08:50', text: '표준계약서 v3 어디 있는지 못 찾겠어요. 해지 조항 개정본이요.' },
+    { who: '나', mine: true, time: '08:55', text: '계약·법무 폴더에 있습니다. 218페이지짜리라 챗봇으로 p.47 바로 열 수 있어요.' },
+    { who: '나', mine: true, time: '08:56', file: '표준 공급계약서_v3.docx', fileExt: 'DOCX', fileSize: '1.2MB' },
+    { who: '김대성', mine: false, time: '09:18', task: 't3' },
+  ],
+  r3: [
+    { who: '최민호', mine: false, time: '어제 17:20', text: '허가증 스캔본 확인 부탁드립니다.' },
+    { who: '나', mine: true, time: '어제 17:35', task: 't2' },
+  ],
+  r4: [{ who: '김대성', mine: false, time: '07.22', text: '표준계약서 v3 최종 승인되었습니다.' }],
+}
+
+/* ── 에코바디스 ───────────────────────────────────── */
+
+export type EcoStatus = '답변완료' | 'AI 초안' | '미처리'
+
+export interface EcoQuestion {
+  id: string
+  no: string
+  cat: string
+  q: string
+  status: EcoStatus
+  files: number
+  filesSize: string
+  owner: string
+}
+
+export const ecoQuestions: EcoQuestion[] = [
+  { id: 'q1', no: 'ENV 1.1', cat: '환경 · 정책', q: '환경 이슈에 대한 공식 정책 문서를 보유하고 있습니까? 해당 문서를 제출하십시오.', status: '답변완료', files: 2, filesSize: '3.2MB', owner: '이수진' },
+  { id: 'q2', no: 'ENV 2.4', cat: '환경 · 실행', q: '에너지 소비 및 온실가스 배출량을 정기적으로 모니터링하는 체계가 있습니까?', status: '답변완료', files: 3, filesSize: '8.1MB', owner: '박지원' },
+  { id: 'q3', no: 'LAB 1.2', cat: '노동·인권 · 정책', q: '아동노동 및 강제노동 금지에 관한 정책 문서를 제출하십시오. 경영진 승인 근거를 포함해야 합니다.', status: 'AI 초안', files: 1, filesSize: '890KB', owner: '-' },
+  { id: 'q4', no: 'LAB 3.1', cat: '노동·인권 · 실행', q: '임직원 안전보건 교육을 실시하고 그 기록을 관리하고 있습니까?', status: '미처리', files: 0, filesSize: '-', owner: '-' },
+  { id: 'q5', no: 'ETH 1.1', cat: '윤리 · 정책', q: '부패 방지에 관한 공식 정책이 있으며 전 임직원에게 배포되었습니까?', status: '답변완료', files: 2, filesSize: '1.7MB', owner: '김대성' },
+  { id: 'q6', no: 'ETH 2.2', cat: '윤리 · 실행', q: '내부 신고 채널의 운영 현황과 처리 결과를 설명하십시오.', status: 'AI 초안', files: 1, filesSize: '640KB', owner: '-' },
+  { id: 'q7', no: 'SUP 1.3', cat: '지속가능한 조달', q: '공급업체 행동강령을 배포하고 서명을 확보하고 있습니까?', status: '미처리', files: 0, filesSize: '-', owner: '-' },
+  { id: 'q8', no: 'SUP 2.1', cat: '지속가능한 조달', q: '주요 공급업체에 대한 ESG 실사를 수행하고 결과를 관리합니까?', status: 'AI 초안', files: 2, filesSize: '4.4MB', owner: '-' },
+]
+
+/** 문항 상태 배지 색 (시안 QST) */
+export const ecoStatusTone: Record<EcoStatus, { bg: string; fg: string; bar: string; color: string }> = {
+  답변완료: { bg: '#f0fdf4', fg: '#15803d', bar: '#16a34a', color: '#16a34a' },
+  'AI 초안': { bg: '#fffbeb', fg: '#b45309', bar: '#f59e0b', color: '#f59e0b' },
+  미처리: { bg: '#e2e8f0', fg: '#334155', bar: '#94a3b8', color: '#94a3b8' },
+}
+
+/** 업무 상태 배지 색 (시안 ST) */
+export const taskStatusTone: Record<TaskStatus, { bg: string; fg: string; dot: string; bar: string }> = {
+  요청됨: { bg: '#e2e8f0', fg: '#334155', dot: '#94a3b8', bar: '#94a3b8' },
+  진행중: { bg: '#eff6ff', fg: '#1d4ed8', dot: '#2563eb', bar: '#2563eb' },
+  검토대기: { bg: '#fffbeb', fg: '#b45309', dot: '#f59e0b', bar: '#f59e0b' },
+  완료: { bg: '#f0fdf4', fg: '#15803d', dot: '#16a34a', bar: '#16a34a' },
+  반려: { bg: '#fef2f2', fg: '#b91c1c', dot: '#ef4444', bar: '#ef4444' },
+}

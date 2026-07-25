@@ -1,81 +1,100 @@
 import { create } from 'zustand'
-import { projects, workspaces } from '@/mocks/data'
 
 /**
- * 앱 셸 상태.
- * ⚠️ 화면 운영 원칙(사용자 지시 2026-07-25): 페이지를 늘리지 않고 **한 화면 안에서** 동선을 운영한다.
- *    → 메뉴 선택은 라우팅이 아니라 이 스토어의 `view` 교체로 처리한다.
+ * 앱 셸 상태 — 시안의 state 구조를 따른다.
+ * ⚠️ 화면 운영 원칙: 페이지를 늘리지 않고 한 화면 안에서 `screen` 교체 + 레이어로 동선을 운영한다.
  */
 
-export type ViewKey =
-  // PROJECT
-  | 'dashboard'
-  | 'members'
-  | 'activity'
-  | 'settings'
-  // 협업공간
-  | 'chat'
-  | 'tasks'
-  // 문서
-  | 'stores'
-  | 'files'
-  | 'uploads'
-  | 'ocr'
-  // EcoVadis
-  | 'eco-summary'
-  | 'eco-questions'
-  | 'eco-evidence'
-  | 'eco-requests'
-  // SYSTEM
-  | 'system-members'
-  // 헤더에서 진입 (프로젝트 메뉴 밖)
-  | 'account-profile'
-  | 'account-security'
-  | 'admin-users'
-  | 'admin-workspaces'
-  | 'admin-members'
-  | 'admin-channels'
+export type ScreenKey =
+  | 'index' // 작업 목록(검수 인덱스)
+  | 'dash' // 대시보드
+  | 'members' // 멤버 / 시스템
+  | 'store' // 문서 저장소
+  | 'chat' // 채팅
+  | 'task' // 업무 관리
+  | 'ecoSum' // 에코바디스 요약
+  | 'ecoWork' // 에코바디스 문항(처리부)
+  | 'ecoDocs' // 증빙자료
+  | 'ecoReq' // 자료요청
 
-export interface PanelState {
-  /** ① 메뉴 — 접으면 아이콘만 */
-  menu: boolean
-  /** ② 서브메뉴 */
-  submenu: boolean
-  /** ③ 컨텐츠 & 챗봇 */
-  chatbot: boolean
-}
+export type StoreMode = 'list' | 'detail' | 'editor'
 
 interface AppState {
-  workspaceId: string
-  projectId: string
-  view: ViewKey
-  panels: PanelState
-  /** 헤더 전체 메뉴(메가메뉴) 열림 */
-  megaMenuOpen: boolean
+  screen: ScreenKey
+  /** 좌측 메뉴 펼침 */
+  menuOpen: boolean
+  /** 우측 챗봇/업무 패널 펼침 */
+  botOpen: boolean
+  botTab: 'chat' | 'task'
+  /** 헤더 레이어 */
+  notiOpen: boolean
+  helpOpen: boolean
+  userOpen: boolean
+  wsPopOpen: boolean
+  /** 전체 메뉴 오버레이 */
+  overlay: boolean
 
-  setWorkspace: (id: string) => void
-  setProject: (id: string) => void
-  setView: (view: ViewKey) => void
-  togglePanel: (key: keyof PanelState) => void
-  setPanel: (key: keyof PanelState, open: boolean) => void
-  setMegaMenu: (open: boolean) => void
+  /** 문서 저장소 */
+  folder: string
+  fileId: string | null
+  storeMode: StoreMode
+  /** 채팅 */
+  room: string
+  /** 업무 */
+  taskId: string
+  /** 에코바디스 */
+  qId: string
+  /** 시스템 탭 */
+  sysTab: 'member' | 'channel'
+
+  setScreen: (screen: ScreenKey) => void
+  toggleMenu: () => void
+  toggleBot: () => void
+  setBotTab: (t: 'chat' | 'task') => void
+  setDropdown: (key: 'notiOpen' | 'helpOpen' | 'userOpen' | 'wsPopOpen', open: boolean) => void
+  closeDropdowns: () => void
+  setOverlay: (open: boolean) => void
+  setFolder: (id: string) => void
+  openFile: (id: string) => void
+  setStoreMode: (m: StoreMode) => void
+  setRoom: (id: string) => void
+  setTaskId: (id: string) => void
+  setQId: (id: string) => void
+  setSysTab: (t: 'member' | 'channel') => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  workspaceId: workspaces[0].id,
-  projectId: projects[0].id,
-  view: 'dashboard',
-  panels: { menu: true, submenu: true, chatbot: true },
-  megaMenuOpen: false,
+  screen: 'dash',
+  menuOpen: true,
+  botOpen: true,
+  botTab: 'chat',
+  notiOpen: false,
+  helpOpen: false,
+  userOpen: false,
+  wsPopOpen: false,
+  overlay: false,
+  folder: 'f2',
+  fileId: null,
+  storeMode: 'list',
+  room: 'r1',
+  taskId: 't1',
+  qId: 'q3',
+  sysTab: 'member',
 
-  setWorkspace: (workspaceId) =>
-    set(() => {
-      const first = projects.find((p) => p.workspaceId === workspaceId)
-      return { workspaceId, projectId: first ? first.id : '' }
-    }),
-  setProject: (projectId) => set({ projectId }),
-  setView: (view) => set({ view, megaMenuOpen: false }),
-  togglePanel: (key) => set((s) => ({ panels: { ...s.panels, [key]: !s.panels[key] } })),
-  setPanel: (key, open) => set((s) => ({ panels: { ...s.panels, [key]: open } })),
-  setMegaMenu: (megaMenuOpen) => set({ megaMenuOpen }),
+  setScreen: (screen) =>
+    set({ screen, overlay: false, notiOpen: false, helpOpen: false, userOpen: false, wsPopOpen: false }),
+  toggleMenu: () => set((s) => ({ menuOpen: !s.menuOpen })),
+  toggleBot: () => set((s) => ({ botOpen: !s.botOpen })),
+  setBotTab: (botTab) => set({ botTab }),
+  setDropdown: (key, open) =>
+    set({ notiOpen: false, helpOpen: false, userOpen: false, wsPopOpen: false, [key]: open } as Partial<AppState>),
+  closeDropdowns: () => set({ notiOpen: false, helpOpen: false, userOpen: false, wsPopOpen: false }),
+  setOverlay: (overlay) => set({ overlay }),
+  setFolder: (folder) => set({ folder, fileId: null, storeMode: 'list' }),
+  openFile: (fileId) => set({ fileId, storeMode: 'detail' }),
+  setStoreMode: (storeMode) => set({ storeMode }),
+  setRoom: (room) => set({ room, screen: 'chat' }),
+  setTaskId: (taskId) => set({ taskId }),
+  setQId: (qId) => set({ qId }),
+  setSysTab: (sysTab) => set({ sysTab }),
 }))
