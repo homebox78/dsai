@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { tasks, taskHistory, taskStatusTone, type TaskStatus } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
@@ -60,11 +61,13 @@ export function TaskView() {
   const { taskId, setTaskId, setScreen, taskFilter: filter, setTaskFilter: setFilter } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const [query, setQuery] = useState('')
-  const [due, setDue] = useState('all')
+  const [due, setDue] = useQaState('taskDue', 'all')
   const [sort, setSort] = useState('due')
-  const [sortOpen, setSortOpen] = useState(false)
+  const [ddOpen, setDdOpen] = useQaState<string | null>('ddOpen', null)
+  const sortOpen = ddOpen === 'taskSort'
+  const setSortOpen = (v: boolean) => setDdOpen(v ? 'taskSort' : null)
   const [comment, setComment] = useState('')
-  const [streamOpen, setStreamOpen] = useState(true)
+  const [streamOpen, setStreamOpen] = useQaState('streamOpen', true)
   const { taskRowMin, contentMin, veryNarrow } = useLayoutMetrics()
 
   const cur = tasks.find((t) => t.id === taskId) ?? tasks[0]
@@ -168,7 +171,7 @@ export function TaskView() {
             <div className="flex-1" />
             <div className="relative flex-none">
               <button
-                onClick={() => setSortOpen((v) => !v)}
+                onClick={() => setSortOpen(!sortOpen)}
                 className="flex items-center gap-1 whitespace-nowrap rounded-md border bg-white px-2 py-1 text-xs2 font-bold text-ink-700 hover:bg-ink-50"
                 style={{ borderColor: sortOpen ? '#1750d8' : '#cbd5e1' }}
               >

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { ctx, wsTree } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
@@ -8,8 +8,8 @@ import { useLayerStore } from '@/stores/layer-store'
 export function WsPopover() {
   const { closeDropdowns } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
-  const [expanded, setExpanded] = useState('w1')
-  const [query, setQuery] = useState('')
+  const [expanded, setExpanded] = useQaState('wsExpanded', 'w1')
+  const [query, setQuery] = useQaState('projQuery', '')
 
   const chips = [`멤버 ${ctx.projMembers}명`, `${ctx.wsChannels} channels`, `${ctx.wsStores} stores`, `${ctx.wsFiles} files`]
 

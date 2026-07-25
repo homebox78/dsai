@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { createPortal } from 'react-dom'
 import { Icon } from '@/components/common/icon'
 import { ctx, tasks, taskStatusTone } from '@/mocks/data'
@@ -129,7 +129,7 @@ export function MegaMenu() {
   const overlay = useAppStore((s) => s.overlay)
   const setOverlay = useAppStore((s) => s.setOverlay)
   const openLayer = useLayerStore((s) => s.open)
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useQaState('menuQuery', '')
   if (!overlay) return null
 
   const myOpen = tasks.filter((t) => t.to === '나' && t.status !== '완료' && t.status !== '반려')

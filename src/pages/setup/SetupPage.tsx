@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Icon } from '@/components/common/icon'
 
@@ -27,6 +27,12 @@ export function SetupPage() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [step, setStep] = useState(Number(params.get('step') ?? 0))
+  // 검수 인덱스에서 다른 단계로 열 때 쿼리 변화를 따라간다
+  const qStep = params.get('step')
+  useEffect(() => {
+    if (qStep !== null) setStep(Number(qStep))
+  }, [qStep])
+
   const [plan, setPlan] = useState('ENTERPRISE')
   const [vis, setVis] = useState('공개')
   const [org, setOrg] = useState('Amber Evolution')

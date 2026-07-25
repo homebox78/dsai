@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { useAppStore } from '@/stores/app-store'
 
@@ -17,8 +17,8 @@ interface Noti {
 
 export function NotiDropdown() {
   const { setScreen, setTaskId, setRoom, setQId, closeDropdowns, openFile, setFolder } = useAppStore()
-  const [tab, setTab] = useState<'all' | 'unread' | 'mention'>('all')
-  const [read, setRead] = useState<Record<string, boolean>>({})
+  const [tab, setTab] = useQaState<'all' | 'unread' | 'mention'>('notiTab', 'all')
+  const [read, setRead] = useQaState<Record<string, boolean>>('notiRead', {})
 
   const NOTI: Noti[] = [
     {

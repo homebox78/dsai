@@ -11,6 +11,7 @@ export type LayerKey =
   | 'ai-chat'
   | 'settings'
   // 조직 · 멤버
+  | 'org-create'
   | 'ws-create'
   | 'proj-create'
   | 'member-invite'
@@ -28,6 +29,9 @@ export type LayerKey =
   | 'chat-leave'
   | 'task-request'
   | 'task-preview'
+  | 'task-alert'
+  // 문서 작성기
+  | 'toc-edit'
   // 에코바디스
   | 'eco-export'
   | 'eco-evidence-pick'

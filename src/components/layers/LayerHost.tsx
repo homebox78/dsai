@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { Icon } from '@/components/common/icon'
 import { BtnDanger, BtnGhost, BtnPrimary, Field, Modal, Sheet, inputCls } from './Modal'
+import { FormModal } from './FormModal'
 import { SettingsModal } from './SettingsModal'
 import { ViewerModal } from './ViewerModal'
-import { ctx, folders, members, tasks } from '@/mocks/data'
+import { ctx, findFile, folders, members, rooms, tasks, taskStatusTone } from '@/mocks/data'
 import { useLayer } from '@/stores/layer-store'
+import { useAppStore } from '@/stores/app-store'
 
 /**
  * 모든 레이어(모달·시트)를 한 곳에서 렌더한다.
  * 화면 운영 원칙: 페이지를 늘리지 않고 이 레이어들이 셸 위에 겹쳐 뜬다.
  */
+/** 시안 chipsPerm */
+const PERM_CHIPS = ['편집 가능', '댓글 가능', '보기 전용']
+
 export function LayerHost() {
   return (
     <>
@@ -17,6 +22,7 @@ export function LayerHost() {
       <FileUpload />
       <FileCreate />
       <FileDelete />
+      <OrgCreate />
       <WsCreate />
       <ProjCreate />
       <MemberInvite />
@@ -27,6 +33,8 @@ export function LayerHost() {
       <TaskPreview />
       <EcoExport />
       <TaskRequestSheet />
+      <TaskAlertSheet />
+      <TocEditSheet />
       <AiChatSheet />
       <SearchModal />
       <SettingsModal />
@@ -39,282 +47,250 @@ export function LayerHost() {
 
 function FolderCreate() {
   const { isOpen, close } = useLayer('folder-create')
-  const [access, setAccess] = useState('팀 전체')
+  const folder = useAppStore((s) => s.folder)
+  const cur = folders.find((f) => f.id === folder) ?? folders[0]
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
+      id="folder"
       title="폴더 추가"
-      desc="문서 저장소 안에 새 폴더를 만듭니다"
-      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>만들기</BtnPrimary></>}
-    >
-      <Field label="폴더 이름">
-        <input className={inputCls} placeholder="예: 2026 제출본" autoFocus />
-      </Field>
-      <Field label="상위 폴더">
-        <select className={inputCls}>
-          <option>최상위</option>
-          {folders.map((f) => (
-            <option key={f.id}>{f.name}</option>
-          ))}
-        </select>
-      </Field>
-      <Field label="접근 권한" hint="비공개는 나와 관리자만 볼 수 있습니다">
-        <div className="flex gap-1.5">
-          {['전체 공개', '팀 전체', '비공개'].map((a) => {
-            const on = access === a
-            return (
-              <button
-                key={a}
-                onClick={() => setAccess(a)}
-                className="flex-1 rounded-md border py-2 text-sm2 font-bold"
-                style={{
-                  background: on ? '#1750d8' : '#fff',
-                  borderColor: on ? '#1750d8' : '#cbd5e1',
-                  color: on ? '#fff' : '#334155',
-                }}
-              >
-                {a}
-              </button>
-            )
-          })}
-        </div>
-      </Field>
-    </Modal>
+      desc={`현재 위치: ${cur.name}`}
+      width={440}
+      cta="폴더 만들기"
+      fields={[
+        { label: '폴더 이름', type: 'text', required: true, placeholder: '예: 2026 제출본' },
+        { label: '상위 폴더', type: 'select', options: folders.map((f) => f.name) },
+        { label: '접근 권한', type: 'chips', options: ['전체 공개', '프로젝트 멤버', '비공개'] },
+      ]}
+    />
   )
 }
 
 function FileUpload() {
   const { isOpen, close } = useLayer('file-upload')
+  const folder = useAppStore((s) => s.folder)
+  const [dest, setDest] = useState(folder)
   const [indexing, setIndexing] = useState(true)
+  const [tableMode, setTableMode] = useState(true)
   const [ocrLang, setOcrLang] = useState('한국어 + 영어')
+  const [dupMode, setDupMode] = useState('새 버전으로 등록')
+  const [access, setAccess] = useState('프로젝트 멤버 6명')
+  const destName = folders.find((f) => f.id === dest)?.name ?? folders[0].name
+
+  const chip = (label: string, on: boolean, onClick: () => void) => (
+    <button
+      key={label}
+      onClick={onClick}
+      className="whitespace-nowrap rounded-md border px-2.5 py-1.5 text-sm2"
+      style={{
+        background: on ? '#eff6ff' : '#fff',
+        borderColor: on ? '#1750d8' : '#cbd5e1',
+        color: on ? '#1345bd' : '#334155',
+        fontWeight: on ? 700 : 500,
+      }}
+    >
+      {label}
+    </button>
+  )
+
+  const toggle = (on: boolean, onClick: () => void) => (
+    <button
+      onClick={onClick}
+      className="relative h-[22px] w-[38px] flex-none rounded-full transition-colors"
+      style={{ background: on ? '#1750d8' : '#cbd5e1' }}
+    >
+      <span
+        className="absolute top-[3px] size-4 rounded-full bg-white transition-all"
+        style={{ left: on ? 19 : 3 }}
+      />
+    </button>
+  )
+
   return (
     <Modal
       open={isOpen}
       onClose={close}
       title="파일 업로드"
-      desc="업로드 후 OCR·RAG 색인이 자동으로 진행됩니다"
-      width={560}
-      footer={<><span className="text-xs2 text-ink-400">PDF · DOCX · XLSX · 이미지 · 최대 200MB</span><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>업로드</BtnPrimary></>}
+      desc={`업로드 위치: ${destName}`}
+      width={480}
+      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>파일을 선택하세요</BtnPrimary></>}
     >
-      <div className="mb-4 rounded-lg border border-dashed border-ink-300 bg-ink-50 px-4 py-10 text-center">
-        <Icon name="cloud_upload" size={34} className="text-ink-400" />
-        <div className="mt-2 text-label font-bold">파일을 끌어다 놓거나 클릭해서 선택</div>
-        <div className="mt-1 text-sm2 text-ink-400">여러 개를 한 번에 올릴 수 있습니다</div>
+      <div className="mb-2 flex items-center gap-1.5">
+        <Icon name="drive_file_move" size={17} className="text-ink-500" />
+        <span className="whitespace-nowrap text-[11.6px] font-bold text-ink-600">저장 위치</span>
+        <span className="min-w-0 truncate text-sm2 text-ink-400">문서 저장소 › {destName}</span>
       </div>
-      <Field label="저장 위치">
-        <select className={inputCls}>
-          {folders.map((f) => (
-            <option key={f.id}>{f.name}</option>
-          ))}
-        </select>
-      </Field>
-      <Field label="OCR 기본 언어">
-        <select className={inputCls} value={ocrLang} onChange={(e) => setOcrLang(e.target.value)}>
-          <option>한국어 + 영어</option>
-          <option>한국어</option>
-          <option>English</option>
-        </select>
-      </Field>
-      <label className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-ink-200 bg-ink-50 px-3.5 py-3">
-        <input type="checkbox" checked={indexing} onChange={(e) => setIndexing(e.target.checked)} className="size-4 accent-brand" />
-        <span className="min-w-0 flex-1">
-          <span className="block text-label font-bold">AI 인덱싱 사용</span>
-          <span className="mt-0.5 block text-xs2 text-ink-500">업로드 후 챗봇 추론 검색과 증빙 찾기에 사용됩니다</span>
-        </span>
-      </label>
+      <div className="mb-3.5 flex flex-wrap gap-1.5">
+        {folders.filter((f) => f.depth > 0).map((f) => chip(f.name, f.id === dest, () => setDest(f.id)))}
+      </div>
+
+      <button className="mb-4 block w-full rounded-lg border border-dashed border-ink-300 bg-ink-50 px-4 py-9 text-center hover:border-brand hover:bg-brand-softer">
+        <Icon name="upload" size={30} className="text-ink-400" />
+        <span className="mt-2 block text-label font-bold">파일을 끌어다 놓거나 클릭해서 선택</span>
+        <span className="mt-1 block text-sm2 text-ink-400">PDF, DOCX, XLSX, HWP, 이미지 · 1건당 100MB까지</span>
+      </button>
+
+      <div className="mb-2 whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">AI 처리 옵션</div>
+      <div className="flex flex-col gap-2.5 rounded-lg border border-ink-200 bg-ink-50 p-3.5">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs2 font-bold">OCR + RAG 색인</div>
+            <div className="mt-0.5 text-[11.2px] text-ink-500">색인 후 챗봇 추론 검색과 에코바디스 답변 찾기에 사용됩니다</div>
+          </div>
+          {toggle(indexing, () => setIndexing(!indexing))}
+        </div>
+        <div className="flex items-center gap-3 border-t border-ink-200 pt-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs2 font-bold">표·서식 구조 인식</div>
+            <div className="mt-0.5 text-[11.2px] text-ink-500">표가 많은 실적표·평가표의 셀 구조를 유지합니다</div>
+          </div>
+          {toggle(tableMode, () => setTableMode(!tableMode))}
+        </div>
+        <div className="border-t border-ink-200 pt-2.5">
+          <div className="mb-1.5 text-[11.2px] font-bold text-ink-600">OCR 인식 언어</div>
+          <div className="flex flex-wrap gap-1.5">
+            {['한국어 + 영어', '한국어', '영어'].map((l) => chip(l, ocrLang === l, () => setOcrLang(l)))}
+          </div>
+        </div>
+        <div className="border-t border-ink-200 pt-2.5">
+          <div className="mb-1.5 text-[11.2px] font-bold text-ink-600">중복 파일 처리</div>
+          <div className="flex flex-wrap gap-1.5">
+            {['새 버전으로 등록', '건너뛰기', '둘 다 보관'].map((l) => chip(l, dupMode === l, () => setDupMode(l)))}
+          </div>
+        </div>
+        <div className="border-t border-ink-200 pt-2.5">
+          <div className="mb-1.5 text-[11.2px] font-bold text-ink-600">접근 권한</div>
+          <div className="flex flex-wrap gap-1.5">
+            {['프로젝트 멤버 6명', '나만 보기', '외부 협업자 포함'].map((l) => chip(l, access === l, () => setAccess(l)))}
+          </div>
+        </div>
+      </div>
     </Modal>
   )
 }
 
 function FileCreate() {
   const { isOpen, close } = useLayer('file-create')
-  const [type, setType] = useState('doc')
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
-      title="새 파일 만들기"
-      desc="문서를 직접 작성합니다"
-      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>만들기</BtnPrimary></>}
-    >
-      <Field label="파일 이름">
-        <input className={inputCls} placeholder="예: 2026 지속가능경영 대응 문서" autoFocus />
-      </Field>
-      <Field label="파일 유형">
-        <div className="flex gap-1.5">
-          {[
-            { id: 'doc', label: 'DOC', icon: 'description' },
-            { id: 'hwp', label: 'HWP', icon: 'article' },
-            { id: 'md', label: 'MD', icon: 'code' },
-          ].map((t) => {
-            const on = type === t.id
-            return (
-              <button
-                key={t.id}
-                onClick={() => setType(t.id)}
-                className="flex flex-1 flex-col items-center gap-1 rounded-lg border py-3 text-sm2 font-bold"
-                style={{
-                  background: on ? '#eff6ff' : '#fff',
-                  borderColor: on ? '#bfdbfe' : '#cbd5e1',
-                  color: on ? '#1345bd' : '#334155',
-                }}
-              >
-                <Icon name={t.icon} size={20} />
-                {t.label}
-              </button>
-            )
-          })}
-        </div>
-      </Field>
-      <Field label="저장 위치">
-        <select className={inputCls}>
-          {folders.map((f) => (
-            <option key={f.id}>{f.name}</option>
-          ))}
-        </select>
-      </Field>
-    </Modal>
+      id="newfile"
+      title="새 파일"
+      desc="문서를 직접 작성해 저장소에 등록합니다"
+      width={420}
+      cta="만들기"
+      fields={[
+        { label: '파일 이름', type: 'text', required: true, placeholder: '파일 이름을 입력하세요' },
+        { label: '파일 유형', type: 'select', required: true, options: ['DOC (워드 문서)', 'HWP (한글 문서)', 'MD (마크다운)'] },
+        { label: '저장 폴더', type: 'select', options: folders.map((f) => f.name) },
+      ]}
+    />
   )
 }
 
 function FileDelete() {
   const { isOpen, close } = useLayer('file-delete')
+  const fileId = useAppStore((s) => s.fileId)
+  const name = (fileId ? findFile(fileId)?.name : null) ?? '표준 공급계약서_v3.docx'
   return (
     <Modal
       open={isOpen}
       onClose={close}
-      title="문서를 삭제할까요?"
+      title="파일을 삭제할까요?"
+      desc="이 작업은 되돌릴 수 없습니다"
       width={440}
       footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnDanger onClick={close}>삭제</BtnDanger></>}
     >
-      <div className="rounded-lg border border-bad-border bg-bad-soft px-3.5 py-3">
-        <div className="flex items-center gap-1.5 text-label font-bold text-bad-dark">
-          <Icon name="warning" size={17} />
-          이 작업은 되돌릴 수 없습니다
-        </div>
-        <div className="mt-1.5 text-sm2 leading-[1.7] text-ink-600">
-          RAG 색인에서도 함께 제거되며, 이 문서를 근거로 사용한 에코바디스 답변 3건의 증빙 연결이 끊깁니다.
-        </div>
+      <div className="text-label leading-[1.8] text-ink-700">
+        <strong className="font-extrabold">{name}</strong> 파일을 삭제하면 RAG 색인에서도 제거되어 챗봇 검색 결과와
+        에코바디스 답변 근거에서 사라집니다.
+      </div>
+      <div className="mt-[13px] rounded-lg border border-bad-border bg-bad-soft px-3.5 py-3 text-sm2 leading-[1.7] text-bad-dark">
+        이 문서를 근거로 사용한 답변 3건이 영향을 받습니다.
       </div>
     </Modal>
   )
 }
 
-/* ── 조직 · 멤버 ──────────────────────────────────── */
+function OrgCreate() {
+  const { isOpen, close } = useLayer('org-create')
+  return (
+    <FormModal
+      open={isOpen}
+      onClose={close}
+      id="org"
+      title="조직 만들기"
+      desc="조직 단위로 조직&사업부와 멤버를 관리합니다"
+      width={460}
+      cta="조직 만들기"
+      fields={[
+        { label: '조직 이름', type: 'text', required: true, placeholder: '예: Amber Evolution' },
+        { label: '사업자 등록번호', type: 'text', placeholder: '000-00-00000' },
+        { label: '플랜', type: 'select', options: ['ENTERPRISE', 'BUSINESS', 'STARTER'] },
+      ]}
+    />
+  )
+}
 
 function WsCreate() {
   const { isOpen, close } = useLayer('ws-create')
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
-      title="조직&사업부 생성"
-      desc={`${ctx.org} 아래에 새 조직&사업부를 만듭니다`}
-      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>생성</BtnPrimary></>}
-    >
-      <Field label="이름">
-        <input className={inputCls} placeholder="예: 품질보증팀" autoFocus />
-      </Field>
-      <Field label="상위 사업부">
-        <select className={inputCls}>
-          <option>{ctx.biz}</option>
-          <option>경영지원본부</option>
-        </select>
-      </Field>
-      <Field label="설명" hint="선택 사항">
-        <textarea className={`${inputCls} resize-none`} rows={3} placeholder="어떤 일을 하는 조직인지 적어주세요" />
-      </Field>
-    </Modal>
+      id="ws"
+      title="조직&사업부 만들기"
+      desc="사업부·팀 단위 공간을 만듭니다"
+      width={460}
+      cta="만들기"
+      fields={[
+        { label: '조직&사업부 이름', type: 'text', required: true, placeholder: '예: ESG 전략팀' },
+        { label: '상위 사업부', type: 'select', options: ['ESG 본부', '경영지원 본부', '구매 본부'] },
+        { label: '설명', type: 'area', placeholder: '용도를 간단히 적어주세요' },
+      ]}
+    />
   )
 }
 
 function ProjCreate() {
   const { isOpen, close } = useLayer('proj-create')
-  const [vis, setVis] = useState('공개')
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
-      title="프로젝트 생성"
-      desc={`${ctx.ws} 안에 새 프로젝트를 만듭니다`}
-      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>생성</BtnPrimary></>}
-    >
-      <Field label="프로젝트 이름">
-        <input className={inputCls} placeholder="예: 지속가능경영보고서 2027" autoFocus />
-      </Field>
-      <Field label="공개 범위" hint="공개면 조직&사업부 전체가 볼 수 있습니다">
-        <div className="flex gap-1.5">
-          {['공개', '비공개'].map((v) => {
-            const on = vis === v
-            return (
-              <button
-                key={v}
-                onClick={() => setVis(v)}
-                className="flex-1 rounded-md border py-2 text-sm2 font-bold"
-                style={{
-                  background: on ? '#1750d8' : '#fff',
-                  borderColor: on ? '#1750d8' : '#cbd5e1',
-                  color: on ? '#fff' : '#334155',
-                }}
-              >
-                {v}
-              </button>
-            )
-          })}
-        </div>
-      </Field>
-      <Field label="기본 문서 저장소">
-        <input className={inputCls} defaultValue="ESG 정책 문서, 에코바디스 증빙" />
-      </Field>
-    </Modal>
+      id="proj"
+      title="프로젝트 만들기"
+      desc="프로젝트 안에 문서·협업·에코바디스가 구성됩니다"
+      width={460}
+      cta="만들기"
+      fields={[
+        { label: '프로젝트 이름', type: 'text', required: true, placeholder: '예: 에코바디스 2026 대응' },
+        { label: '공개 범위', type: 'chips', options: ['공개', '비공개'] },
+        { label: '초대할 멤버', type: 'text', placeholder: '이메일을 쉼표로 구분' },
+      ]}
+    />
   )
 }
 
 function MemberInvite() {
   const { isOpen, close } = useLayer('member-invite')
-  const [rows, setRows] = useState([{ email: '', role: '편집 가능' }])
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
-      title="멤버 초대"
-      desc="이메일로 초대장을 보냅니다"
-      width={560}
-      footer={<><span className="text-xs2 text-ink-400">외부 이메일은 기본 30일 후 만료</span><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>초대 보내기</BtnPrimary></>}
-    >
-      {rows.map((r, i) => (
-        <div key={i} className="mb-2 flex gap-1.5">
-          <input
-            className={inputCls}
-            placeholder="name@company.com"
-            value={r.email}
-            onChange={(e) => setRows((rs) => rs.map((x, xi) => (xi === i ? { ...x, email: e.target.value } : x)))}
-          />
-          <select
-            className="w-[130px] flex-none rounded-md border border-ink-300 px-2 py-2 text-label outline-none"
-            value={r.role}
-            onChange={(e) => setRows((rs) => rs.map((x, xi) => (xi === i ? { ...x, role: e.target.value } : x)))}
-          >
-            <option>편집 가능</option>
-            <option>댓글 가능</option>
-            <option>보기 전용</option>
-          </select>
-          <button
-            onClick={() => setRows((rs) => rs.filter((_, xi) => xi !== i))}
-            className="size-[38px] flex-none rounded-md border border-ink-300 p-0 text-ink-400 hover:text-bad-dark"
-          >
-            <Icon name="close" size={17} />
-          </button>
-        </div>
-      ))}
-      <button
-        onClick={() => setRows((rs) => [...rs, { email: '', role: '편집 가능' }])}
-        className="w-full rounded-md border border-dashed border-ink-300 py-2 text-sm2 font-bold text-ink-500 hover:border-brand-link hover:text-brand-link"
-      >
-        + 초대 추가
-      </button>
-    </Modal>
+      id="member"
+      title="멤버 추가"
+      desc="이메일로 초대하고 권한을 지정합니다"
+      width={460}
+      cta="초대 보내기"
+      fields={[
+        { label: '이메일', type: 'text', required: true, placeholder: 'name@company.com' },
+        { label: '소속 팀', type: 'text', placeholder: '예: ESG팀' },
+        { label: '기본 권한', type: 'chips', options: PERM_CHIPS },
+      ]}
+    />
   )
 }
 
@@ -363,90 +339,23 @@ function PlanModal() {
 
 function ChatInvite() {
   const { isOpen, close } = useLayer('chat-invite')
-  const [tab, setTab] = useState<'email' | 'link'>('email')
-  const [expire, setExpire] = useState('30일 후 만료')
-  const [perm, setPerm] = useState('댓글 가능')
+  const room = useAppStore((s) => s.room)
+  const cur = rooms.find((r) => r.id === room) ?? rooms[0]
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
-      title="외부 협업자 초대"
-      desc="조직 외부 인원을 이 대화방에 초대합니다"
-      width={540}
-      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>{tab === 'email' ? '초대 보내기' : '링크 복사'}</BtnPrimary></>}
-    >
-      <div className="mb-4 flex gap-1 border-b border-ink-200">
-        {([['email', '이메일 초대'], ['link', '초대 링크']] as const).map(([id, label]) => {
-          const on = tab === id
-          return (
-            <button
-              key={id}
-              onClick={() => setTab(id)}
-              className="border-b-2 px-3 py-2 text-label font-bold"
-              style={{ borderBottomColor: on ? '#1750d8' : 'transparent', color: on ? '#0f172a' : '#94a3b8' }}
-            >
-              {label}
-            </button>
-          )
-        })}
-      </div>
-
-      {tab === 'email' ? (
-        <Field label="이메일">
-          <input className={inputCls} placeholder="partner@company.com" autoFocus />
-        </Field>
-      ) : (
-        <Field label="초대 링크">
-          <div className="flex gap-1.5">
-            <input className={inputCls} readOnly value="https://amber.evolvailab.com/invite/8f2a…" />
-            <BtnGhost>복사</BtnGhost>
-          </div>
-        </Field>
-      )}
-
-      <Field label="링크 만료">
-        <div className="flex gap-1.5">
-          {['7일 후 만료', '30일 후 만료', '만료 없음'].map((e) => {
-            const on = expire === e
-            return (
-              <button
-                key={e}
-                onClick={() => setExpire(e)}
-                className="flex-1 rounded-md border py-2 text-sm2 font-bold"
-                style={{
-                  background: on ? '#eff6ff' : '#fff',
-                  borderColor: on ? '#bfdbfe' : '#cbd5e1',
-                  color: on ? '#1345bd' : '#334155',
-                }}
-              >
-                {e}
-              </button>
-            )
-          })}
-        </div>
-      </Field>
-      <Field label="기본 권한">
-        <div className="flex gap-1.5">
-          {['편집 가능', '보기 전용', '댓글 가능'].map((p) => {
-            const on = perm === p
-            return (
-              <button
-                key={p}
-                onClick={() => setPerm(p)}
-                className="flex-1 rounded-md border py-2 text-sm2 font-bold"
-                style={{
-                  background: on ? '#eff6ff' : '#fff',
-                  borderColor: on ? '#bfdbfe' : '#cbd5e1',
-                  color: on ? '#1345bd' : '#334155',
-                }}
-              >
-                {p}
-              </button>
-            )
-          })}
-        </div>
-      </Field>
-    </Modal>
+      id="invite"
+      title="채팅방 초대"
+      desc={`${cur.name} 대화방에 멤버를 초대합니다`}
+      width={460}
+      cta="초대 링크 만들기"
+      fields={[
+        { label: '초대할 멤버', type: 'text', placeholder: '이름 또는 이메일 검색' },
+        { label: '링크 만료', type: 'chips', options: ['7일 후 만료', '30일 후 만료', '만료 없음'] },
+        { label: '기본 권한', type: 'chips', options: PERM_CHIPS },
+      ]}
+    />
   )
 }
 
@@ -596,63 +505,36 @@ function TaskPreview() {
 
 function EcoExport() {
   const { isOpen, close } = useLayer('eco-export')
-  const [scope, setScope] = useState('답변완료만')
   return (
-    <Modal
+    <FormModal
       open={isOpen}
       onClose={close}
-      title="답변서 내려받기"
-      desc="전체 문항의 답변과 증빙을 1개 파일로 내보냅니다"
-      footer={<><div className="flex-1" /><BtnGhost onClick={close}>취소</BtnGhost><BtnPrimary onClick={close}>내려받기</BtnPrimary></>}
-    >
-      <Field label="포함 범위">
-        <div className="flex gap-1.5">
-          {['전체 문항', '답변완료만', 'AI 초안 포함'].map((s) => {
-            const on = scope === s
-            return (
-              <button
-                key={s}
-                onClick={() => setScope(s)}
-                className="flex-1 rounded-md border py-2 text-sm2 font-bold"
-                style={{
-                  background: on ? '#eff6ff' : '#fff',
-                  borderColor: on ? '#bfdbfe' : '#cbd5e1',
-                  color: on ? '#1345bd' : '#334155',
-                }}
-              >
-                {s}
-              </button>
-            )
-          })}
-        </div>
-      </Field>
-      <Field label="파일 형식">
-        <select className={inputCls}>
-          <option>PDF (답변 + 증빙 병합)</option>
-          <option>XLSX (답변표)</option>
-          <option>ZIP (증빙 원본 포함)</option>
-        </select>
-      </Field>
-      <div className="rounded-lg border border-ink-200 bg-ink-50 px-3.5 py-3 text-sm2 leading-[1.7] text-ink-500">
-        답변완료 214문항 · 증빙 246건이 포함됩니다. 미처리 45문항은 빈칸으로 표기됩니다.
-      </div>
-    </Modal>
+      id="evpack"
+      title="증빙 팩 내보내기"
+      desc="문항별 답변과 증빙을 1개 파일로 묶어 내려받습니다"
+      width={460}
+      cta="내보내기 시작"
+      fields={[
+        { label: '포함 범위', type: 'chips', options: ['전체 문항', '답변완료만', '현재 필터'] },
+        { label: '증빙 파일', type: 'chips', options: ['원본 첨부', '인용 페이지만', '링크만'] },
+        { label: '출력 형식', type: 'select', options: ['PDF 통합본', 'ZIP (답변서 + 증빙 원본)', 'XLSX 답변표'] },
+      ]}
+    />
   )
 }
-
-/* ── 시트 ─────────────────────────────────────────── */
 
 function TaskRequestSheet() {
   const { isOpen, close, payload } = useLayer('task-request')
   const [to, setTo] = useState((payload?.to as string) ?? 'm3')
   const [dueIdx, setDueIdx] = useState(1)
+  const [reqType, setReqType] = useState(0)
   return (
     <Sheet
       open={isOpen}
       onClose={close}
-      title="업무 요청"
-      desc="특정 담당자에게 업무 또는 파일을 요청합니다"
-      width={400}
+      title="업무 요청 (Task)"
+      desc="담당자를 지정해 자료·업무를 요청합니다"
+      width={420}
       footer={<><BtnGhost onClick={close}>취소</BtnGhost><div className="flex-1" /><BtnPrimary onClick={close}>요청 보내기</BtnPrimary></>}
     >
       <Field label="담당자 지정">
@@ -677,6 +559,27 @@ function TaskRequestSheet() {
                   {m.name[0]}
                 </span>
                 {m.name}
+              </button>
+            )
+          })}
+        </div>
+      </Field>
+      <Field label="요청 유형">
+        <div className="flex gap-1.5">
+          {['자료 요청', '업무 처리', '검토 요청'].map((t, i) => {
+            const on = reqType === i
+            return (
+              <button
+                key={t}
+                onClick={() => setReqType(i)}
+                className="flex-1 whitespace-nowrap rounded-[7px] border py-2 text-sm2 font-bold"
+                style={{
+                  background: on ? '#1750d8' : '#fff',
+                  borderColor: on ? '#1750d8' : '#cbd5e1',
+                  color: on ? '#fff' : '#334155',
+                }}
+              >
+                {t}
               </button>
             )
           })}
@@ -714,6 +617,92 @@ function TaskRequestSheet() {
           파일을 끌어다 놓거나 <span className="underline">찾아보기</span>
         </button>
       </Field>
+    </Sheet>
+  )
+}
+
+function TaskAlertSheet() {
+  const { isOpen, close } = useLayer('task-alert')
+  const { setTaskId, setScreen } = useAppStore()
+  return (
+    <Sheet
+      open={isOpen}
+      onClose={close}
+      title="내 Task"
+      desc="요청받은 업무와 진행 상태"
+      width={420}
+      footer={<><BtnGhost onClick={close}>닫기</BtnGhost><div className="flex-1" /><BtnPrimary onClick={() => { setScreen('task'); close() }}>업무 관리 열기</BtnPrimary></>}
+    >
+      <div className="flex flex-col">
+        {tasks.map((t) => {
+          const tone = taskStatusTone[t.status]
+          return (
+            <button
+              key={t.id}
+              onClick={() => { setTaskId(t.id); setScreen('task'); close() }}
+              className="block w-full border-b border-l-2 border-ink-100 px-2.5 py-3 text-left last:border-b-0 hover:bg-ink-50"
+              style={{ borderLeftColor: tone.bar }}
+            >
+              <span className="mb-[5px] flex items-center gap-1.5">
+                <span
+                  className="rounded-full px-2 py-0.5 text-mini font-extrabold"
+                  style={{ background: tone.bg, color: tone.fg }}
+                >
+                  {t.status}
+                </span>
+                <span className="font-mono text-mini text-ink-400">TASK-{t.no}</span>
+                <span className="ml-auto whitespace-nowrap text-mini text-ink-400">~{t.due}</span>
+              </span>
+              <span className="block text-sm2 font-bold leading-[1.6]">{t.title}</span>
+              <span className="mt-1 block text-xs2 text-ink-500">
+                {t.from} → {t.to} · {t.room}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </Sheet>
+  )
+}
+
+function TocEditSheet() {
+  const { isOpen, close } = useLayer('toc-edit')
+  const items: [string, number][] = [
+    ['1. 개요', 0],
+    ['2. 환경 경영', 0],
+    ['2.1 인증 현황', 1],
+    ['2.2 온실가스 배출', 1],
+    ['3. 노동·인권', 0],
+    ['4. 윤리 경영', 0],
+  ]
+  return (
+    <Sheet
+      open={isOpen}
+      onClose={close}
+      title="목차 편집"
+      desc="드래그로 순서와 단계를 조정합니다"
+      width={380}
+      footer={<><BtnGhost onClick={close}>취소</BtnGhost><div className="flex-1" /><BtnPrimary onClick={close}>목차 적용</BtnPrimary></>}
+    >
+      <div className="flex flex-col">
+        {items.map(([label, lv]) => (
+          <div key={label} className="flex items-center gap-2 border-b border-ink-100 py-2.5 last:border-b-0">
+            <Icon name="drag_indicator" size={17} className="text-ink-300" />
+            <span
+              className="min-w-0 flex-1 truncate text-label"
+              style={{ paddingLeft: lv * 18, fontWeight: lv === 0 ? 700 : 500 }}
+            >
+              {label}
+            </span>
+            <span className="flex-none rounded bg-ink-100 px-1.5 py-0.5 text-mini font-extrabold text-ink-500">
+              {lv === 0 ? 'H1' : 'H2'}
+            </span>
+          </div>
+        ))}
+      </div>
+      <button className="mt-3 w-full rounded-lg border border-dashed border-ink-300 py-2.5 text-sm2 font-bold text-ink-500 hover:border-brand-link hover:text-brand-link">
+        + 목차 항목 추가
+      </button>
     </Sheet>
   )
 }

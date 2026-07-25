@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Icon } from '@/components/common/icon'
 import { DotCube } from '@/components/common/DotCube'
@@ -48,6 +48,13 @@ export function LoginPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]['id']>(
     (params.get('tab') as (typeof TABS)[number]['id']) ?? 'login',
   )
+  // 검수 인덱스에서 같은 라우트의 다른 탭으로 열 때 쿼리 변화를 따라간다
+  const qTab = params.get('tab') as (typeof TABS)[number]['id'] | null
+  useEffect(() => {
+    if (qTab && qTab !== tab) setTab(qTab)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qTab])
+
   const [pw, setPw] = useState('')
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [agree, setAgree] = useState({ tos: false, priv: false, mkt: false })

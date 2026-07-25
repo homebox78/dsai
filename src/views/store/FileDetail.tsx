@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { fileStatusTone, type DocFile } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
@@ -41,8 +42,8 @@ const PAGE_LINES: [string, string, string][] = [
 export function FileDetail({ file, folderName }: { file: DocFile; folderName: string }) {
   const { setStoreMode } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
-  const [tab, setTab] = useState('preview')
-  const [summaryOpen, setSummaryOpen] = useState(true)
+  const [tab, setTab] = useQaState('detailTab', 'preview')
+  const [summaryOpen, setSummaryOpen] = useQaState('summaryOpen', true)
   const [page, setPage] = useState(1)
   const [highlight, setHighlight] = useState<string | null>(null)
 

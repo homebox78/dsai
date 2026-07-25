@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Select } from '@/components/common/select'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { Modal, BtnGhost, BtnPrimary } from './Modal'
 import { useLayer } from '@/stores/layer-store'
@@ -62,8 +64,9 @@ const ROWS: Record<string, Row[]> = {
 
 export function SettingsModal() {
   const { isOpen, close } = useLayer('settings')
-  const [tab, setTab] = useState<string>('account')
+  const [tab, setTab] = useQaState<string>('settingTab', 'account')
   const [flags, setFlags] = useState<Record<string, boolean>>({})
+  const [picks, setPicks] = useState<Record<string, string>>({})
   const cur = NAV.find((n) => n.id === tab) ?? NAV[0]
 
   return (
@@ -119,11 +122,13 @@ export function SettingsModal() {
               )}
 
               {r.kind === 'select' && (
-                <select className="w-[190px] flex-none rounded-md border border-ink-300 px-2.5 py-1.5 text-sm2 outline-none">
-                  {r.options.map((o) => (
-                    <option key={o}>{o}</option>
-                  ))}
-                </select>
+                <Select
+                  ddKey={`set:${r.label}`}
+                  value={picks[r.label] ?? r.options[0]}
+                  options={r.options}
+                  onChange={(v) => setPicks({ ...picks, [r.label]: v })}
+                  className="w-[190px] flex-none"
+                />
               )}
 
               {r.kind === 'action' && (

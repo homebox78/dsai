@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
+import { Select } from '@/components/common/select'
 import { Icon } from '@/components/common/icon'
 import { ChatbotPanel } from '@/components/common/ChatbotPanel'
 import { PanelHandle } from '@/components/layout/PanelHandle'
@@ -37,10 +39,11 @@ export function EcoWorkView() {
   const { contentMin, autoHideBot } = useLayoutMetrics()
   const botOpen = botPref && !autoHideBot
   const openLayer = useLayerStore((s) => s.open)
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useQaState('ecoQuery', '')
   const [filter, setFilter] = useState('전체')
-  const [editing, setEditing] = useState(false)
-  const [search, setSearch] = useState<SearchState>('idle')
+  const [editing, setEditing] = useQaState('qEdit', false)
+  const [search, setSearch] = useQaState<SearchState>('ecoSearch', 'idle')
+  const [searchFolder, setSearchFolder] = useState(folders[4]?.name ?? folders[0].name)
   const [answer, setAnswer] = useState('')
   const [attachments, setAttachments] = useState([
     { ext: 'PDF', name: '윤리경영 행동강령_v2.pdf', path: 'ESG 정책 문서 / 노동·인권', page: 'p.12~14' },
@@ -219,11 +222,13 @@ export function EcoWorkView() {
             답변 자료 찾기 · 폴더 지정 AI 검색
           </div>
           <div className="flex items-center gap-1.5">
-            <select className="w-[220px] rounded-md border border-ink-300 bg-white px-3 py-2 text-label outline-none">
-              {folders.map((f) => (
-                <option key={f.id}>{f.name}</option>
-              ))}
-            </select>
+            <Select
+              ddKey="eco:folder"
+              value={searchFolder}
+              options={folders.map((f) => f.name)}
+              onChange={setSearchFolder}
+              className="w-[220px]"
+            />
             <button
               onClick={runSearch}
               className="rounded-md bg-brand px-3.5 py-2 text-sm2 font-bold text-white hover:bg-brand-dark"

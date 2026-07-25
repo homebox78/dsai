@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { ChatbotPanel } from '@/components/common/ChatbotPanel'
 import { PanelHandle } from '@/components/layout/PanelHandle'
-import { fileStatusTone, filesByFolder, folders, findFile } from '@/mocks/data'
+import { allFiles, fileStatusTone, filesByFolder, folders, findFile } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { useLayoutMetrics } from '@/lib/responsive'
@@ -25,14 +26,15 @@ const SORTS: [string, string][] = [
 ]
 
 export function StoreView() {
-  const { folder, fileId, storeMode, botOpen: botPref, toggleBot, setFolder, openFile } = useAppStore()
+  const { folder, fileId, storeMode, botOpen: botPref, toggleBot, setFolder, openFile, setStoreMode } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
-  const [folderQuery, setFolderQuery] = useState('')
+  const [folderQuery, setFolderQuery] = useQaState('folderQuery', '')
   const [fileQuery, setFileQuery] = useState('')
   const [scope, setScope] = useState('project')
-  const [status, setStatus] = useState('전체')
-  const [sort, setSort] = useState('recent')
-  const [listPref, setListPref] = useState<boolean | null>(null)
+  const [status, setStatus] = useQaState('fileStatus', '전체')
+  const [sort, setSort] = useQaState('sort', 'recent')
+  const [listPref, setListPref] = useQaState<boolean | null>('listCol', null)
+  const [ctx, setCtx] = useQaState<{ x: number; y: number; id: string } | null>('ctx', null)
   const { storeRowMin, contentMin, autoHideList, autoHideBot } = useLayoutMetrics()
   // 시안: 좁아지면 자동 접힘, 단 목록 모드거나 사용자가 명시로 펼치면 유지
   const listOpen = listPref ?? (!autoHideList || storeMode === 'list')
@@ -185,6 +187,10 @@ export function StoreView() {
                 <button
                   key={f.id}
                   onClick={() => openFile(f.id)}
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                    setCtx({ x: e.clientX, y: e.clientY, id: f.id })
+                  }}
                   className="block w-full border-b border-l-2 border-ink-100 px-3 py-2 text-left hover:bg-ink-50"
                   style={{ background: on ? '#eff6ff' : '#fff', borderLeftColor: on ? '#2563eb' : 'transparent' }}
                 >
@@ -265,6 +271,10 @@ export function StoreView() {
                     <button
                       key={f.id}
                       onClick={() => openFile(f.id)}
+                      onContextMenu={(e) => {
+                        e.preventDefault()
+                        setCtx({ x: e.clientX, y: e.clientY, id: f.id })
+                      }}
                       className="grid w-full min-w-[640px] grid-cols-[minmax(200px,1fr)_78px_62px_62px_84px_92px] items-center gap-2 border-b border-ink-100 bg-white px-[18px] py-[11px] text-left hover:bg-ink-50"
                     >
                       <span className="min-w-0">
@@ -316,6 +326,48 @@ export function StoreView() {
         />
       )}
       <PanelHandle side="right" open={botOpen} onClick={toggleBot} title={botOpen ? '챗봇 접기' : '챗봇 펼치기'} />
+
+      {/* 파일 우클릭 컨텍스트 메뉴 */}
+      {ctx && (
+        <div
+          className="fixed inset-0 z-[104]"
+          onClick={() => setCtx(null)}
+          onContextMenu={(e) => {
+            e.preventDefault()
+            setCtx(null)
+          }}
+        >
+          <div
+            className="absolute w-[206px] rounded-[9px] border border-ink-200 bg-white p-[5px] shadow-[0_14px_36px_rgba(15,23,42,.16)]"
+            style={{ top: ctx.y, left: ctx.x }}
+          >
+            <div className="mb-1 truncate border-b border-ink-100 px-2.5 pb-1.5 pt-[7px] text-[11.6px] font-extrabold">
+              {allFiles.find((f) => f.id === ctx.id)?.name ?? ''}
+            </div>
+            {[
+              { label: '문서 열기 · AI로 찾기', run: () => openFile(ctx.id) },
+              { label: '뷰어로 열기', run: () => { openFile(ctx.id); openLayer('viewer') } },
+              { label: '문서 수정', run: () => { openFile(ctx.id); setStoreMode('editor') } },
+              { label: '다운로드', run: () => {} },
+              { label: '공유 링크 복사', run: () => {} },
+              { label: '자료 요청 보내기', run: () => openLayer('task-request') },
+              { label: '삭제', run: () => openLayer('file-delete'), danger: true },
+            ].map((it) => (
+              <button
+                key={it.label}
+                onClick={() => {
+                  it.run()
+                  setCtx(null)
+                }}
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-xs2 font-semibold hover:bg-ink-100"
+                style={{ color: it.danger ? '#b91c1c' : '#0f172a' }}
+              >
+                {it.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

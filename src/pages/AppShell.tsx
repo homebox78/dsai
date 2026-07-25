@@ -5,8 +5,10 @@ import { PanelHandle } from '@/components/layout/PanelHandle'
 import { WsPopover } from '@/components/layout/WsPopover'
 import { MegaMenu } from '@/components/layout/MegaMenu'
 import { LayerHost } from '@/components/layers/LayerHost'
+import { QaBar } from '@/components/common/QaBar'
 import { useAppStore } from '@/stores/app-store'
 import { ScreenRouter } from '@/views/ScreenRouter'
+import { useHashSync } from '@/lib/hash-sync'
 
 /**
  * 단일 앱 셸 — 화면 운영 원칙상 여기가 유일한 앱 화면이다.
@@ -16,6 +18,7 @@ import { ScreenRouter } from '@/views/ScreenRouter'
 export function AppShell() {
   const { menuOpen, toggleMenu, wsPopOpen, closeDropdowns, notiOpen, helpOpen, userOpen } = useAppStore()
   const anyDropdown = notiOpen || helpOpen || userOpen
+  useHashSync()
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-ink-50 text-[14.1px]">
@@ -36,6 +39,7 @@ export function AppShell() {
       {wsPopOpen && <WsPopover />}
       <MegaMenu />
       <LayerHost />
+      <QaBar />
 
       {/* 드롭다운 바깥 클릭 닫기 */}
       {anyDropdown && <div className="fixed inset-0 z-[55]" onClick={closeDropdowns} />}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { tasks, taskStatusTone } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
@@ -64,7 +65,8 @@ export function ChatbotPanel({
   const [msgs, setMsgs] = useState<BotMsg[]>([{ role: 'ai', text: INTRO[kind] }])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
-  const [insertOpen, setInsertOpen] = useState<number | null>(null)
+  const [insertDemo] = useQaState('insertDemo', false)
+  const [insertOpen, setInsertOpen] = useState<number | null>(insertDemo ? 0 : null)
 
   const myTasks = tasks.filter((t) => t.to === '나' && t.status !== '완료' && t.status !== '반려')
 

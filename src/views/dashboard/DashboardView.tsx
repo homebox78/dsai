@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { ctx, findFile, fileStatusTone, rooms, tasks, taskStatusTone } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
@@ -81,7 +82,7 @@ export function DashboardView() {
   const { setScreen, setQId, setTaskId, setRoom, openFile, setFolder } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const [range, setRange] = useState('week')
-  const [taskTab, setTaskTab] = useState<'mine' | 'sent'>('mine')
+  const [taskTab, setTaskTab] = useQaState<'mine' | 'sent'>('dashTaskTab', 'mine')
 
   const myOpen = tasks.filter((t) => t.to === '나' && t.status !== '완료' && t.status !== '반려').length
   const sentTasks = tasks.filter((t) => t.from === '나')

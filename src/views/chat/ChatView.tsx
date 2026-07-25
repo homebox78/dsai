@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { members, msgs, rooms, tasks, taskStatusTone } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
@@ -37,14 +38,14 @@ export function ChatView() {
   const { room, setRoom, setTaskId, setScreen } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const [roomQuery, setRoomQuery] = useState('')
-  const [roomFilter, setRoomFilter] = useState('all')
-  const [searchOpen, setSearchOpen] = useState(false)
+  const [roomFilter, setRoomFilter] = useQaState('roomFilter', 'all')
+  const [searchOpen, setSearchOpen] = useQaState('roomSearch', false)
   const [msgQuery, setMsgQuery] = useState('')
-  const [pinnedOpen, setPinnedOpen] = useState(false)
-  const [zoneTab, setZoneTab] = useState<'task' | 'info'>('task')
+  const [pinnedOpen, setPinnedOpen] = useQaState('pinnedOpen', false)
+  const [zoneTab, setZoneTab] = useQaState<'task' | 'info'>('zoneTab', 'task')
   const [zoneFilter, setZoneFilter] = useState('all')
   const [input, setInput] = useState('')
-  const [mentionOpen, setMentionOpen] = useState(false)
+  const [mentionOpen, setMentionOpen] = useQaState('mentionOpen', false)
   const { chatRowMin, autoHideZone } = useLayoutMetrics()
 
   const cur = rooms.find((r) => r.id === room) ?? rooms[0]
@@ -182,7 +183,7 @@ export function ChatView() {
           </span>
           <div>
             <div className="whitespace-nowrap text-body font-extrabold">{cur.name}</div>
-            <div className="whitespace-nowrap text-xs2 text-ink-400">{cur.type} · 메시지 {curMsgs.length}건</div>
+            <div className="whitespace-nowrap text-[11.2px] text-ink-400">{cur.type === '1:1' ? '1:1 대화 · 온라인' : `${cur.type} 참여`}</div>
           </div>
           <div className="ml-1 flex items-center">
             {members.slice(0, 3).map((m) => (

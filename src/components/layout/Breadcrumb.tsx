@@ -1,5 +1,5 @@
 import { Icon } from '@/components/common/icon'
-import { ctx, folders, findFile } from '@/mocks/data'
+import { ctx, filesByFolder, folders, findFile } from '@/mocks/data'
 import { useAppStore, type ScreenKey } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 
@@ -35,7 +35,7 @@ export function Breadcrumb() {
 
   const badges =
     screen === 'store'
-      ? [{ label: `RAG 색인 ${folders.find((f) => f.id === folder)?.count ?? 0}건`, bg: '#ecfdf3', fg: '#15803d', bd: '#bbf7d0' }]
+      ? [{ label: `RAG 색인 ${(filesByFolder[folder] ?? []).length}건`, bg: '#ecfdf3', fg: '#15803d', bd: '#bbf7d0' }]
       : screen === 'ecoWork' || screen === 'ecoSum'
         ? [{ label: 'OCR 300문항', bg: '#f0fdf4', fg: '#15803d', bd: '#bbf7d0' }]
         : []
