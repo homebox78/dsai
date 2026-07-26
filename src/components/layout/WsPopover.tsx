@@ -98,7 +98,6 @@ export function WsPopover() {
                         on ? 'bg-ink-50' : ''
                       }`}
                     >
-                      <Icon name={on ? 'expand_more' : 'chevron_right'} size={16} className="text-ink-400" />
                       <span className="flex size-6 flex-none items-center justify-center rounded-[7px] border border-brand-border bg-brand-soft text-tiny font-extrabold text-brand-dark">
                         {w.initial}
                       </span>
@@ -108,6 +107,12 @@ export function WsPopover() {
                           {w.role} · {w.meta}
                         </span>
                       </span>
+                      {/* 접기·펴기 아이콘은 행 우측 끝 */}
+                      <Icon
+                        name={on ? 'expand_less' : 'expand_more'}
+                        size={16}
+                        className="ml-auto flex-none text-ink-400"
+                      />
                     </button>
                     {on && (
                       <div className="py-0.5 pl-5">

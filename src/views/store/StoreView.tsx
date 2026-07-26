@@ -4,7 +4,8 @@ import { Icon } from '@/components/common/icon'
 import { ChatbotPanel } from '@/components/common/ChatbotPanel'
 import { PanelHandle } from '@/components/layout/PanelHandle'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import { allFiles, fileStatusTone, filesByFolder, folders, findFile } from '@/mocks/data'
+import { fileStatusTone } from '@/mocks/data'
+import { useDataStore } from '@/stores/data-store'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { useLayoutMetrics } from '@/lib/responsive'
@@ -36,6 +37,10 @@ export function StoreView() {
   const [sort, setSort] = useQaState('sort', 'recent')
   const [listPref, setListPref] = useQaState<boolean | null>('listCol', null)
   const [ctx, setCtx] = useQaState<{ x: number; y: number; id: string } | null>('ctx', null)
+  const folders = useDataStore((s) => s.folders)
+  const filesByFolder = useDataStore((s) => s.filesByFolder)
+  const allFiles = Object.values(filesByFolder).flat()
+  const findFile = (id: string) => allFiles.find((f) => f.id === id)
   const { storeRowMin, contentMin, autoHideList, autoHideBot } = useLayoutMetrics()
   // 시안: 좁아지면 자동 접힘, 단 목록 모드거나 사용자가 명시로 펼치면 유지
   const listOpen = listPref ?? (!autoHideList || storeMode === 'list')
@@ -263,7 +268,7 @@ export function StoreView() {
             <div className="flex-1 overflow-auto bg-white">
               <div className="overflow-x-auto">
                 <div className="sticky top-0 z-[1] grid min-w-[640px] grid-cols-[minmax(200px,1fr)_78px_62px_62px_84px_92px] gap-2 border-b border-ink-200 bg-white px-[18px] py-[11px] text-xs2 font-extrabold text-ink-400">
-                  <span className="truncate">파일명 · 요약</span>
+                  <span className="truncate text-center">파일명 · 요약</span>
                   <span className="whitespace-nowrap text-center">상태</span>
                   <span className="whitespace-nowrap text-center">페이지</span>
                   <span className="whitespace-nowrap text-center">크기</span>
@@ -299,8 +304,8 @@ export function StoreView() {
                           {f.status}
                         </span>
                       </span>
-                      <span className="text-center text-sm2 text-ink-500">{f.pages}p</span>
-                      <span className="text-center text-sm2 text-ink-500">{f.size}</span>
+                      <span className="text-right text-sm2 text-ink-500">{f.pages}p</span>
+                      <span className="text-right text-sm2 text-ink-500">{f.size}</span>
                       <span className="text-center text-sm2 text-ink-500">{f.owner}</span>
                       <span className="text-center text-sm2 text-ink-500">{f.date}</span>
                     </button>

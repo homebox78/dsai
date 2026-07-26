@@ -214,7 +214,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
 
         {tab === 'meta' && (
           <div className="flex-1 overflow-auto bg-white p-4">
-            <div className="max-w-[640px]">
+            <div className="w-full">
               {metaRows.map((m) => (
                 <div key={m.label} className="grid grid-cols-[132px_1fr] gap-3 border-b border-ink-100 px-[18px] py-[11px]">
                   <span className="whitespace-nowrap text-sm2 text-ink-400">{m.label}</span>
@@ -232,7 +232,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
 
         {tab === 'version' && (
           <div className="flex-1 overflow-auto bg-ink-50 p-4">
-            <div className="flex max-w-[620px] flex-col gap-2">
+            <div className="flex w-full flex-col gap-2">
               {VERSIONS.map((v) => (
                 <div
                   key={v.ver}
@@ -265,7 +265,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
 
         {tab === 'activity' && (
           <div className="flex-1 overflow-auto bg-ink-50 p-4">
-            <div className="flex max-w-[620px] flex-col">
+            <div className="flex w-full flex-col">
               {ACTIVITY.map((a, i) => (
                 <div key={i} className="flex gap-3">
                   <div className="flex w-2.5 flex-none flex-col items-center">

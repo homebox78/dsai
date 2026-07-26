@@ -1,5 +1,6 @@
 import { Icon } from '@/components/common/icon'
 import { useQaState } from '@/lib/qa-state'
+import { useFlipUp } from '@/lib/flip-up'
 
 /**
  * 커스텀 드롭다운 — 네이티브 select 금지 규칙(시안 공통 규칙 9)에 따른 공용 컴포넌트.
@@ -11,7 +12,7 @@ export function Select({
   options,
   onChange,
   className = '',
-  up = false,
+  up,
 }: {
   /** 열림 상태 키 — 검수 프리셋(ddOpen)과 동일한 문자열 */
   ddKey: string
@@ -19,15 +20,19 @@ export function Select({
   options: string[]
   onChange: (v: string) => void
   className?: string
-  /** 하단 잘림 방지: 위로 열기 */
+  /** 강제로 위로 열기 (기본은 공간을 재서 자동 판정) */
   up?: boolean
 }) {
   const [ddOpen, setDdOpen] = useQaState<string | null>('ddOpen', null)
   const open = ddOpen === ddKey
+  const { ref, up: autoUp } = useFlipUp<HTMLButtonElement>(open, Math.min(220, options.length * 34 + 12))
+  const openUp = up ?? autoUp
 
   return (
-    <div className={`relative ${className}`}>
+    // 최소 폭을 고정해 화면마다 드롭다운 폭이 들쭉날쭉하지 않게 한다
+    <div className={`relative min-w-[140px] ${className}`}>
       <button
+        ref={ref}
         onClick={() => setDdOpen(open ? null : ddKey)}
         className="flex w-full items-center gap-2 rounded-md border bg-white px-2.5 py-1.5 text-left text-sm2"
         style={{ borderColor: open ? '#1750d8' : '#cbd5e1' }}
@@ -38,7 +43,7 @@ export function Select({
       {open && (
         <div
           className="absolute left-0 z-30 max-h-[220px] w-full overflow-auto rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
-          style={up ? { bottom: 'calc(100% + 4px)' } : { top: 'calc(100% + 4px)' }}
+          style={openUp ? { bottom: 'calc(100% + 4px)' } : { top: 'calc(100% + 4px)' }}
         >
           {options.map((o) => {
             const on = o === value

@@ -177,7 +177,7 @@ export function EcoSummaryView() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="문항번호·키워드 검색"
-                className="w-[158px] border-none border-b border-b-ink-300 bg-transparent px-0.5 py-[5px] text-sm2 outline-none"
+                className="h-[34px] w-[158px] border-none border-b border-b-ink-300 bg-transparent px-0.5 text-sm2 outline-none"
               />
               {FILTERS.map((f) => {
                 const on = filter === f
@@ -185,7 +185,7 @@ export function EcoSummaryView() {
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className="rounded-full border px-2.5 py-1 text-xs2 font-bold"
+                    className="h-[34px] rounded-full border px-2.5 text-xs2 font-bold"
                     style={{
                       background: on ? '#1750d8' : '#fff',
                       borderColor: on ? '#1750d8' : '#cbd5e1',

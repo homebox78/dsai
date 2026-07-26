@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@/components/common/icon'
 import { BtnDanger, BtnGhost, BtnPrimary, Field, Modal, Sheet, inputCls } from './Modal'
 import { FormModal } from './FormModal'
+import { ChoiceRow } from '@/components/common/ChoiceRow'
 import { SettingsModal } from './SettingsModal'
 import { ViewerModal } from './ViewerModal'
 import { ctx, findFile, folders, members, rooms, tasks, taskStatusTone } from '@/mocks/data'
@@ -14,6 +15,8 @@ import { useAppStore } from '@/stores/app-store'
  */
 /** 시안 chipsPerm */
 const PERM_CHIPS = ['편집 가능', '댓글 가능', '보기 전용']
+const REQ_TYPES = ['자료 요청', '업무 처리', '검토 요청']
+const DUES = ['오늘', '3일 내', '1주 내', '직접 입력']
 
 export function LayerHost() {
   return (
@@ -565,25 +568,12 @@ function TaskRequestSheet() {
         </div>
       </Field>
       <Field label="요청 유형">
-        <div className="flex gap-1.5">
-          {['자료 요청', '업무 처리', '검토 요청'].map((t, i) => {
-            const on = reqType === i
-            return (
-              <button
-                key={t}
-                onClick={() => setReqType(i)}
-                className="flex-1 whitespace-nowrap rounded-[7px] border py-2 text-sm2 font-bold"
-                style={{
-                  background: on ? '#1750d8' : '#fff',
-                  borderColor: on ? '#1750d8' : '#cbd5e1',
-                  color: on ? '#fff' : '#334155',
-                }}
-              >
-                {t}
-              </button>
-            )
-          })}
-        </div>
+        <ChoiceRow
+          name="req-type"
+          value={REQ_TYPES[reqType]}
+          options={REQ_TYPES}
+          onChange={(v) => setReqType(REQ_TYPES.indexOf(v))}
+        />
       </Field>
       <Field label="요청 제목">
         <input className={inputCls} placeholder="예: 2025 표준계약서 최신본 전달" />
@@ -592,25 +582,7 @@ function TaskRequestSheet() {
         <textarea className={`${inputCls} resize-none`} rows={4} placeholder="필요한 업무 내용, 파일 조건 등을 적어주세요" />
       </Field>
       <Field label="처리 기한">
-        <div className="flex gap-1.5">
-          {['오늘', '3일 내', '1주 내', '직접 입력'].map((d, i) => {
-            const on = dueIdx === i
-            return (
-              <button
-                key={d}
-                onClick={() => setDueIdx(i)}
-                className="flex-1 whitespace-nowrap rounded-md border py-2 text-xs2 font-bold"
-                style={{
-                  background: on ? '#1750d8' : '#fff',
-                  borderColor: on ? '#1750d8' : '#cbd5e1',
-                  color: on ? '#fff' : '#334155',
-                }}
-              >
-                {d}
-              </button>
-            )
-          })}
-        </div>
+        <ChoiceRow name="req-due" value={DUES[dueIdx]} options={DUES} onChange={(v) => setDueIdx(DUES.indexOf(v))} />
       </Field>
       <Field label="참고 파일 첨부">
         <button className="w-full rounded-lg border border-dashed border-ink-300 py-6 text-sm2 font-bold text-ink-500 hover:border-brand-link hover:text-brand-link">

@@ -1,7 +1,7 @@
 import { Icon } from '@/components/common/icon'
 
 /**
- * 패널 경계 토글 핸들 — 시안 실측: 22×22 원형 / top 96
+ * 패널 경계 토글 핸들 — 22×22 사각형(radius 4) / top 96 / 화살표는 가로·세로 정중앙
  * 좌측 핸들은 경계 위(-11), 우측 핸들은 화면 끝에서 잘리지 않도록 **경계 안쪽**(+6)에 고정한다.
  * hover 시 border·color·shadow가 브랜드색으로.
  */
@@ -25,10 +25,10 @@ export function PanelHandle({
       <button
         onClick={onClick}
         title={title}
-        className="absolute top-24 flex size-[22px] items-center justify-center rounded-full border border-ink-300 bg-white p-0 text-ink-500 shadow-[0_1px_4px_rgba(15,23,42,.14)] transition-[border-color,color,box-shadow] duration-100 hover:border-brand hover:text-brand hover:shadow-[0_2px_9px_rgba(23,80,216,.24)]"
+        className="absolute top-24 grid size-[22px] place-items-center rounded-[4px] border border-ink-300 bg-white p-0 leading-none text-ink-500 shadow-[0_1px_4px_rgba(15,23,42,.14)] transition-[border-color,color,box-shadow] duration-100 hover:border-brand hover:text-brand hover:shadow-[0_2px_9px_rgba(23,80,216,.24)]"
         style={side === 'left' ? { left: -11 } : { right: 6 }}
       >
-        <Icon name={arrow} size={16} />
+        <Icon name={arrow} size={16} className="block leading-none" />
       </button>
     </div>
   )

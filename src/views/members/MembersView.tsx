@@ -1,6 +1,7 @@
 import { Icon } from '@/components/common/icon'
 import { useQaState } from '@/lib/qa-state'
-import { members } from '@/mocks/data'
+import { useFlipUp } from '@/lib/flip-up'
+import { useDataStore } from '@/stores/data-store'
 import { useAppStore, type SysTab } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
@@ -28,9 +29,8 @@ const PERM_SUMMARY = [
   { label: '보기 전용', count: 2, color: '#cbd5e1' },
 ]
 
-/** 시안 ALLM — 목업 멤버 4명 + 마스터/외부 협업자 2명 */
-const ALL_MEMBERS = [
-  ...members,
+/** 시안 ALLM — 스토어 멤버 + 마스터/외부 협업자 2명 */
+const EXTRA_MEMBERS = [
   {
     id: 'm5', name: '홍길동', role: '성과 리드', dept: 'ESG팀', email: 'hong@evolvailab.com',
     perm: '마스터', on: true, state: '활성', last: '방금 전',
@@ -91,7 +91,7 @@ const tagTone = (t: string) =>
         ? { bg: '#ecfdf3', fg: '#15803d' }
         : { bg: '#f1f5f9', fg: '#64748b' }
 
-const matchFilter = (m: (typeof ALL_MEMBERS)[number], id: string) =>
+const matchFilter = (m: { state: string; dept: string }, id: string) =>
   id === 'all' ? true : id === 'active' ? m.state === '활성' : id === 'pending' ? m.state === '초대 대기' : m.dept === '외부 협업자'
 
 const GRID = '34px minmax(170px,1fr) 150px 108px 104px 92px 76px'
@@ -104,6 +104,10 @@ export function MembersView() {
   const [filter, setFilter] = useQaState('memberFilter', 'all')
   const [sel, setSel] = useQaState<Record<string, boolean>>('memberSel', {})
   const [ddOpen, setDdOpen] = useQaState<string | null>('ddOpen', null)
+  const storeMembers = useDataStore((s) => s.members)
+  const ALL_MEMBERS = [...storeMembers, ...EXTRA_MEMBERS]
+  const setMemberPerm = useDataStore((s) => s.setMemberPerm)
+  const removeMembers = useDataStore((s) => s.removeMembers)
   const [roleOv, setRoleOv] = useQaState<Record<string, string>>('roleOverride', {})
 
   const q = query.trim()
@@ -176,7 +180,7 @@ export function MembersView() {
             </div>
           </div>
           <div className="flex-1" />
-          <div className="flex w-[190px] items-center gap-1.5 rounded-md border border-ink-300 bg-white px-2.5 py-1.5">
+          <div className="flex h-[34px] w-[190px] items-center gap-1.5 rounded-md border border-ink-300 bg-white px-2.5">
             <Icon name="search" size={16} className="text-ink-400" />
             <input
               value={query}
@@ -187,7 +191,7 @@ export function MembersView() {
           </div>
           <button
             onClick={() => openLayer('member-invite')}
-            className="flex items-center gap-1 whitespace-nowrap rounded-md bg-brand px-3 py-2 text-xs2 font-bold text-white hover:bg-brand-dark"
+            className="flex h-[34px] items-center gap-1 whitespace-nowrap rounded-md bg-brand px-3 text-xs2 font-bold text-white hover:bg-brand-dark"
           >
             <Icon name="person_add" size={17} />
             멤버 추가
@@ -227,7 +231,10 @@ export function MembersView() {
                     권한 변경
                   </button>
                   <button
-                    onClick={() => setSel({})}
+                    onClick={() => {
+                      removeMembers(Object.entries(sel).filter(([, on]) => on).map(([id]) => id))
+                      setSel({})
+                    }}
                     className="whitespace-nowrap rounded-md border border-[#fecaca] bg-white px-2.5 py-[5px] text-[11.6px] font-bold text-[#b91c1c] hover:bg-[#fef2f2]"
                   >
                     내보내기
@@ -244,19 +251,19 @@ export function MembersView() {
                 <button onClick={toggleAll} className="justify-self-start" style={{ color: allOn ? '#1750d8' : '#cbd5e1' }}>
                   <Icon name={allOn ? 'check_box' : 'check_box_outline_blank'} size={18} />
                 </button>
-                <span className={head}>멤버</span>
-                <span className={head}>이메일</span>
+                <span className={`${head} text-center`}>멤버</span>
+                <span className={`${head} text-center`}>이메일</span>
                 <span className={`${head} text-center`}>권한</span>
-                <span className={head}>담당 프로젝트</span>
+                <span className={`${head} text-center`}>담당 프로젝트</span>
                 <span className={`${head} text-center`}>상태</span>
                 <span className={`${head} text-center`}>최근 접속</span>
               </div>
 
-              {list.map((m, i) => {
+              {list.map((m) => {
                 const checked = !!sel[m.id]
                 const role = roleOv[m.id] ?? m.perm
                 const open = ddOpen === `role:${m.id}`
-                const upward = i >= list.length - 2
+
                 return (
                   <div
                     key={m.id}
@@ -289,47 +296,18 @@ export function MembersView() {
                       </span>
                     </div>
 
-                    <span className="truncate text-sm2 text-ink-500">{m.email}</span>
+                    <span className="truncate text-left text-sm2 text-ink-500">{m.email}</span>
 
-                    <span className="relative flex justify-center">
-                      <button
-                        onClick={() => setDdOpen(open ? null : `role:${m.id}`)}
-                        className="flex items-center gap-[3px] whitespace-nowrap rounded-[7px] border bg-white px-[7px] py-[3px] text-[10.7px] font-bold text-ink-600 hover:border-brand hover:text-brand-dark"
-                        style={{ borderColor: open ? '#1750d8' : '#e2e8f0' }}
-                      >
-                        {role}
-                        <Icon name={open ? 'expand_less' : 'expand_more'} size={14} className="text-ink-400" />
-                      </button>
-                      {open && (
-                        <span
-                          className="absolute left-0 z-30 flex min-w-full flex-col rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
-                          style={upward ? { bottom: 'calc(100% + 4px)' } : { top: 'calc(100% + 4px)' }}
-                        >
-                          {ROLE_OPTS.map((label) => {
-                            const on = label === role
-                            return (
-                              <button
-                                key={label}
-                                onClick={() => {
-                                  setRoleOv({ ...roleOv, [m.id]: label })
-                                  setDdOpen(null)
-                                }}
-                                className="flex items-center gap-1.5 whitespace-nowrap rounded-md px-[9px] py-1.5 text-left text-[11.6px] hover:bg-ink-100"
-                                style={{ background: on ? '#eff6ff' : 'transparent', fontWeight: on ? 700 : 500 }}
-                              >
-                                <Icon
-                                  name={on ? 'check' : 'radio_button_unchecked'}
-                                  size={15}
-                                  style={{ color: on ? '#1750d8' : '#cbd5e1' }}
-                                />
-                                {label}
-                              </button>
-                            )
-                          })}
-                        </span>
-                      )}
-                    </span>
-
+                    <RoleCell
+                      open={open}
+                      onToggle={() => setDdOpen(open ? null : `role:${m.id}`)}
+                      role={role}
+                      onPick={(label) => {
+                        setRoleOv({ ...roleOv, [m.id]: label })
+                        setMemberPerm(m.id, label)
+                        setDdOpen(null)
+                      }}
+                    />
                     <span className="truncate text-[11.6px] text-ink-500">
                       {m.dept === '외부 협업자' ? '에코바디스 2026' : m.perm === '마스터' ? '전체 3개' : '에코바디스 2026'}
                     </span>
@@ -373,7 +351,7 @@ export function MembersView() {
               style={{ gridTemplateColumns: SYS_GRID }}
             >
               {SYS_DEFS[sysTab].headers.map((h, i) => (
-                <span key={i} className={head} style={{ textAlign: i === 0 ? 'left' : 'center' }}>
+                <span key={i} className={head} style={{ textAlign: 'center' }}>
                   {h}
                 </span>
               ))}
@@ -420,5 +398,54 @@ export function MembersView() {
         )}
       </ResizablePanel>
     </ResizablePanelGroup>
+  )
+}
+
+/** 멤버 권한 드롭다운 — 아래 공간이 부족하면 위로 열린다 */
+function RoleCell({
+  open,
+  onToggle,
+  role,
+  onPick,
+}: {
+  open: boolean
+  onToggle: () => void
+  role: string
+  onPick: (label: string) => void
+}) {
+  const { ref, up } = useFlipUp<HTMLButtonElement>(open, ROLE_OPTS.length * 30 + 12)
+  return (
+    <span className="relative flex w-full min-w-[96px] justify-center">
+      <button
+        ref={ref}
+        onClick={onToggle}
+        className="flex w-full items-center gap-[3px] whitespace-nowrap rounded-[7px] border bg-white px-[7px] py-[3px] text-left text-[10.7px] font-bold text-ink-600 hover:border-brand hover:text-brand-dark"
+        style={{ borderColor: open ? '#1750d8' : '#e2e8f0' }}
+      >
+        <span className="min-w-0 flex-1 truncate">{role}</span>
+        <Icon name={open ? 'expand_less' : 'expand_more'} size={14} className="ml-auto flex-none text-ink-400" />
+      </button>
+      {open && (
+        <span
+          className="absolute left-0 z-30 flex w-full flex-col rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
+          style={up ? { bottom: 'calc(100% + 4px)' } : { top: 'calc(100% + 4px)' }}
+        >
+          {ROLE_OPTS.map((label) => {
+            const on = label === role
+            return (
+              <button
+                key={label}
+                onClick={() => onPick(label)}
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-md px-[9px] py-1.5 text-left text-[11.6px] hover:bg-ink-100"
+                style={{ background: on ? '#eff6ff' : 'transparent', fontWeight: on ? 700 : 500 }}
+              >
+                <Icon name={on ? 'check' : 'radio_button_unchecked'} size={15} style={{ color: on ? '#1750d8' : '#cbd5e1' }} />
+                {label}
+              </button>
+            )
+          })}
+        </span>
+      )}
+    </span>
   )
 }

@@ -11,7 +11,7 @@ export const ctx = {
   orgPlan: 'ENTERPRISE',
   biz: 'ESG 본부',
   ws: 'ESG 전략팀',
-  wsInitial: 'E',
+  wsInitial: 'N', // 시안 p9 — 조직&사업부 스위처 배지
   proj: '에코바디스 2026 대응',
   projVis: '공개',
   projMembers: 6,

@@ -1,4 +1,5 @@
 import { Icon } from '@/components/common/icon'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   Sidebar,
   SidebarContent,
@@ -10,11 +11,14 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { ICON, ctx, tasks } from '@/mocks/data'
-import { useAppStore, type ScreenKey } from '@/stores/app-store'
-import { useLayerStore } from '@/stores/layer-store'
+import { useAppStore, type ScreenKey, type SysTab } from '@/stores/app-store'
+import { useLayerStore, type LayerKey } from '@/stores/layer-store'
 
 /**
  * 메뉴 영역 (p26~28) — shadcn Sidebar 기반.
@@ -22,7 +26,7 @@ import { useLayerStore } from '@/stores/layer-store'
  * 접힘 상태는 앱 스토어(menuOpen)와 Sidebar 상태를 함께 물린다.
  */
 
-type Target = ScreenKey | `room:${string}` | 'editor' | 'channel' | 'settings'
+type Target = ScreenKey | `room:${string}` | `sys:${string}` | `layer:${string}` | 'editor' | 'channel' | 'settings'
 
 interface MenuItem {
   label: string
@@ -31,10 +35,11 @@ interface MenuItem {
   badge: number
   /** 1:1 대화방 — 아이콘 대신 이름 이니셜 아바타로 구분(아이콘 중복 방지) */
   avatar?: boolean
+  /** 하위 메뉴 — 있으면 chevron으로 펼쳐지는 서브 목록이 된다 */
+  sub?: { label: string; target: Target; tab?: string }[]
 }
 
 const GROUPS: { title: string; items: MenuItem[] }[] = [
-  { title: '검수', items: [{ label: '작업 목록', target: 'index', icon: 'fact_check', badge: 0 }] },
   {
     title: '프로젝트',
     items: [
@@ -70,9 +75,40 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
   {
     title: '시스템',
     items: [
-      { label: '멤버등록', target: 'members', icon: 'person_add', badge: 0 },
-      { label: '채널관리', target: 'channel', icon: 'hub', badge: 8 },
-      { label: '설정', target: 'settings', icon: ICON.gear, badge: 0 },
+      {
+        label: '멤버등록',
+        target: 'members',
+        icon: 'person_add',
+        badge: 0,
+        sub: [
+          { label: '멤버 관리', target: 'members' },
+          { label: '조직&사업부', target: 'sys:ws' },
+          { label: '권한 그룹', target: 'sys:perm' },
+        ],
+      },
+      {
+        label: '채널관리',
+        target: 'channel',
+        icon: 'hub',
+        badge: 8,
+        sub: [
+          { label: '채널 목록', target: 'channel' },
+          { label: '채널 초대', target: 'layer:chat-invite' },
+        ],
+      },
+      {
+        label: '설정',
+        target: 'settings',
+        icon: ICON.gear,
+        badge: 0,
+        sub: [
+          { label: '내 계정', target: 'settings', tab: 'account' },
+          { label: '보안 및 로그인', target: 'settings', tab: 'security' },
+          { label: '조직&사업부', target: 'settings', tab: 'org' },
+          { label: 'AI · 색인', target: 'settings', tab: 'ai' },
+          { label: '알림', target: 'settings', tab: 'noti' },
+        ],
+      },
     ],
   },
 ]
@@ -80,7 +116,8 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
 const ALERT_TARGETS = new Set<Target>(['task', 'ecoReq'])
 
 export function SideMenu() {
-  const { screen, room, storeMode, sysTab, setScreen, setRoom, setStoreMode, setSysTab, setDropdown } = useAppStore()
+  const { screen, room, storeMode, sysTab, setScreen, setRoom, setStoreMode, setSysTab, setDropdown, applyPreset } =
+    useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const { state } = useSidebar()
   const open = state === 'expanded'
@@ -94,12 +131,20 @@ export function SideMenu() {
     return t === screen
   }
 
-  const go = (t: Target) => {
+  const go = (t: Target, tab?: string) => {
     if (typeof t === 'string' && t.startsWith('room:')) return setRoom(t.slice(5))
+    if (typeof t === 'string' && t.startsWith('sys:')) {
+      setSysTab(t.slice(4) as SysTab)
+      return setScreen('members')
+    }
+    if (typeof t === 'string' && t.startsWith('layer:')) return openLayer(t.slice(6) as LayerKey)
+    if (t === 'settings') {
+      if (tab) applyPreset({ settingTab: tab })
+      return openLayer('settings')
+    }
     if (t === 'channel') { setSysTab('channel'); return setScreen('members') }
     if (t === 'editor') { setStoreMode('editor'); return setScreen('store') }
     if (t === 'store') { setStoreMode('list'); return setScreen('store') }
-    if (t === 'settings') return openLayer('settings')
     if (t === 'members') { setSysTab('member'); return setScreen('members') }
     setScreen(t as ScreenKey)
   }
@@ -150,21 +195,30 @@ export function SideMenu() {
 
       <SidebarContent className="gap-0 overflow-x-hidden pb-[7.6px] pt-[4.7px]">
         {GROUPS.map((g) => (
-          <SidebarGroup key={g.title} className="gap-0 p-0 pb-[5.7px]">
+          <Collapsible key={g.title} defaultOpen className="group/collapsible">
+          <SidebarGroup className="gap-0 p-0 pb-[5.7px]">
             {open ? (
-              <SidebarGroupLabel className="h-auto px-3.5 pb-[2.8px] pt-[3.8px] text-mini font-extrabold tracking-[.07em] text-ink-400">
-                {g.title}
-              </SidebarGroupLabel>
+              <CollapsibleTrigger asChild>
+                <SidebarGroupLabel className="h-auto cursor-pointer px-3.5 pb-[2.8px] pt-[3.8px] text-mini font-extrabold tracking-[.07em] text-ink-400 hover:text-ink-600">
+                  {g.title}
+                  <Icon
+                    name="expand_more"
+                    size={15}
+                    className="ml-auto text-ink-300 transition-transform group-data-[state=closed]/collapsible:-rotate-90"
+                  />
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
             ) : (
               <div className="mx-2.5 my-[5px] h-px bg-ink-200" />
             )}
+            <CollapsibleContent>
             <SidebarGroupContent>
               <SidebarMenu className="gap-0">
                 {g.items.map((mi) => {
                   const active = isActive(mi.target)
                   const badge = mi.target === 'task' ? myOpen : mi.badge
                   const alert = ALERT_TARGETS.has(mi.target)
-                  return (
+                  const item = (
                     <SidebarMenuItem key={`${g.title}-${mi.label}`}>
                       <SidebarMenuButton
                         onClick={() => go(mi.target)}
@@ -196,7 +250,21 @@ export function SideMenu() {
                         )}
                         {open && <span className="truncate leading-none">{mi.label}</span>}
                       </SidebarMenuButton>
-                      {open && !!badge && (
+                      {open && mi.sub && (
+                        <CollapsibleTrigger asChild>
+                          <button
+                            title={`${mi.label} 하위 메뉴`}
+                            className="absolute right-2 top-1/2 flex size-[18px] -translate-y-1/2 items-center justify-center rounded text-ink-400 hover:bg-ink-200 hover:text-ink-700"
+                          >
+                            <Icon
+                              name="chevron_right"
+                              size={16}
+                              className="transition-transform group-data-[state=open]/item:rotate-90"
+                            />
+                          </button>
+                        </CollapsibleTrigger>
+                      )}
+                      {open && !!badge && !mi.sub && (
                         <SidebarMenuBadge
                           className="top-1/2 h-auto -translate-y-1/2 rounded-full border px-2 py-[1.5px] text-tiny font-extrabold leading-[1.45]"
                           style={{
@@ -208,12 +276,37 @@ export function SideMenu() {
                           {badge}
                         </SidebarMenuBadge>
                       )}
+                      {open && mi.sub && (
+                        <CollapsibleContent>
+                          <SidebarMenuSub className="my-0.5 gap-0.5">
+                            {mi.sub.map((sm) => (
+                              <SidebarMenuSubItem key={sm.label}>
+                                <SidebarMenuSubButton
+                                  onClick={() => go(sm.target, sm.tab)}
+                                  className="h-auto cursor-pointer py-[5px] text-sm2 text-ink-600 hover:bg-ink-100 hover:text-ink-900"
+                                >
+                                  {sm.label}
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      )}
                     </SidebarMenuItem>
+                  )
+                  return mi.sub && open ? (
+                    <Collapsible key={`${g.title}-${mi.label}`} className="group/item">
+                      {item}
+                    </Collapsible>
+                  ) : (
+                    item
                   )
                 })}
               </SidebarMenu>
             </SidebarGroupContent>
+            </CollapsibleContent>
           </SidebarGroup>
+          </Collapsible>
         ))}
       </SidebarContent>
     </Sidebar>

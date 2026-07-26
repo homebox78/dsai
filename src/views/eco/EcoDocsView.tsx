@@ -145,17 +145,17 @@ export function EcoDocsView() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="문항번호·파일명 검색"
-            className="w-[200px] rounded-md border border-ink-300 bg-ink-50 px-2.5 py-1.5 text-sm2 outline-none"
+            className="h-[34px] w-[200px] rounded-md border border-ink-300 bg-ink-50 px-2.5 text-sm2 outline-none"
           />
           <button
             onClick={() => openLayer('file-upload')}
-            className="rounded-md border border-ink-300 bg-white px-2.5 py-1.5 text-sm2 font-semibold text-ink-700 hover:bg-ink-100"
+            className="h-[34px] rounded-md border border-ink-300 bg-white px-2.5 text-sm2 font-semibold text-ink-700 hover:bg-ink-100"
           >
             증빙 업로드
           </button>
           <button
             onClick={() => openLayer('eco-export')}
-            className="rounded-md bg-brand px-2.5 py-1.5 text-sm2 font-bold text-white hover:bg-brand-dark"
+            className="h-[34px] rounded-md bg-brand px-2.5 text-sm2 font-bold text-white hover:bg-brand-dark"
           >
             증빙 팩 내보내기
           </button>
@@ -164,9 +164,9 @@ export function EcoDocsView() {
         <div className="flex-1 overflow-auto bg-white">
           <div className="overflow-x-auto">
             <div className="sticky top-0 z-[1] grid min-w-[720px] grid-cols-[82px_minmax(180px,1fr)_minmax(180px,1.1fr)_76px_92px_84px] gap-2 border-b border-ink-200 bg-white px-[18px] py-[11px] text-xs2 font-extrabold text-ink-400">
-              <span className="whitespace-nowrap">문항</span>
-              <span className="whitespace-nowrap">질문 요약</span>
-              <span className="whitespace-nowrap">연결된 증빙 문서</span>
+              <span className="whitespace-nowrap text-center">문항</span>
+              <span className="whitespace-nowrap text-center">질문 요약</span>
+              <span className="whitespace-nowrap text-center">연결된 증빙 문서</span>
               <span className="whitespace-nowrap text-center">페이지</span>
               <span className="whitespace-nowrap text-center">검증</span>
               <span className="whitespace-nowrap text-center">유효기한</span>
@@ -187,7 +187,7 @@ export function EcoDocsView() {
                 className="grid w-full min-w-[720px] grid-cols-[82px_minmax(180px,1fr)_minmax(180px,1.1fr)_76px_92px_84px] items-center gap-2 border-b border-l-2 border-ink-100 bg-white px-[18px] py-2.5 text-left hover:bg-ink-50"
                 style={{ borderLeftColor: EVST[r.state].bar }}
               >
-                <span className="flex">
+                <span className="flex justify-center">
                   <span className="whitespace-nowrap rounded bg-ink-200 px-2 py-0.5 font-mono text-tiny font-extrabold text-ink-600">
                     {r.no}
                   </span>

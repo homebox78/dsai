@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Icon } from '@/components/common/icon'
 import { BtnDanger, BtnGhost, BtnPrimary, Field, Modal, inputCls } from './Modal'
-import { useQaState } from '@/lib/qa-state'
+import { ChoiceRow } from '@/components/common/ChoiceRow'
+import { Select } from '@/components/common/select'
 import { bizNo, email, emailList, maxLen, required, runRules, safeName, type Validator } from '@/lib/validate'
 
 /**
@@ -61,7 +61,6 @@ export function FormModal({
   const [values, setValues] = useState<Record<number, string>>({})
   const [touched, setTouched] = useState<Record<number, boolean>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [ddOpen, setDdOpen] = useQaState<string | null>('ddOpen', null)
 
   const Cta = danger ? BtnDanger : BtnPrimary
   const list = fields ?? []
@@ -96,7 +95,6 @@ export function FormModal({
       {list.map((f, i) => {
         const cur = sel[i] ?? 0
         const key = `mf:${id}:${i}`
-        const isOpen = ddOpen === key
         const err = errorOf(i)
         const invalidCls = err ? ' border-bad-border focus:border-bad' : ''
         return (
@@ -124,62 +122,20 @@ export function FormModal({
               />
             )}
             {f.type === 'chips' && (
-              <div className="flex gap-1.5">
-                {(f.options ?? []).map((o, oi) => {
-                  const on = cur === oi
-                  return (
-                    <button
-                      key={o}
-                      onClick={() => setSel({ ...sel, [i]: oi })}
-                      className="flex-1 whitespace-nowrap rounded-md border py-2 text-sm2 font-bold"
-                      style={{
-                        background: on ? '#1750d8' : '#fff',
-                        borderColor: on ? '#1750d8' : '#cbd5e1',
-                        color: on ? '#fff' : '#334155',
-                      }}
-                    >
-                      {o}
-                    </button>
-                  )
-                })}
-              </div>
+              <ChoiceRow
+                name={`${id}-${i}`}
+                value={(f.options ?? [])[cur] ?? ''}
+                options={f.options ?? []}
+                onChange={(v) => setSel({ ...sel, [i]: (f.options ?? []).indexOf(v) })}
+              />
             )}
             {f.type === 'select' && (
-              <div className="relative">
-                <button
-                  onClick={() => setDdOpen(isOpen ? null : key)}
-                  className="flex w-full items-center gap-2 rounded-[9px] border bg-white px-3.5 py-2.5 text-left text-body"
-                  style={{ borderColor: isOpen ? '#1750d8' : '#cbd5e1' }}
-                >
-                  <span className="min-w-0 flex-1 truncate">{(f.options ?? [])[cur]}</span>
-                  <Icon name={isOpen ? 'expand_less' : 'expand_more'} size={18} className="text-ink-400" />
-                </button>
-                {isOpen && (
-                  <div className="absolute left-0 top-[calc(100%+4px)] z-30 max-h-[220px] w-full overflow-auto rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]">
-                    {(f.options ?? []).map((o, oi) => {
-                      const on = cur === oi
-                      return (
-                        <button
-                          key={o}
-                          onClick={() => {
-                            setSel({ ...sel, [i]: oi })
-                            setDdOpen(null)
-                          }}
-                          className="flex w-full items-center gap-1.5 rounded-md px-2.5 py-2 text-left text-sm2 hover:bg-ink-100"
-                          style={{ background: on ? '#eff6ff' : 'transparent', fontWeight: on ? 700 : 500 }}
-                        >
-                          <Icon
-                            name={on ? 'check' : 'radio_button_unchecked'}
-                            size={15}
-                            style={{ color: on ? '#1750d8' : '#cbd5e1' }}
-                          />
-                          <span className="min-w-0 flex-1 truncate">{o}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
+              <Select
+                ddKey={key}
+                value={(f.options ?? [])[cur] ?? ''}
+                options={f.options ?? []}
+                onChange={(v) => setSel({ ...sel, [i]: (f.options ?? []).indexOf(v) })}
+              />
             )}
           </Field>
         )

@@ -1,6 +1,7 @@
 import { Icon } from '@/components/common/icon'
 import { useQaState } from '@/lib/qa-state'
-import { reqs, reqStatusTone, type ReqStatus } from '@/mocks/data'
+import { reqStatusTone, type ReqStatus } from '@/mocks/data'
+import { useDataStore } from '@/stores/data-store'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { useLayoutMetrics } from '@/lib/responsive'
@@ -22,6 +23,7 @@ export function EcoReqView() {
   const [filter, setFilter] = useQaState<'전체' | ReqStatus>('rqFilter', '전체')
   const [query, setQuery] = useQaState('rqQuery', '')
   const [sel, setSel] = useQaState('rqSel', 'REQ-142')
+  const reqs = useDataStore((s) => s.reqs)
 
   const q = query.trim()
   const list = reqs.filter(
@@ -118,11 +120,11 @@ export function EcoReqView() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="요청 자료·담당자 검색"
-            className="w-[184px] border-none border-b border-b-ink-300 bg-transparent px-0.5 py-[5px] text-sm2 outline-none"
+            className="h-[34px] w-[184px] border-none border-b border-b-ink-300 bg-transparent px-0.5 text-sm2 outline-none"
           />
           <button
             onClick={() => openLayer('task-request')}
-            className="whitespace-nowrap rounded-md bg-brand px-[11px] py-1.5 text-sm2 font-bold text-white hover:bg-brand-dark"
+            className="h-[34px] whitespace-nowrap rounded-md bg-brand px-[11px] text-sm2 font-bold text-white hover:bg-brand-dark"
           >
             + 자료 요청
           </button>
@@ -134,10 +136,10 @@ export function EcoReqView() {
               className="sticky top-0 z-[1] grid min-w-[700px] gap-2 border-b border-ink-200 bg-white px-[18px] py-[11px]"
               style={{ gridTemplateColumns: GRID }}
             >
-              <span className={head}>요청번호</span>
-              <span className={head}>요청 자료</span>
-              <span className={head}>연결 문항</span>
-              <span className={head}>담당자</span>
+              <span className={`${head} text-center`}>요청번호</span>
+              <span className={`${head} text-center`}>요청 자료</span>
+              <span className={`${head} text-center`}>연결 문항</span>
+              <span className={`${head} text-center`}>담당자</span>
               <span className={`${head} text-center`}>기한</span>
               <span className={`${head} text-center`}>상태</span>
             </div>
@@ -155,10 +157,10 @@ export function EcoReqView() {
                     borderLeftColor: on ? '#1750d8' : 'transparent',
                   }}
                 >
-                  <span className="whitespace-nowrap font-mono text-[10.7px] font-extrabold text-ink-600">{r.no}</span>
+                  <span className="whitespace-nowrap text-center font-mono text-[10.7px] font-extrabold text-ink-600">{r.no}</span>
                   <span className="min-w-0 truncate text-xs2 font-semibold">{r.title}</span>
-                  <span className="whitespace-nowrap text-[11.2px] font-bold text-brand">{r.qno}</span>
-                  <span className="whitespace-nowrap text-sm2 text-ink-700">{r.to}</span>
+                  <span className="whitespace-nowrap text-center text-[11.2px] font-bold text-brand">{r.qno}</span>
+                  <span className="whitespace-nowrap text-center text-sm2 text-ink-700">{r.to}</span>
                   <span
                     className="whitespace-nowrap text-center text-[11.6px] font-semibold"
                     style={{ color: r.overdue ? '#b91c1c' : '#64748b' }}

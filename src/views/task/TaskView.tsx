@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
-import { tasks, taskHistory, taskStatusTone, type TaskStatus } from '@/mocks/data'
+import { taskHistory, taskStatusTone, type TaskStatus } from '@/mocks/data'
+import { useDataStore } from '@/stores/data-store'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { useFlipUp } from '@/lib/flip-up'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useLayoutMetrics } from '@/lib/responsive'
 
@@ -38,11 +40,11 @@ const STREAM = [
 
 const PRESETS = ['확인했습니다', '자료 첨부했습니다', '기한 연장 요청', '담당자 변경 필요']
 
-const ACTIONS = [
-  { label: '진행 시작', color: '#1d4ed8', bd: '#cbd5e1' },
-  { label: '검토 요청', color: '#b45309', bd: '#cbd5e1' },
-  { label: '완료 처리', color: '#15803d', bd: '#cbd5e1' },
-  { label: '반려', color: '#b91c1c', bd: '#fecaca' },
+const ACTIONS: { label: string; color: string; bd: string; to: TaskStatus }[] = [
+  { label: '진행 시작', color: '#1d4ed8', bd: '#cbd5e1', to: '진행중' },
+  { label: '검토 요청', color: '#b45309', bd: '#cbd5e1', to: '검토대기' },
+  { label: '완료 처리', color: '#15803d', bd: '#cbd5e1', to: '완료' },
+  { label: '반려', color: '#b91c1c', bd: '#fecaca', to: '반려' },
 ]
 
 const STATUS_ORDER: TaskStatus[] = ['요청됨', '진행중', '검토대기', '완료', '반려']
@@ -66,7 +68,10 @@ export function TaskView() {
   const [sort, setSort] = useState('due')
   const [ddOpen, setDdOpen] = useQaState<string | null>('ddOpen', null)
   const sortOpen = ddOpen === 'taskSort'
+  const { ref: sortRef, up: sortUp } = useFlipUp<HTMLButtonElement>(sortOpen, SORTS.length * 30 + 12)
   const setSortOpen = (v: boolean) => setDdOpen(v ? 'taskSort' : null)
+  const tasks = useDataStore((s) => s.tasks)
+  const setTaskStatus = useDataStore((s) => s.setTaskStatus)
   const [comment, setComment] = useState('')
   const [streamOpen, setStreamOpen] = useQaState('streamOpen', true)
   const { taskRowMin, contentMin, veryNarrow } = useLayoutMetrics()
@@ -172,18 +177,22 @@ export function TaskView() {
             </span>
             <span className="whitespace-nowrap text-xs2 text-ink-400">{list.length}건</span>
             <div className="flex-1" />
-            <div className="relative flex-none">
+            <div className="relative min-w-[132px] flex-none">
               <button
+                ref={sortRef}
                 onClick={() => setSortOpen(!sortOpen)}
-                className="flex items-center gap-1 whitespace-nowrap rounded-md border bg-white px-2 py-1 text-xs2 font-bold text-ink-700 hover:bg-ink-50"
+                className="flex w-full items-center gap-1 whitespace-nowrap rounded-md border bg-white px-2 py-1 text-xs2 font-bold text-ink-700 hover:bg-ink-50"
                 style={{ borderColor: sortOpen ? '#1750d8' : '#cbd5e1' }}
               >
-                <Icon name="swap_vert" size={15} className="text-ink-400" />
-                {SORTS.find(([id]) => id === sort)?.[1]}
-                <Icon name={sortOpen ? 'expand_less' : 'expand_more'} size={14.1} className="text-ink-400" />
+                <Icon name="swap_vert" size={15} className="flex-none text-ink-400" />
+                <span className="min-w-0 flex-1 truncate text-left">{SORTS.find(([id]) => id === sort)?.[1]}</span>
+                <Icon name={sortOpen ? 'expand_less' : 'expand_more'} size={14.1} className="ml-auto flex-none text-ink-400" />
               </button>
               {sortOpen && (
-                <div className="anim-pop absolute right-0 top-[calc(100%+4px)] z-30 rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]">
+                <div
+                  className="anim-pop absolute left-0 z-30 w-full rounded-lg border border-ink-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
+                  style={sortUp ? { bottom: 'calc(100% + 4px)' } : { top: 'calc(100% + 4px)' }}
+                >
                   {SORTS.map(([id, label]) => {
                     const on = sort === id
                     return (
@@ -338,7 +347,9 @@ export function TaskView() {
             {ACTIONS.map((a) => (
               <button
                 key={a.label}
-                className="rounded-md border bg-white px-[13px] py-[7px] text-sm2 font-bold hover:bg-ink-50"
+                onClick={() => setTaskStatus(cur.id, a.to)}
+                disabled={cur.status === a.to}
+                className="rounded-md border bg-white px-[13px] py-[7px] text-sm2 font-bold hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ borderColor: a.bd, color: a.color }}
               >
                 {a.label}
