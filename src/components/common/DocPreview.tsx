@@ -15,7 +15,7 @@ export const fileUrl = (f: DocFile) => `${import.meta.env.BASE_URL}files/${f.id}
 export function DocPreview({ file, page, zoom = 100 }: { file: DocFile; page: number; zoom?: number }) {
   const ext = file.ext.toLowerCase()
   if (ext === 'pdf') return <PdfPreview file={file} page={page} zoom={zoom} />
-  if (ext === 'xlsx') return <XlsxPreview file={file} />
+  if (ext === 'xlsx') return <XlsxPreview file={file} zoom={zoom} />
   if (ext === 'docx') return <DocxPreview file={file} zoom={zoom} />
   return <Missing name={file.name} />
 }
@@ -43,7 +43,7 @@ function PdfPreview({ file, page, zoom }: { file: DocFile; page: number; zoom: n
   // #page= 로 해당 페이지를 열고, 페이지가 바뀌면 key로 다시 로드한다
   return (
     <iframe
-      key={`${file.id}-${page}`}
+      key={`${file.id}-${page}-${zoom}`}
       title={file.name}
       src={`${fileUrl(file)}#page=${page}&zoom=${zoom}&toolbar=0&navpanes=0`}
       className="h-full w-full border-none bg-white"
@@ -51,7 +51,7 @@ function PdfPreview({ file, page, zoom }: { file: DocFile; page: number; zoom: n
   )
 }
 
-function XlsxPreview({ file }: { file: DocFile }) {
+function XlsxPreview({ file, zoom = 100 }: { file: DocFile; zoom?: number }) {
   const [sheets, setSheets] = useState<{ name: string; rows: string[][] }[] | null>(null)
   const [active, setActive] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -111,7 +111,7 @@ function XlsxPreview({ file }: { file: DocFile }) {
         </div>
       )}
       <div className="flex-1 overflow-auto">
-        <table className="border-collapse text-sm2">
+        <table className="border-collapse" style={{ fontSize: `${(zoom / 100) * 12.6}px` }}>
           <tbody>
             {cur.rows.map((row, ri) => (
               <tr key={ri} className={ri === 0 ? 'bg-ink-50' : undefined}>

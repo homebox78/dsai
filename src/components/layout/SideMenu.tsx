@@ -1,6 +1,14 @@
 import { Icon } from '@/components/common/icon'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -11,9 +19,6 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { ICON, ctx, tasks } from '@/mocks/data'
@@ -35,8 +40,12 @@ interface MenuItem {
   badge: number
   /** 1:1 대화방 — 아이콘 대신 이름 이니셜 아바타로 구분(아이콘 중복 방지) */
   avatar?: boolean
-  /** 하위 메뉴 — 있으면 chevron으로 펼쳐지는 서브 목록이 된다 */
-  sub?: { label: string; target: Target; tab?: string }[]
+  /** 하위 메뉴 — 트리거 우측 ⇅ 클릭 시 우측 팝오버로 열린다 */
+  sub?: { label: string; target: Target; tab?: string; icon: string; kbd?: string }[]
+  /** 팝오버 하단 액션 (예: + 멤버 추가) */
+  subAction?: { label: string; target: Target; icon: string }
+  /** 트리거 두 번째 줄 */
+  desc?: string
 }
 
 const GROUPS: { title: string; items: MenuItem[] }[] = [
@@ -80,34 +89,40 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
         target: 'members',
         icon: 'person_add',
         badge: 0,
+        desc: `멤버 ${ctx.projMembers}명 · 권한 4단계`,
         sub: [
-          { label: '멤버 관리', target: 'members' },
-          { label: '조직&사업부', target: 'sys:ws' },
-          { label: '권한 그룹', target: 'sys:perm' },
+          { label: '멤버 관리', target: 'members', icon: 'group' },
+          { label: '조직&사업부', target: 'sys:ws', icon: 'account_tree' },
+          { label: '권한 그룹', target: 'sys:perm', icon: 'admin_panel_settings' },
         ],
+        subAction: { label: '멤버 추가', target: 'layer:member-invite', icon: 'add' },
       },
       {
         label: '채널관리',
         target: 'channel',
         icon: 'hub',
         badge: 8,
+        desc: `채널 ${ctx.wsChannels}개 운영중`,
         sub: [
-          { label: '채널 목록', target: 'channel' },
-          { label: '채널 초대', target: 'layer:chat-invite' },
+          { label: '채널 목록', target: 'channel', icon: 'forum' },
+          { label: '외부 협업자 초대', target: 'layer:chat-invite', icon: 'person_add' },
         ],
+        subAction: { label: '채널 만들기', target: 'layer:chat-invite', icon: 'add' },
       },
       {
         label: '설정',
         target: 'settings',
         icon: ICON.gear,
         badge: 0,
+        desc: '계정 · 보안 · AI · 알림',
         sub: [
-          { label: '내 계정', target: 'settings', tab: 'account' },
-          { label: '보안 및 로그인', target: 'settings', tab: 'security' },
-          { label: '조직&사업부', target: 'settings', tab: 'org' },
-          { label: 'AI · 색인', target: 'settings', tab: 'ai' },
-          { label: '알림', target: 'settings', tab: 'noti' },
+          { label: '내 계정', target: 'settings', tab: 'account', icon: 'person' },
+          { label: '보안 및 로그인', target: 'settings', tab: 'security', icon: 'lock' },
+          { label: '조직&사업부', target: 'settings', tab: 'org', icon: 'apartment' },
+          { label: 'AI · 색인', target: 'settings', tab: 'ai', icon: 'auto_awesome' },
+          { label: '알림', target: 'settings', tab: 'noti', icon: 'notifications' },
         ],
+        subAction: { label: '요금제 · 크레딧', target: 'layer:plan', icon: 'add' },
       },
     ],
   },
@@ -218,6 +233,80 @@ export function SideMenu() {
                   const active = isActive(mi.target)
                   const badge = mi.target === 'task' ? myOpen : mi.badge
                   const alert = ALERT_TARGETS.has(mi.target)
+                  if (mi.sub) {
+                    // 하위 메뉴가 있는 항목 — 아이콘 + 2줄 텍스트 + ⇅, 클릭 시 우측 팝오버
+                    return (
+                      <SidebarMenuItem key={`${g.title}-${mi.label}`}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <SidebarMenuButton
+                              isActive={active}
+                              tooltip={mi.label}
+                              className="h-auto rounded-none border-l-2 text-body hover:bg-ink-100 data-[active=true]:bg-brand-softer data-[state=open]:bg-ink-100"
+                              style={{
+                                gap: open ? 9 : 0,
+                                padding: open ? '7px 10px 7px 12px' : '7.8px 0',
+                                justifyContent: open ? 'flex-start' : 'center',
+                                borderLeftColor: active ? '#2563eb' : 'transparent',
+                                color: active ? '#1d4ed8' : '#334155',
+                              }}
+                            >
+                              <span
+                                className="flex size-[26px] flex-none items-center justify-center rounded-[7px] border"
+                                style={{
+                                  background: active ? '#dbeafe' : '#fff',
+                                  borderColor: active ? '#bfdbfe' : '#e2e8f0',
+                                  color: active ? '#1d4ed8' : '#475569',
+                                }}
+                              >
+                                <Icon name={mi.icon} size={16} />
+                              </span>
+                              {open && (
+                                <span className="flex min-w-0 flex-1 flex-col text-left leading-tight">
+                                  <span className="truncate text-label font-bold">{mi.label}</span>
+                                  {mi.desc && <span className="truncate text-tiny text-ink-400">{mi.desc}</span>}
+                                </span>
+                              )}
+                              {open && <Icon name="unfold_more" size={16} className="ml-auto flex-none text-ink-400" />}
+                            </SidebarMenuButton>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            side="right"
+                            align="start"
+                            sideOffset={8}
+                            className="min-w-[212px] rounded-lg border-ink-200 p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
+                          >
+                            <DropdownMenuLabel className="px-2.5 pb-1 pt-1.5 text-mini font-extrabold tracking-[.06em] text-ink-400">
+                              {mi.label}
+                            </DropdownMenuLabel>
+                            {mi.sub.map((sm) => (
+                              <DropdownMenuItem
+                                key={sm.label}
+                                onSelect={() => go(sm.target, sm.tab)}
+                                className="cursor-pointer gap-2.5 rounded-md px-2.5 py-2 text-label text-ink-700 focus:bg-ink-100 focus:text-ink-900"
+                              >
+                                <Icon name={sm.icon} size={17} className="text-ink-500" />
+                                <span className="flex-1 truncate">{sm.label}</span>
+                              </DropdownMenuItem>
+                            ))}
+                            {mi.subAction && (
+                              <>
+                                <DropdownMenuSeparator className="my-1 bg-ink-100" />
+                                <DropdownMenuItem
+                                  onSelect={() => go(mi.subAction!.target)}
+                                  className="cursor-pointer gap-2.5 rounded-md px-2.5 py-2 text-label font-semibold text-ink-500 focus:bg-ink-100 focus:text-ink-900"
+                                >
+                                  <Icon name={mi.subAction.icon} size={17} className="text-ink-400" />
+                                  <span className="flex-1 truncate">{mi.subAction.label}</span>
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </SidebarMenuItem>
+                    )
+                  }
+
                   const item = (
                     <SidebarMenuItem key={`${g.title}-${mi.label}`}>
                       <SidebarMenuButton
@@ -250,20 +339,6 @@ export function SideMenu() {
                         )}
                         {open && <span className="truncate leading-none">{mi.label}</span>}
                       </SidebarMenuButton>
-                      {open && mi.sub && (
-                        <CollapsibleTrigger asChild>
-                          <button
-                            title={`${mi.label} 하위 메뉴`}
-                            className="absolute right-2 top-1/2 flex size-[18px] -translate-y-1/2 items-center justify-center rounded text-ink-400 hover:bg-ink-200 hover:text-ink-700"
-                          >
-                            <Icon
-                              name="chevron_right"
-                              size={16}
-                              className="transition-transform group-data-[state=open]/item:rotate-90"
-                            />
-                          </button>
-                        </CollapsibleTrigger>
-                      )}
                       {open && !!badge && !mi.sub && (
                         <SidebarMenuBadge
                           className="top-1/2 h-auto -translate-y-1/2 rounded-full border px-2 py-[1.5px] text-tiny font-extrabold leading-[1.45]"
@@ -276,31 +351,9 @@ export function SideMenu() {
                           {badge}
                         </SidebarMenuBadge>
                       )}
-                      {open && mi.sub && (
-                        <CollapsibleContent>
-                          <SidebarMenuSub className="my-0.5 gap-0.5">
-                            {mi.sub.map((sm) => (
-                              <SidebarMenuSubItem key={sm.label}>
-                                <SidebarMenuSubButton
-                                  onClick={() => go(sm.target, sm.tab)}
-                                  className="h-auto cursor-pointer py-[5px] text-sm2 text-ink-600 hover:bg-ink-100 hover:text-ink-900"
-                                >
-                                  {sm.label}
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      )}
                     </SidebarMenuItem>
                   )
-                  return mi.sub && open ? (
-                    <Collapsible key={`${g.title}-${mi.label}`} className="group/item">
-                      {item}
-                    </Collapsible>
-                  ) : (
-                    item
-                  )
+                  return item
                 })}
               </SidebarMenu>
             </SidebarGroupContent>

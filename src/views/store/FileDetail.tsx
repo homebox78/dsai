@@ -178,6 +178,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
               >
                 <Icon name="zoom_out" size={17} />
               </button>
+              <span className="w-[42px] text-center text-xs2 font-bold text-ink-600">{zoom}%</span>
               <button
                 onClick={() => setZoom((z) => Math.min(200, z + 20))}
                 title="확대"
