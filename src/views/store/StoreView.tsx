@@ -3,6 +3,7 @@ import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { ChatbotPanel } from '@/components/common/ChatbotPanel'
 import { PanelHandle } from '@/components/layout/PanelHandle'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { allFiles, fileStatusTone, filesByFolder, folders, findFile } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
@@ -49,9 +50,9 @@ export function StoreView() {
   const curFile = (fileId ? findFile(fileId) : null) ?? folderFiles[0]
 
   return (
-    <div className="flex min-h-0 flex-1" style={{ minWidth: storeRowMin }}>
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 flex-1" style={{ minWidth: storeRowMin }}>
       {/* 1영역: 폴더 구조 */}
-      <div className="flex w-[212px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={212} minSize={168} maxSize={360} className="flex flex-col bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
           <div className="mb-2 flex items-center gap-1.5">
             <span className="whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">문서 저장소</span>
@@ -125,11 +126,13 @@ export function StoreView() {
             <div className="h-full bg-brand-fade" style={{ width: '21%' }} />
           </div>
         </div>
-      </div>
+      </ResizablePanel>
+      <ResizableHandle />
 
       {/* 2영역: 폴더내 파일 목록 */}
       {listOpen && (
-        <div className="flex w-[264px] min-w-0 flex-none flex-col border-r border-ink-200 bg-white">
+        <>
+        <ResizablePanel defaultSize={264} minSize={208} maxSize={420} className="flex min-w-0 flex-col bg-white">
           <div className="flex-none border-b border-ink-200 px-3 py-2">
             <div className="mb-2 flex items-center gap-1.5">
               <span className="min-w-0 flex-1 truncate text-label font-extrabold">{curFolder.name}</span>
@@ -221,7 +224,9 @@ export function StoreView() {
               )
             })}
           </div>
-        </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        </>
       )}
       <PanelHandle
         side="left"
@@ -231,7 +236,7 @@ export function StoreView() {
       />
 
       {/* 3영역: 목록 / 상세 / 작성 */}
-      <div className="flex flex-1 flex-col bg-ink-50" style={{ minWidth: contentMin }}>
+      <ResizablePanel minSize={Number(String(contentMin).replace('px', '')) || 280} className="flex flex-col bg-ink-50">
         {storeMode === 'list' && (
           <>
             <div className="flex h-10 flex-none items-center gap-2 border-b border-ink-200 bg-white px-3.5">
@@ -311,10 +316,13 @@ export function StoreView() {
 
         {storeMode === 'detail' && <FileDetail file={curFile} folderName={curFolder.name} />}
         {storeMode === 'editor' && <EditorPane fileName={curFile.name} />}
-      </div>
+      </ResizablePanel>
 
       {/* 4영역: 챗봇 */}
       {botOpen && (
+        <>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={330} minSize={264} maxSize={520} className="flex flex-col">
         <ChatbotPanel
           kind="store"
           scopeLabel={storeMode === 'detail' ? `문서: ${curFile.name}` : `폴더: ${curFolder.name}`}
@@ -324,6 +332,8 @@ export function StoreView() {
               : '이 폴더의 문서를 대상으로 파일을 찾습니다'
           }
         />
+        </ResizablePanel>
+        </>
       )}
       <PanelHandle side="right" open={botOpen} onClick={toggleBot} title={botOpen ? '챗봇 접기' : '챗봇 펼치기'} />
 
@@ -368,6 +378,6 @@ export function StoreView() {
           </div>
         </div>
       )}
-    </div>
+    </ResizablePanelGroup>
   )
 }

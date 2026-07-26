@@ -4,6 +4,7 @@ import { reqs, reqStatusTone, type ReqStatus } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { useLayoutMetrics } from '@/lib/responsive'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 /**
  * 에코바디스 자료요청 (p59) — 요청 상태 206px | 요청 목록 | 요청 상세 326px 3분할.
@@ -44,9 +45,9 @@ export function EcoReqView() {
   const head = 'text-[11.2px] font-extrabold text-ink-400 whitespace-nowrap'
 
   return (
-    <div className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
       {/* 요청 상태 레일 */}
-      <div className="flex w-[206px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={206} minSize={168} maxSize={340} className="flex flex-col bg-white">
         <div className="flex h-11 flex-none items-center border-b border-ink-200 px-3.5">
           <span className={railLabel}>요청 상태</span>
         </div>
@@ -101,10 +102,12 @@ export function EcoReqView() {
             })}
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       {/* 요청 목록 */}
-      <div className="flex min-w-0 flex-1 flex-col bg-white" style={{ minWidth: contentMin }}>
+      <ResizableHandle />
+
+      <ResizablePanel minSize={Number(String(contentMin).replace('px', '')) || 280} className="flex flex-col bg-white">
         <div className="flex h-11 flex-none items-center gap-2 border-b border-ink-200 px-[18px]">
           <span className="whitespace-nowrap text-label font-extrabold">자료요청</span>
           <span className="whitespace-nowrap text-[11.2px] text-ink-400">
@@ -178,10 +181,12 @@ export function EcoReqView() {
             )}
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       {/* 요청 상세 */}
-      <aside className="flex w-[326px] flex-none flex-col overflow-auto border-l border-ink-200 bg-white">
+      <ResizableHandle />
+
+      <ResizablePanel defaultSize={326} minSize={260} maxSize={520} className="flex flex-col overflow-auto bg-white">
         <div className="flex h-11 flex-none items-center gap-2 border-b border-ink-200 px-4">
           <span className="whitespace-nowrap text-xs2 font-extrabold">{cur.no}</span>
           <span
@@ -289,7 +294,7 @@ export function EcoReqView() {
             {cur.files.length ? '증빙으로 반영하고 요청 종료' : '담당자에게 재요청'}
           </button>
         </div>
-      </aside>
-    </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   )
 }

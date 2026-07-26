@@ -1,7 +1,9 @@
 import { useQaState } from '@/lib/qa-state'
+import { RatioBarChart } from '@/components/common/RatioBarChart'
 import { useLayerStore } from '@/stores/layer-store'
 import { useAppStore } from '@/stores/app-store'
 import { useLayoutMetrics } from '@/lib/responsive'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 /** 에코바디스 증빙자료 — 문항 ↔ 문서 ↔ 페이지 매핑 + 커버리지 패널 */
 
@@ -69,9 +71,9 @@ export function EcoDocsView() {
   )
 
   return (
-    <div className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
       {/* 평가 영역 */}
-      <div className="flex w-[206px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={206} minSize={168} maxSize={340} className="flex flex-col bg-white">
         <div className="flex h-10 flex-none items-center border-b border-ink-200 px-3.5">
           <span className="whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">평가 영역</span>
         </div>
@@ -127,10 +129,12 @@ export function EcoDocsView() {
             })}
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       {/* 매핑 테이블 */}
-      <div className="flex flex-1 flex-col bg-ink-50" style={{ minWidth: contentMin }}>
+      <ResizableHandle />
+
+      <ResizablePanel minSize={Number(String(contentMin).replace('px', '')) || 280} className="flex flex-col bg-ink-50">
         <div className="flex flex-none items-center gap-2 border-b border-ink-200 bg-white px-3.5 py-3">
           <div>
             <div className="text-[15px] font-extrabold tracking-[-.01em]">증빙자료 매핑</div>
@@ -223,10 +227,12 @@ export function EcoDocsView() {
             ))}
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       {/* 커버리지 */}
-      <aside className="flex w-[290px] flex-none flex-col overflow-auto border-l border-ink-200 bg-white">
+      <ResizableHandle />
+
+      <ResizablePanel defaultSize={290} minSize={232} maxSize={460} className="flex flex-col overflow-auto bg-white">
         <div className="flex-none border-b border-ink-200 px-3.5 py-3">
           <div className="text-sm2 font-extrabold">증빙 커버리지</div>
           <div className="mt-1 text-xs2 text-ink-400">문항 대비 증빙 연결률</div>
@@ -236,10 +242,8 @@ export function EcoDocsView() {
             <span className="text-[25.7px] font-extrabold tracking-[-.02em] text-ok-dark">82</span>
             <span className="text-sm2 text-ink-500">% · 246 / 300문항</span>
           </div>
-          <div className="mb-[11px] flex h-[9px] overflow-hidden rounded-full border border-ink-200">
-            {COVERAGE.map((c) => (
-              <span key={c.label} style={{ width: c.w, background: c.color }} />
-            ))}
+          <div className="mb-[11px]">
+            <RatioBarChart slices={COVERAGE.map((c) => ({ label: c.label, count: c.count, color: c.color, pct: c.w }))} height={9} />
           </div>
           <div className="mb-4 flex flex-col gap-1.5">
             {COVERAGE.map((c) => (
@@ -272,7 +276,7 @@ export function EcoDocsView() {
             ))}
           </div>
         </div>
-      </aside>
-    </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   )
 }

@@ -4,6 +4,7 @@ import { Icon } from '@/components/common/icon'
 import { tasks, taskHistory, taskStatusTone, type TaskStatus } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useLayoutMetrics } from '@/lib/responsive'
 
 /** 업무 관리 (p55~56) — 상태 196px | 목록 322px | 상세 | 실시간 스트림 284px */
@@ -110,9 +111,9 @@ export function TaskView() {
   ]
 
   return (
-    <div className="flex min-h-0 flex-1" style={{ minWidth: taskRowMin }}>
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 flex-1" style={{ minWidth: taskRowMin }}>
       {/* 업무 상태 */}
-      <div className="flex w-[196px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={196} minSize={160} maxSize={320} className="flex flex-col bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
           <div className="mb-2 whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">업무 상태</div>
           <div className="flex items-center gap-1.5 rounded-md border border-ink-200 bg-ink-50 px-2.5 py-1.5">
@@ -157,11 +158,13 @@ export function TaskView() {
             + 업무 요청
           </button>
         </div>
-      </div>
+      </ResizablePanel>
+      <ResizableHandle />
 
       {/* 목록 — 아주 좁으면 자동 접힘 */}
       {!veryNarrow && (
-      <div className="flex w-[322px] flex-none flex-col border-r border-ink-200 bg-white">
+      <>
+      <ResizablePanel defaultSize={322} minSize={252} maxSize={480} className="flex flex-col bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
           <div className="mb-2 flex items-center gap-2">
             <span className="whitespace-nowrap text-label font-extrabold">
@@ -260,11 +263,13 @@ export function TaskView() {
             )
           })}
         </div>
-      </div>
+      </ResizablePanel>
+      <ResizableHandle />
+      </>
       )}
 
       {/* 상세 */}
-      <div className="flex flex-1 flex-col bg-ink-50" style={{ minWidth: contentMin }}>
+      <ResizablePanel minSize={Number(String(contentMin).replace('px', '')) || 280} className="flex flex-col bg-ink-50">
         <div className="flex-none border-b border-ink-200 bg-white px-3.5 py-3">
           <div className="mb-[7px] flex items-center gap-2">
             <span
@@ -426,11 +431,13 @@ export function TaskView() {
             </button>
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       {/* 실시간 스트림 */}
       {streamOpen && (
-        <aside className="flex w-[284px] flex-none flex-col border-l border-ink-200 bg-white">
+        <>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={284} minSize={224} maxSize={460} className="flex flex-col bg-white">
           <div className="flex flex-none items-center gap-2 border-b border-ink-200 px-[18px] py-[11px]">
             <span className="whitespace-nowrap text-sm2 font-extrabold">실시간 스트림</span>
             <button
@@ -457,8 +464,9 @@ export function TaskView() {
               </div>
             ))}
           </div>
-        </aside>
+        </ResizablePanel>
+        </>
       )}
-    </div>
+    </ResizablePanelGroup>
   )
 }

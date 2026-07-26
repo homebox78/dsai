@@ -4,6 +4,7 @@ import { Select } from '@/components/common/select'
 import { Icon } from '@/components/common/icon'
 import { ChatbotPanel } from '@/components/common/ChatbotPanel'
 import { PanelHandle } from '@/components/layout/PanelHandle'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { ecoQuestions, ecoStatusTone, folders } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
@@ -64,9 +65,9 @@ export function EcoWorkView() {
   const doneStep = cur.status === '답변완료' ? 3 : cur.status === 'AI 초안' ? 2 : 0
 
   return (
-    <div className="flex min-h-0 min-w-[1176px] flex-1">
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 min-w-[1176px] flex-1">
       {/* OCR 인식 질문 목록 */}
-      <div className="flex w-[300px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={300} minSize={240} maxSize={460} className="flex flex-col bg-white">
         <div className="flex-none border-b border-ink-200 px-3.5 py-3">
           <div className="mb-2 flex items-center gap-1.5">
             <span className="whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">
@@ -141,10 +142,11 @@ export function EcoWorkView() {
             )
           })}
         </div>
-      </div>
+      </ResizablePanel>
+      <ResizableHandle />
 
       {/* 처리부 */}
-      <div className="flex flex-1 flex-col overflow-auto bg-ink-50" style={{ minWidth: contentMin }}>
+      <ResizablePanel minSize={Number(String(contentMin).replace('px', '')) || 280} className="flex flex-col overflow-auto bg-ink-50">
         {/* 질문 상세 + OCR 수정 */}
         <div className="flex-none border-b border-ink-200 bg-white px-3.5 py-3">
           <div className="mb-2 flex items-center gap-2">
@@ -427,16 +429,21 @@ export function EcoWorkView() {
             </div>
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       <PanelHandle side="right" open={botOpen} onClick={toggleBot} title={botOpen ? '챗봇 접기' : '챗봇 펼치기'} />
       {botOpen && (
-        <ChatbotPanel
-          kind="eco"
-          scopeLabel="전체 RAG 색인 검색"
-          scopeDesc="AI가 파일명과 페이지를 함께 제시합니다"
-        />
+        <>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={330} minSize={264} maxSize={520} className="flex flex-col">
+          <ChatbotPanel
+            kind="eco"
+            scopeLabel="전체 RAG 색인 검색"
+            scopeDesc="AI가 파일명과 페이지를 함께 제시합니다"
+          />
+        </ResizablePanel>
+        </>
       )}
-    </div>
+    </ResizablePanelGroup>
   )
 }

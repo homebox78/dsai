@@ -111,12 +111,30 @@ export function Sheet({
 
 /* 공용 폼 조각 */
 
-export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+export function Field({
+  label,
+  hint,
+  error,
+  children,
+}: {
+  label: string
+  hint?: string
+  /** 검증 실패 메시지 — 있으면 힌트 대신 빨간 안내로 표시 */
+  error?: string | null
+  children: ReactNode
+}) {
   return (
     <label className="mb-3.5 block">
       <span className="mb-1.5 block text-sm2 font-bold text-ink-700">{label}</span>
       {children}
-      {hint && <span className="mt-1.5 block text-xs2 text-ink-400">{hint}</span>}
+      {error ? (
+        <span className="mt-1.5 flex items-center gap-1 text-xs2 font-semibold text-bad-dark">
+          <Icon name="error" size={14} />
+          {error}
+        </span>
+      ) : (
+        hint && <span className="mt-1.5 block text-xs2 text-ink-400">{hint}</span>
+      )}
     </label>
   )
 }

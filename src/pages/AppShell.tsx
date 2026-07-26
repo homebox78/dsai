@@ -1,6 +1,7 @@
 import { AppHeader } from '@/components/layout/AppHeader'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { SideMenu } from '@/components/layout/SideMenu'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { PanelHandle } from '@/components/layout/PanelHandle'
 import { WsPopover } from '@/components/layout/WsPopover'
 import { MegaMenu } from '@/components/layout/MegaMenu'
@@ -21,6 +22,13 @@ export function AppShell() {
   useHashSync()
 
   return (
+    <SidebarProvider
+      open={menuOpen}
+      onOpenChange={(v) => v !== menuOpen && toggleMenu()}
+      // 셸 안에 배치되므로 shadcn 기본 래퍼의 최소 높이·배경은 쓰지 않는다
+      className="contents"
+      style={{ ['--sidebar-width' as string]: '234px', ['--sidebar-width-icon' as string]: '48px' }}
+    >
     <div className="flex h-screen flex-col overflow-hidden bg-ink-50 text-[14.1px]">
       <AppHeader />
       <Breadcrumb />
@@ -44,5 +52,6 @@ export function AppShell() {
       {/* 드롭다운 바깥 클릭 닫기 */}
       {anyDropdown && <div className="fixed inset-0 z-[55]" onClick={closeDropdowns} />}
     </div>
+    </SidebarProvider>
   )
 }

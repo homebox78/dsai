@@ -100,7 +100,7 @@ export function ChatbotPanel({
     : [{ id: 'chat', label: '챗봇' }]
 
   return (
-    <aside className="flex w-[330px] flex-none flex-col border-l border-ink-200 bg-white">
+    <aside className="flex h-full w-full min-w-[264px] flex-1 flex-col border-l border-ink-200 bg-white">
       <div className="flex flex-none items-center border-b border-ink-200">
         {tabs.map((t) => {
           const on = botTab === t.id

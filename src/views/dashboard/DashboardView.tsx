@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
+import { RatioBarChart } from '@/components/common/RatioBarChart'
 import { ctx, findFile, fileStatusTone, rooms, tasks, taskStatusTone } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
@@ -240,11 +241,7 @@ export function DashboardView() {
             <div className="min-w-[300px] flex-1">
               <SectionHead title="에코바디스 진행 상태" action="처리부" onAction={() => setScreen('ecoWork')} />
               <div className="px-[18px] py-3.5">
-                <div className="flex h-2.5 overflow-hidden rounded-full border border-ink-200">
-                  {ECO_BARS.map((b) => (
-                    <span key={b.label} style={{ width: b.w, background: b.color }} />
-                  ))}
-                </div>
+                <RatioBarChart slices={ECO_BARS.map((b) => ({ label: b.label, count: b.count, color: b.color, pct: b.w }))} height={10} unit="문항" />
                 <div className="mt-[11px] flex gap-4">
                   {ECO_BARS.map((b) => (
                     <div key={b.label} className="flex items-center gap-1.5">

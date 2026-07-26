@@ -1,11 +1,25 @@
 import { Icon } from '@/components/common/icon'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar'
 import { ICON, ctx, tasks } from '@/mocks/data'
 import { useAppStore, type ScreenKey } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 
 /**
- * 메뉴 영역 (p26~28) — 시안 실측: bg #fafbfc / border-right #e2e8f0 / 펼침 226px, 접힘 52px
- * 접으면 아이콘만 노출 (스토리보드 p5 ①)
+ * 메뉴 영역 (p26~28) — shadcn Sidebar 기반.
+ * 시안 실측: bg #fafbfc / border-right #e2e8f0 / 펼침 234px, 접힘 48px(아이콘 레일)
+ * 접힘 상태는 앱 스토어(menuOpen)와 Sidebar 상태를 함께 물린다.
  */
 
 type Target = ScreenKey | `room:${string}` | 'editor' | 'channel' | 'settings'
@@ -15,7 +29,7 @@ interface MenuItem {
   target: Target
   icon: string
   badge: number
-  /** 1:1 대화방 — 아이콘 대신 이름 이니셜 아바타로 구분 */
+  /** 1:1 대화방 — 아이콘 대신 이름 이니셜 아바타로 구분(아이콘 중복 방지) */
   avatar?: boolean
 }
 
@@ -66,9 +80,10 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
 const ALERT_TARGETS = new Set<Target>(['task', 'ecoReq'])
 
 export function SideMenu() {
-  const { menuOpen, screen, room, storeMode, sysTab, setScreen, setRoom, setStoreMode, setSysTab, setDropdown } =
-    useAppStore()
+  const { screen, room, storeMode, sysTab, setScreen, setRoom, setStoreMode, setSysTab, setDropdown } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
+  const { state } = useSidebar()
+  const open = state === 'expanded'
   const myOpen = tasks.filter((t) => t.to === '나' && t.status !== '완료' && t.status !== '반려').length
 
   const isActive = (t: Target) => {
@@ -90,12 +105,14 @@ export function SideMenu() {
   }
 
   return (
-    <aside
-      className="flex flex-none flex-col border-r border-ink-200 bg-surface-sidebar transition-[width] duration-150"
-      style={{ width: menuOpen ? 234 : 48 }}
+    <Sidebar
+      collapsible="none"
+      className="h-full flex-none border-r border-ink-200 transition-[width] duration-150"
+      style={{ ['--sidebar-width' as string]: open ? '234px' : '48px' }}
     >
-      {menuOpen && (
-        <div className="flex-none border-b border-ink-200">
+      {/* 현재 조직&사업부 · 프로젝트 (펼침 상태에서만) */}
+      {open && (
+        <SidebarHeader className="gap-0 border-b border-ink-200 p-0">
           <button
             onClick={() => setDropdown('wsPopOpen', true)}
             className="block w-full px-3.5 py-3 text-left hover:bg-ink-100"
@@ -128,78 +145,77 @@ export function SideMenu() {
               <span className="mt-1 block whitespace-nowrap text-xs2 text-ink-500">멤버 {ctx.projMembers}명</span>
             </button>
           </div>
-        </div>
+        </SidebarHeader>
       )}
 
-      <div className="flex-1 overflow-auto pb-[7.6px] pt-[4.7px]">
+      <SidebarContent className="gap-0 overflow-x-hidden pb-[7.6px] pt-[4.7px]">
         {GROUPS.map((g) => (
-          <div key={g.title} className="mb-[5.7px]">
-            {menuOpen ? (
-              <div className="px-3.5 pb-[2.8px] pt-[3.8px] text-mini font-extrabold tracking-[.07em] text-ink-400">
+          <SidebarGroup key={g.title} className="gap-0 p-0 pb-[5.7px]">
+            {open ? (
+              <SidebarGroupLabel className="h-auto px-3.5 pb-[2.8px] pt-[3.8px] text-mini font-extrabold tracking-[.07em] text-ink-400">
                 {g.title}
-              </div>
+              </SidebarGroupLabel>
             ) : (
               <div className="mx-2.5 my-[5px] h-px bg-ink-200" />
             )}
-            {g.items.map((mi) => {
-              const active = isActive(mi.target)
-              const badge = mi.target === 'task' ? myOpen : mi.badge
-              const alert = ALERT_TARGETS.has(mi.target)
-              return (
-                <button
-                  key={`${g.title}-${mi.label}`}
-                  onClick={() => go(mi.target)}
-                  title={menuOpen ? mi.label : mi.label + (badge ? ` (${badge})` : '')}
-                  className="flex w-full items-center border-l-2 text-left hover:bg-ink-100"
-                  style={{
-                    gap: menuOpen ? 9 : 0,
-                    padding: menuOpen ? '6.4px 12px' : '7.8px 0',
-                    justifyContent: menuOpen ? 'flex-start' : 'center',
-                    background: active ? '#eff6ff' : 'transparent',
-                    borderLeftColor: active ? '#2563eb' : 'transparent',
-                    color: active ? '#1d4ed8' : '#334155',
-                  }}
-                >
-                  {mi.avatar ? (
-                    <span
-                      className="flex size-[18.4px] flex-none items-center justify-center rounded-full border text-[9.7px] font-extrabold"
-                      style={{
-                        background: active ? '#dbeafe' : '#f1f5f9',
-                        borderColor: active ? '#bfdbfe' : '#e2e8f0',
-                        color: active ? '#1d4ed8' : '#64748b',
-                      }}
-                    >
-                      {mi.label[0]}
-                    </span>
-                  ) : (
-                    <Icon name={mi.icon} size={18.4} className="opacity-90" style={{ lineHeight: 1 }} />
-                  )}
-                  {menuOpen && (
-                    <span
-                      className="flex-1 truncate text-body leading-none"
-                      style={{ fontWeight: active ? 700 : 500 }}
-                    >
-                      {mi.label}
-                    </span>
-                  )}
-                  {menuOpen && !!badge && (
-                    <span
-                      className="flex-none rounded-full border px-2 py-[1.5px] text-tiny font-extrabold leading-[1.45]"
-                      style={{
-                        background: alert ? '#fef2f2' : '#fff',
-                        color: alert ? '#b91c1c' : '#475569',
-                        borderColor: alert ? '#fecaca' : '#e2e8f0',
-                      }}
-                    >
-                      {badge}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-0">
+                {g.items.map((mi) => {
+                  const active = isActive(mi.target)
+                  const badge = mi.target === 'task' ? myOpen : mi.badge
+                  const alert = ALERT_TARGETS.has(mi.target)
+                  return (
+                    <SidebarMenuItem key={`${g.title}-${mi.label}`}>
+                      <SidebarMenuButton
+                        onClick={() => go(mi.target)}
+                        isActive={active}
+                        tooltip={badge ? `${mi.label} (${badge})` : mi.label}
+                        className="h-auto rounded-none border-l-2 text-body hover:bg-ink-100 data-[active=true]:bg-brand-softer"
+                        style={{
+                          gap: open ? 9 : 0,
+                          padding: open ? '6.4px 12px' : '7.8px 0',
+                          justifyContent: open ? 'flex-start' : 'center',
+                          borderLeftColor: active ? '#2563eb' : 'transparent',
+                          color: active ? '#1d4ed8' : '#334155',
+                          fontWeight: active ? 700 : 500,
+                        }}
+                      >
+                        {mi.avatar ? (
+                          <span
+                            className="flex size-[18.4px] flex-none items-center justify-center rounded-full border text-[9.7px] font-extrabold"
+                            style={{
+                              background: active ? '#dbeafe' : '#f1f5f9',
+                              borderColor: active ? '#bfdbfe' : '#e2e8f0',
+                              color: active ? '#1d4ed8' : '#64748b',
+                            }}
+                          >
+                            {mi.label[0]}
+                          </span>
+                        ) : (
+                          <Icon name={mi.icon} size={18.4} className="opacity-90" style={{ lineHeight: 1 }} />
+                        )}
+                        {open && <span className="truncate leading-none">{mi.label}</span>}
+                      </SidebarMenuButton>
+                      {open && !!badge && (
+                        <SidebarMenuBadge
+                          className="top-1/2 h-auto -translate-y-1/2 rounded-full border px-2 py-[1.5px] text-tiny font-extrabold leading-[1.45]"
+                          style={{
+                            background: alert ? '#fef2f2' : '#fff',
+                            color: alert ? '#b91c1c' : '#475569',
+                            borderColor: alert ? '#fecaca' : '#e2e8f0',
+                          }}
+                        >
+                          {badge}
+                        </SidebarMenuBadge>
+                      )}
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         ))}
-      </div>
-    </aside>
+      </SidebarContent>
+    </Sidebar>
   )
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
 import { members, msgs, rooms, tasks, taskStatusTone } from '@/mocks/data'
@@ -70,9 +71,9 @@ export function ChatView() {
   const iconBtn = 'size-[30px] flex-none rounded-md border border-ink-300 bg-white p-0 text-ink-600 hover:bg-ink-100'
 
   return (
-    <div className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 flex-1" style={{ minWidth: chatRowMin }}>
       {/* 채팅룸 목록 */}
-      <div className="flex w-[250px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={250} minSize={196} maxSize={420} className="flex flex-col bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
           <div className="mb-2 flex items-center gap-1.5">
             <span className="whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">채팅룸 목록</span>
@@ -173,10 +174,11 @@ export function ChatView() {
             ))}
           </div>
         </div>
-      </div>
+      </ResizablePanel>
+      <ResizableHandle />
 
       {/* 대화 */}
-      <div className="flex min-w-[400px] flex-1 flex-col bg-white">
+      <ResizablePanel minSize={400} className="flex flex-col bg-white">
         <div className="flex h-11 flex-none items-center gap-2 border-b border-ink-200 px-[18px]">
           <span className="flex size-7 items-center justify-center rounded-full border border-brand-border bg-brand-soft text-cap font-extrabold text-brand-link-dark">
             {cur.name[0]}
@@ -428,11 +430,13 @@ export function ChatView() {
             </div>
           </div>
         </div>
-      </div>
+      </ResizablePanel>
 
       {/* 업무 영역 (탭 전환) — 룸 안에서는 항상 열림, 아주 좁을 때만 숨김 */}
       {!autoHideZone && (
-      <aside className="flex w-[318px] flex-none flex-col border-l border-ink-200 bg-white">
+      <>
+      <ResizableHandle />
+      <ResizablePanel defaultSize={318} minSize={252} maxSize={520} className="flex flex-col bg-white">
         <div className="flex flex-none items-center border-b border-ink-200">
           {([['task', 'Task 업무영역'], ['info', '대화방 정보']] as const).map(([id, label]) => {
             const on = zoneTab === id
@@ -575,8 +579,9 @@ export function ChatView() {
             </div>
           </div>
         )}
-      </aside>
+      </ResizablePanel>
+      </>
       )}
-    </div>
+    </ResizablePanelGroup>
   )
 }

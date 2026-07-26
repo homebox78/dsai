@@ -3,6 +3,7 @@ import { useQaState } from '@/lib/qa-state'
 import { members } from '@/mocks/data'
 import { useAppStore, type SysTab } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 /** 멤버 / 시스템 (p19~22) — 관리 항목 196px | 목록 테이블 (시안 1:1) */
 
@@ -122,9 +123,9 @@ export function MembersView() {
   const head = 'text-[11.2px] font-extrabold text-ink-400 whitespace-nowrap'
 
   return (
-    <div className="flex min-h-0 min-w-[900px] flex-1">
+    <ResizablePanelGroup orientation="horizontal" className="flex min-h-0 min-w-[900px] flex-1">
       {/* 관리 항목 레일 */}
-      <div className="flex w-[196px] flex-none flex-col border-r border-ink-200 bg-white">
+      <ResizablePanel defaultSize={196} minSize={160} maxSize={320} className="flex flex-col bg-white">
         <div className="flex-none border-b border-ink-200 px-3 py-2">
           <div className="whitespace-nowrap text-tiny font-extrabold tracking-[.06em] text-ink-400">관리 항목</div>
         </div>
@@ -163,9 +164,10 @@ export function MembersView() {
             ))}
           </div>
         </div>
-      </div>
+      </ResizablePanel>
+      <ResizableHandle />
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-auto bg-white">
+      <ResizablePanel minSize={520} className="flex flex-col overflow-auto bg-white">
         <div className="flex items-center gap-2 px-[18px] pb-[13px] pt-4">
           <div className="min-w-0">
             <div className="whitespace-nowrap text-lg2 font-extrabold tracking-[-.01em]">{SYS_TITLE[sysTab]}</div>
@@ -416,7 +418,7 @@ export function MembersView() {
             })}
           </div>
         )}
-      </div>
-    </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   )
 }
