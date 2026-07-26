@@ -5,17 +5,12 @@ import { ChatbotPanel } from '@/components/common/ChatbotPanel'
 import { findFile } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayer } from '@/stores/layer-store'
+import { DocPreview, fileUrl } from '@/components/common/DocPreview'
 
 /**
- * 전체화면 문서 뷰어 (p40) — react-pdf·이미지 프리뷰 자리 + 문서 챗봇.
- * 목업이므로 페이지 렌더는 플레이스홀더, 툴바·페이지 이동·챗봇 연동은 실동작.
+ * 전체화면 문서 뷰어 (p40) — 실제 파일(public/files) 렌더 + 문서 챗봇.
+ * PDF는 브라우저 뷰어, XLSX/DOCX는 파싱해 표·본문으로 보여준다.
  */
-
-const PAGE_LINES: [string, string, string][] = [
-  ['15px', '52%', '#e2e8f0'], ['11px', '100%', '#f1f5f9'], ['11px', '97%', '#f1f5f9'], ['11px', '99%', '#f1f5f9'],
-  ['11px', '88%', '#f1f5f9'], ['15px', '40%', '#e2e8f0'], ['11px', '100%', '#f1f5f9'], ['11px', '94%', '#f1f5f9'],
-  ['140px', '100%', '#f8fafc'], ['11px', '96%', '#f1f5f9'], ['11px', '58%', '#f1f5f9'],
-]
 
 export function ViewerModal() {
   const { isOpen, close } = useLayer('viewer')
@@ -69,9 +64,14 @@ export function ViewerModal() {
         <button onClick={() => setZoom((z) => Math.min(200, z + 10))} className={iconBtn}>
           <Icon name="zoom_in" size={17} />
         </button>
-        <button className={iconBtn} title="다운로드">
+        <a
+          href={fileUrl(file)}
+          download={file.name}
+          className={`${iconBtn} flex items-center justify-center`}
+          title="다운로드"
+        >
           <Icon name="download" size={17} />
-        </button>
+        </a>
         <button className={iconBtn} title="인쇄">
           <Icon name="print" size={17} />
         </button>
@@ -86,20 +86,8 @@ export function ViewerModal() {
 
       {/* 본문 + 챗봇 */}
       <div className="flex min-h-0 flex-1">
-        <div className="flex flex-1 justify-center overflow-auto p-6">
-          <div
-            className="h-fit border border-ink-200 bg-white shadow-[0_2px_14px_rgba(15,23,42,.08)]"
-            style={{ width: `min(${Math.round(760 * (zoom / 100))}px, 100%)`, padding: '48px 54px' }}
-          >
-            <div className="mb-5 font-mono text-tiny text-ink-400">
-              {page}p / {file.name}
-            </div>
-            <div className="flex flex-col gap-3.5">
-              {PAGE_LINES.map(([h, w, bg], i) => (
-                <div key={i} style={{ height: h, width: w, background: bg, borderRadius: 2 }} />
-              ))}
-            </div>
-          </div>
+        <div className="min-w-0 flex-1">
+          <DocPreview file={file} page={page} zoom={zoom} />
         </div>
 
         <ChatbotPanel

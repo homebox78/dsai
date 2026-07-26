@@ -15,6 +15,8 @@ interface MenuItem {
   target: Target
   icon: string
   badge: number
+  /** 1:1 대화방 — 아이콘 대신 이름 이니셜 아바타로 구분 */
+  avatar?: boolean
 }
 
 const GROUPS: { title: string; items: MenuItem[] }[] = [
@@ -30,8 +32,8 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
     title: '협업공간',
     items: [
       { label: 'ESG 전략 TF', target: 'room:r1', icon: ICON.chat, badge: 3 },
-      { label: '김대성', target: 'room:r2', icon: ICON.chat, badge: 0 },
-      { label: '최민호', target: 'room:r3', icon: ICON.chat, badge: 1 },
+      { label: '김대성', target: 'room:r2', icon: 'person', badge: 0, avatar: true },
+      { label: '최민호', target: 'room:r3', icon: 'person', badge: 1, avatar: true },
       { label: '업무', target: 'task', icon: ICON.task, badge: 0 },
     ],
   },
@@ -54,8 +56,8 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
   {
     title: '시스템',
     items: [
-      { label: '멤버등록', target: 'members', icon: ICON.user, badge: 0 },
-      { label: '채널관리', target: 'channel', icon: ICON.chat, badge: 8 },
+      { label: '멤버등록', target: 'members', icon: 'person_add', badge: 0 },
+      { label: '채널관리', target: 'channel', icon: 'hub', badge: 8 },
       { label: '설정', target: 'settings', icon: ICON.gear, badge: 0 },
     ],
   },
@@ -158,7 +160,20 @@ export function SideMenu() {
                     color: active ? '#1d4ed8' : '#334155',
                   }}
                 >
-                  <Icon name={mi.icon} size={18.4} className="opacity-90" style={{ lineHeight: 1 }} />
+                  {mi.avatar ? (
+                    <span
+                      className="flex size-[18.4px] flex-none items-center justify-center rounded-full border text-[9.7px] font-extrabold"
+                      style={{
+                        background: active ? '#dbeafe' : '#f1f5f9',
+                        borderColor: active ? '#bfdbfe' : '#e2e8f0',
+                        color: active ? '#1d4ed8' : '#64748b',
+                      }}
+                    >
+                      {mi.label[0]}
+                    </span>
+                  ) : (
+                    <Icon name={mi.icon} size={18.4} className="opacity-90" style={{ lineHeight: 1 }} />
+                  )}
                   {menuOpen && (
                     <span
                       className="flex-1 truncate text-body leading-none"

@@ -213,17 +213,24 @@ export function ChatbotPanel({
                 </button>
               ))}
             </div>
-            <div className="flex gap-1.5">
-              <input
+            <div className="flex items-stretch gap-1.5">
+              <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && send(input)}
-                placeholder="문장으로 물어보세요"
-                className="flex-1 rounded-md border border-ink-300 px-3 py-2 text-label outline-none"
+                onKeyDown={(e) => {
+                  // Enter 전송 / Shift+Enter 줄바꿈
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    send(input)
+                  }
+                }}
+                rows={2}
+                placeholder="문장으로 물어보세요 · Enter 전송 / Shift+Enter 줄바꿈"
+                className="min-h-[58px] flex-1 resize-none rounded-md border border-ink-300 px-3 py-2 text-label leading-[1.6] outline-none focus:border-brand-link"
               />
               <button
                 onClick={() => send(input)}
-                className="rounded-md bg-brand px-3.5 text-sm2 font-bold text-white hover:bg-brand-dark"
+                className="flex-none rounded-md bg-brand px-3.5 text-sm2 font-bold text-white hover:bg-brand-dark"
               >
                 전송
               </button>

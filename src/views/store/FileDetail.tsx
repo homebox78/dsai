@@ -4,6 +4,7 @@ import { Icon } from '@/components/common/icon'
 import { fileStatusTone, type DocFile } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
+import { DocPreview, fileUrl } from '@/components/common/DocPreview'
 
 /** 파일 상세 (p40) — 요약 hide/show · 탭 4종 · 뷰어 · 메타/버전/활동 */
 
@@ -33,12 +34,6 @@ const KEY_PAGES = [
   { label: 'p.132 배상 기준', page: 132, quote: '[별표 3] 손해배상 예정액 산정 기준 — 지연 1일당 계약금액의 1,000분의 1.5' },
 ]
 
-const PAGE_LINES: [string, string, string][] = [
-  ['13px', '58%', '#e2e8f0'], ['10px', '100%', '#f1f5f9'], ['10px', '97%', '#f1f5f9'], ['10px', '99%', '#f1f5f9'],
-  ['10px', '86%', '#f1f5f9'], ['13px', '44%', '#e2e8f0'], ['10px', '100%', '#f1f5f9'], ['10px', '93%', '#f1f5f9'],
-  ['112px', '100%', '#f8fafc'], ['10px', '96%', '#f1f5f9'], ['10px', '62%', '#f1f5f9'],
-]
-
 export function FileDetail({ file, folderName }: { file: DocFile; folderName: string }) {
   const { setStoreMode } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
@@ -46,6 +41,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
   const [summaryOpen, setSummaryOpen] = useQaState('summaryOpen', true)
   const [page, setPage] = useState(1)
   const [highlight, setHighlight] = useState<string | null>(null)
+  const [zoom, setZoom] = useState(100)
 
   const st = fileStatusTone[file.status]
 
@@ -175,33 +171,43 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
                   <Icon name="chevron_right" size={17} />
                 </button>
               </div>
-              <button className="size-[26px] rounded-[5px] border border-ink-300 bg-white p-0 text-ink-700 hover:bg-ink-100">
+              <button
+                onClick={() => setZoom((z) => Math.max(60, z - 20))}
+                title="축소"
+                className="size-[26px] rounded-[5px] border border-ink-300 bg-white p-0 text-ink-700 hover:bg-ink-100"
+              >
                 <Icon name="zoom_out" size={17} />
               </button>
-              <button className="size-[26px] rounded-[5px] border border-ink-300 bg-white p-0 text-ink-700 hover:bg-ink-100">
+              <button
+                onClick={() => setZoom((z) => Math.min(200, z + 20))}
+                title="확대"
+                className="size-[26px] rounded-[5px] border border-ink-300 bg-white p-0 text-ink-700 hover:bg-ink-100"
+              >
                 <Icon name="zoom_in" size={17} />
               </button>
+              <a
+                href={fileUrl(file)}
+                download={file.name}
+                title="원본 내려받기"
+                className="flex size-[26px] items-center justify-center rounded-[5px] border border-ink-300 bg-white text-ink-700 hover:bg-ink-100"
+              >
+                <Icon name="download" size={17} />
+              </a>
             </>
           )}
         </div>
 
         {tab === 'preview' && (
-          <div className="flex flex-1 justify-center overflow-auto p-4">
-            <div className="h-fit w-[min(620px,100%)] border border-ink-200 bg-white px-[42px] py-[38px]">
-              <div className="mb-4 font-mono text-tiny text-ink-400">
-                {page}p / {file.name}
+          <div className="flex min-h-0 flex-1 flex-col">
+            {highlight && (
+              <div className="flex-none border-b border-warn-light bg-warn-soft px-4 py-3 text-label leading-[1.8]">
+                <div className="mb-[5px] text-mini font-extrabold tracking-[.05em] text-warn-dark">AI가 찾은 구절</div>
+                {highlight}
               </div>
-              {highlight && (
-                <div className="mb-4 rounded-md border border-warn-light bg-warn-soft px-3.5 py-3 text-label leading-[1.8]">
-                  <div className="mb-[5px] text-mini font-extrabold tracking-[.05em] text-warn-dark">AI가 찾은 구절</div>
-                  {highlight}
-                </div>
-              )}
-              <div className="flex flex-col gap-3">
-                {PAGE_LINES.map(([h, w, bg], i) => (
-                  <div key={i} style={{ height: h, width: w, background: bg, borderRadius: 2 }} />
-                ))}
-              </div>
+            )}
+            {/* 실제 파일 렌더 — public/files/<id>.<ext> */}
+            <div className="min-h-0 flex-1">
+              <DocPreview file={file} page={page} zoom={zoom} />
             </div>
           </div>
         )}

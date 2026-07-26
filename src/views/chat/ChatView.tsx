@@ -343,7 +343,7 @@ export function ChatView() {
                 {task && tone && (
                   <button
                     onClick={() => { setTaskId(task.id); setScreen('task') }}
-                    className="mt-1.5 block w-[330px] border-y border-l-2 border-ink-200 bg-white px-3.5 py-3 text-left hover:bg-ink-50"
+                    className="mt-1.5 block w-[330px] rounded-r-lg border-y border-r border-l-2 border-ink-200 bg-white px-3.5 py-3 text-left hover:bg-ink-50"
                     style={{ borderLeftColor: tone.bar }}
                   >
                     <span className="mb-[5px] flex items-center gap-1.5">

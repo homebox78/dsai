@@ -181,12 +181,13 @@ export function MegaMenu() {
             className="min-w-0 flex-1 border-none bg-transparent p-0 text-label text-white placeholder:text-white/60 focus:outline-none"
           />
         </div>
+        <span className="mx-2 h-5 w-px flex-none bg-white/25" />
         <button
           onClick={() => setOverlay(false)}
-          className="flex items-center gap-1 whitespace-nowrap rounded-md border border-white/25 bg-white/10 px-2.5 py-1.5 text-label font-bold text-white hover:bg-white/20"
+          title="전체 메뉴 닫기"
+          className="flex size-[34px] flex-none items-center justify-center rounded-full border border-white/30 bg-white/10 text-white hover:bg-white/20"
         >
-          닫기
-          <Icon name="close" size={17} />
+          <Icon name="close" size={19} />
         </button>
       </div>
 
