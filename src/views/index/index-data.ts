@@ -1,4 +1,8 @@
 /**
+ * ⚠️ 검수 전용 — 클라이언트 검수가 끝나면 삭제합니다.
+ *    제거 명령: npm run remove-qa   (미리보기: npm run remove-qa -- --dry)
+ */
+/**
  * 작업 목록 · 검수 인덱스 데이터 — 완성 시안(delivery/Amber Document Intelligence.dc.html)의
  * IDX 배열을 그대로 옮긴 것. 116항목 · 7그룹.
  * st = "열기"를 눌렀을 때 재현할 화면 상태(스토어 코어 키 + 뷰 로컬 상태 프리셋).

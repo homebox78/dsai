@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
@@ -12,7 +13,13 @@ import { useLayoutMetrics } from '@/lib/responsive'
 import { FileDetail } from './FileDetail'
 import { EditorPane } from './EditorPane'
 
-/** 문서 저장소 (p35~45) — 1영역 폴더 212px | 2영역 목록 264px | 3영역 컨텐츠 | 4영역 챗봇 330px */
+/**
+ * 문서 저장소 (설계서 p35~45)
+ *
+ * 4분할: ①폴더 212px | ②파일 목록 264px | ③본문(목록·상세·작성기) | ④챗봇 330px
+ * ③은 선택 상태에 따라 안내 → 파일 상세(FileDetail) → 작성기로 바뀐다.
+ * 파일 행 우클릭 시 컨텍스트 메뉴, 업로드는 file-upload 레이어에서 처리한다.
+ */
 
 const SCOPES: [string, string][] = [
   ['project', '프로젝트'],
@@ -30,6 +37,7 @@ const SORTS: [string, string][] = [
 export function StoreView() {
   const { folder, fileId, storeMode, botOpen: botPref, toggleBot, setFolder, openFile, setStoreMode } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [folderQuery, setFolderQuery] = useQaState('folderQuery', '')
   const [fileQuery, setFileQuery] = useState('')
   const [scope, setScope] = useState('project')
@@ -203,9 +211,7 @@ export function StoreView() {
                   style={{ background: on ? '#eff6ff' : '#fff', borderLeftColor: on ? '#2563eb' : 'transparent' }}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="flex size-[26px] flex-none items-center justify-center rounded-md bg-ink-100 font-mono text-[8.2px] font-extrabold text-ink-600">
-                      {f.ext}
-                    </span>
+                    <FileExt ext={f.ext} size={26} />
                     <span className="min-w-0 flex-1 truncate text-label font-semibold">{f.name}</span>
                   </span>
                   <span className="mt-1.5 flex items-center gap-1.5 pl-[34px]">
@@ -289,9 +295,7 @@ export function StoreView() {
                     >
                       <span className="min-w-0">
                         <span className="flex items-center gap-2">
-                          <span className="flex size-6 flex-none items-center justify-center rounded-[5px] bg-ink-100 font-mono text-[7.3px] font-extrabold text-ink-600">
-                            {f.ext}
-                          </span>
+                          <FileExt ext={f.ext} size={24} />
                           <span className="min-w-0 flex-1 truncate text-body font-semibold">{f.name}</span>
                         </span>
                         <span className="mt-1 block truncate pl-8 text-xs2 text-ink-400">{f.summary}</span>

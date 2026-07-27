@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
@@ -120,7 +121,7 @@ export function ChatbotPanel({
             </button>
           )
         })}
-        <button onClick={toggleBot} className="ml-auto mr-2 size-[22px] p-0 text-ink-400 hover:text-ink-900">
+        <button title="패널 닫기" onClick={toggleBot} className="ml-auto mr-2 size-[22px] p-0 text-ink-400 hover:text-ink-900">
           <Icon name="close" size={17.9} />
         </button>
       </div>
@@ -154,9 +155,7 @@ export function ChatbotPanel({
                         onClick={() => openLayer('viewer')}
                         className="flex items-center gap-2 rounded-[7px] border border-ink-200 bg-ink-50 px-[9px] py-2 text-left hover:border-brand-fade hover:bg-brand-soft"
                       >
-                        <span className="flex size-[22px] flex-none items-center justify-center rounded-[5px] border border-ink-200 bg-white font-mono text-[7.3px] font-extrabold text-ink-600">
-                          {h.ext}
-                        </span>
+                        <FileExt ext={h.ext} size={22} />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm2 font-bold">{h.name}</span>
                           <span className="mt-px block text-tiny font-bold text-brand-link">{h.pageLabel}</span>

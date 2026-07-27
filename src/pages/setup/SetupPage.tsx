@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
+import { markEntered } from '@/lib/session'
 import { Icon } from '@/components/common/icon'
 
 /**
@@ -42,7 +43,12 @@ export function SetupPage() {
   const [invites, setInvites] = useState(['sj.lee@corp.com', 'jw.park@corp.com'])
   const [inviteInput, setInviteInput] = useState('')
 
-  const next = () => (step < 2 ? setStep(step + 1) : navigate('/'))
+  /** 마지막 단계에서는 셸로 들어간다 — 진입 게이트도 함께 통과시킨다 */
+  const finish = () => {
+    markEntered()
+    navigate('/#screen=index')
+  }
+  const next = () => (step < 2 ? setStep(step + 1) : finish())
 
   return (
     <div className="flex h-screen min-h-0 bg-ink-50">
@@ -220,7 +226,7 @@ export function SetupPage() {
                       className="flex items-center gap-1.5 rounded-full border border-brand-border bg-brand-soft px-2.5 py-1 text-sm2 font-semibold text-brand-dark"
                     >
                       {e}
-                      <button
+                      <button title="제거"
                         onClick={() => setInvites((v) => v.filter((x) => x !== e))}
                         className="text-brand-dark/60 hover:text-bad-dark"
                       >
@@ -277,7 +283,7 @@ export function SetupPage() {
               </button>
             )}
             <div className="flex-1" />
-            <button onClick={() => navigate('/')} className="text-sm2 font-bold text-ink-500 hover:text-ink-900">
+            <button onClick={finish} className="text-sm2 font-bold text-ink-500 hover:text-ink-900">
               나중에 하기
             </button>
             <button

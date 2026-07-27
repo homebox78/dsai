@@ -103,7 +103,8 @@ const CORE_KEYS: Record<string, keyof AppState> = {
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  screen: 'dash',
+  // 로그인 직후 착지 화면 — 클라이언트 검수 동선상 작업목록부터 본다
+  screen: 'index',
   menuOpen: true,
   botOpen: true,
   botTab: 'chat',

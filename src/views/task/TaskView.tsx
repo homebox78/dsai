@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
@@ -12,6 +13,8 @@ import { useLayoutMetrics } from '@/lib/responsive'
 /** 업무 관리 (p55~56) — 상태 196px | 목록 322px | 상세 | 실시간 스트림 284px */
 
 /** 좌측 상태 필터 (시안 tfDefs) */
+/* ── 화면 전용 목업 · 상수 ────────────────────────── */
+
 const FILTERS: { id: string; label: string; dot: string }[] = [
   { id: 'all', label: '전체', dot: '#94a3b8' },
   { id: 'mine', label: '내가 받은 요청', dot: '#2563eb' },
@@ -55,15 +58,21 @@ const SORTS: [string, string][] = [
   ['status', '상태순'],
 ]
 
+/* ── 기한 판정 헬퍼 ───────────────────────────────── */
+
+/** 기한이 지났고 아직 끝나지 않은 업무 */
 const isOverdue = (t: { due: string; status: TaskStatus }) =>
   t.due < '07.25' && t.status !== '완료' && t.status !== '반려'
 const isSoon = (t: { due: string; status: TaskStatus }) =>
   t.due >= '07.25' && t.due <= '07.28' && t.status !== '완료'
 
+/* ── 화면 ─────────────────────────────────────────── */
+
 export function TaskView() {
   const { taskId, setTaskId, setScreen, taskFilter: filter, setTaskFilter: setFilter } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const [query, setQuery] = useState('')
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [due, setDue] = useQaState('taskDue', 'all')
   const [sort, setSort] = useState('due')
   const [ddOpen, setDdOpen] = useQaState<string | null>('ddOpen', null)
@@ -387,9 +396,7 @@ export function TaskView() {
                     onClick={() => setScreen('store')}
                     className="mt-[7px] flex items-center gap-2 rounded-[7px] border border-ink-200 bg-white px-3 py-2 hover:border-brand-fade"
                   >
-                    <span className="flex size-6 flex-none items-center justify-center rounded-[5px] bg-ink-100 font-mono text-[7.3px] font-extrabold text-ink-600">
-                      {h.fileExt}
-                    </span>
+                    <FileExt ext={h.fileExt} size={24} />
                     <span className="text-left">
                       <span className="block text-sm2 font-bold">{h.file}</span>
                       <span className="block text-mini text-ink-400">문서 저장소에 자동 등록됨</span>
@@ -453,6 +460,7 @@ export function TaskView() {
             <span className="whitespace-nowrap text-sm2 font-extrabold">실시간 스트림</span>
             <button
               onClick={() => setStreamOpen(false)}
+              title="실시간 스트림 닫기"
               className="ml-auto size-[22px] p-0 text-ink-400 hover:text-ink-900"
             >
               <Icon name="close" size={17.9} />

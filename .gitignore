@@ -32,3 +32,12 @@ dist-ssr
 # delivery: 중복 사본 (delivery/delivery 는 delivery/ 와 동일)
 delivery/delivery/
 delivery/.thumbnail
+
+# 납품 패키지 생성 결과 (scripts/prepare-handover.mjs)
+/amber-front-mockup/
+/납품본/
+
+# AI 코딩 도구 설정 (개인 환경)
+.claude/
+.agents/
+skills-lock.json

@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Icon } from '@/components/common/icon'
@@ -27,9 +28,7 @@ export function ViewerModal() {
     <div className="anim-fade fixed inset-0 z-[90] flex flex-col bg-surface-rail">
       {/* 뷰어 헤더 */}
       <div className="flex h-[52px] flex-none items-center gap-2 border-b border-ink-200 bg-white px-3.5">
-        <span className="flex size-7 flex-none items-center justify-center rounded-md bg-ink-100 font-mono text-[8.7px] font-extrabold text-ink-600">
-          {file.ext}
-        </span>
+        <FileExt ext={file.ext} size={28} />
         <div className="min-w-0">
           <div className="truncate text-label font-extrabold">{file.name}</div>
           <div className="text-xs2 text-ink-400">
@@ -40,7 +39,7 @@ export function ViewerModal() {
         <div className="flex-1" />
 
         <div className="flex items-center gap-1 rounded-md bg-ink-200 px-1 py-[3px]">
-          <button
+          <button title="이전 페이지"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="size-[22px] rounded border border-ink-200 bg-white p-0 text-ink-600"
           >
@@ -49,7 +48,7 @@ export function ViewerModal() {
           <span className="min-w-[74px] text-center text-cap font-bold">
             {page} / {file.pages}p
           </span>
-          <button
+          <button title="다음 페이지"
             onClick={() => setPage((p) => Math.min(file.pages, p + 1))}
             className="size-[22px] rounded border border-ink-200 bg-white p-0 text-ink-600"
           >
@@ -57,11 +56,11 @@ export function ViewerModal() {
           </button>
         </div>
 
-        <button onClick={() => setZoom((z) => Math.max(50, z - 10))} className={iconBtn}>
+        <button title="축소" onClick={() => setZoom((z) => Math.max(50, z - 10))} className={iconBtn}>
           <Icon name="zoom_out" size={17} />
         </button>
         <span className="w-[46px] text-center text-xs2 font-bold text-ink-600">{zoom}%</span>
-        <button onClick={() => setZoom((z) => Math.min(200, z + 10))} className={iconBtn}>
+        <button title="확대" onClick={() => setZoom((z) => Math.min(200, z + 10))} className={iconBtn}>
           <Icon name="zoom_in" size={17} />
         </button>
         <a

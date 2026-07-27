@@ -10,6 +10,10 @@ import { useEffect, useRef } from 'react'
 const N = 20
 /** 원근 초점 거리 (클수록 왜곡이 약해진다) */
 const FOCAL = 5.2
+/** 마우스 밀어내기 반경(px)과 최대 밀림 거리(px) */
+const PUSH_R = 120
+const PUSH_R2 = PUSH_R * PUSH_R
+const PUSH_MAX = 56
 
 interface Point {
   x: number
@@ -98,10 +102,46 @@ export function DotCube({ className }: { className?: string }) {
     let raf = 0
     let t = 0
 
+    // 포인터 추적 — 평소엔 스스로 돌다가, 마우스가 움직이면 그 방향으로 기울어 따라본다.
+    // 캔버스는 pointer-events:none 이라 좌표는 window 에서 받는다.
+    let targetTiltY = 0
+    let targetTiltX = 0
+    let tiltY = 0
+    let tiltX = 0
+    /** 마우스가 멈추면 서서히 원래 자전으로 돌아간다 */
+    let lastMove = -Infinity
+    /** 캔버스 좌표계의 포인터 위치 — 도트를 밀어내는 데 쓴다 */
+    let mx = -9999
+    let my = -9999
+    /** 밀어내기 세기 0~1 (마우스가 멈추면 서서히 0) */
+    let push = 0
+    const onMove = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect()
+      if (!r.width || !r.height) return
+      mx = e.clientX - r.left
+      my = e.clientY - r.top
+      // 큐브 중심(ox, oy) 기준 -1 ~ 1
+      const nx = (mx - ox) / (r.width * 0.5)
+      const ny = (my - oy) / (r.height * 0.5)
+      targetTiltY = Math.max(-1, Math.min(1, nx)) * 0.95
+      targetTiltX = Math.max(-1, Math.min(1, ny)) * 0.55
+      lastMove = performance.now()
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+
     const draw = () => {
-      // 회전: Y축 등속 + X축 완만한 왕복 (살짝 떠 있는 느낌)
-      const ay = t * 0.00022
-      const ax = -0.42 + Math.sin(t * 0.00013) * 0.13
+      // 마우스가 1.2초 이상 멈춰 있으면 기울기를 0으로 풀어 자전만 남긴다
+      const idle = performance.now() - lastMove > 1200
+      const wantY = idle ? 0 : targetTiltY
+      const wantX = idle ? 0 : targetTiltX
+      // 지수 감쇠로 부드럽게 따라간다
+      tiltY += (wantY - tiltY) * 0.06
+      tiltX += (wantX - tiltX) * 0.06
+      push += ((idle ? 0 : 1) - push) * 0.08
+
+      // 회전: Y축 등속 자전 + 마우스 방향 기울기, X축 완만한 왕복
+      const ay = t * 0.00022 + tiltY
+      const ax = -0.42 + Math.sin(t * 0.00013) * 0.13 + tiltX
       const cy = Math.cos(ay)
       const sy = Math.sin(ay)
       const cx = Math.cos(ax)
@@ -118,8 +158,24 @@ export function DotCube({ className }: { className?: string }) {
         const z2 = by[i] * sx + z1 * cx
         const scale = FOCAL / (FOCAL + z2)
         pz[i] = z2
-        sxArr[i] = ox + x1 * size * scale
-        syArr[i] = oy + y2 * size * scale
+        let px = ox + x1 * size * scale
+        let py = oy + y2 * size * scale
+
+        // 포인터 주변의 점은 바깥으로 밀려난다 (반경 안에서 거리에 반비례)
+        if (push > 0.01) {
+          const dx = px - mx
+          const dy = py - my
+          const d2 = dx * dx + dy * dy
+          if (d2 < PUSH_R2 && d2 > 0.0001) {
+            const d = Math.sqrt(d2)
+            // 중심에 가까울수록 강하게 — 가장자리에서는 0으로 부드럽게 수렴
+            const f = (1 - d / PUSH_R) ** 2 * PUSH_MAX * push
+            px += (dx / d) * f
+            py += (dy / d) * f
+          }
+        }
+        sxArr[i] = px
+        syArr[i] = py
       }
 
       // 정렬은 몇 프레임에 한 번 — 회전이 느려 중간 프레임은 이전 순서로 그려도 표가 안 난다
@@ -129,6 +185,10 @@ export function DotCube({ className }: { className?: string }) {
       ctx.clearRect(0, 0, w, h)
       // ⚠️ canvas.width 를 쓰면 컨텍스트 상태가 초기화된다(fillStyle 이 검정으로 돌아감) → 매 프레임 지정
       ctx.fillStyle = '#dbeafe'
+      // 어두운 테두리·헤일로가 생기지 않게: 그림자 끄고, 배경을 어둡게 만들 수 없는 가산 합성으로 그린다
+      ctx.shadowBlur = 0
+      ctx.shadowColor = 'transparent'
+      ctx.globalCompositeOperation = 'lighter'
 
       for (let n = 0; n < COUNT; n++) {
         const i = order[n]
@@ -143,11 +203,12 @@ export function DotCube({ className }: { className?: string }) {
         const d = (1 - pz[i]) * 0.5
         ctx.globalAlpha = (0.14 + d * 0.72) * fade
         // 경로 없이 fillRect — 1px 안팎 크기에서는 원과 구분되지 않으면서 훨씬 저렴하다
-        const s2 = (0.7 + d * 1.15) * scale
+        const s2 = (0.34 + d * 0.58) * scale
         ctx.fillRect(sxp - s2, syp - s2, s2 * 2, s2 * 2)
       }
 
       ctx.globalAlpha = 1
+      ctx.globalCompositeOperation = 'source-over'
     }
 
     if (reduced) {
@@ -167,6 +228,7 @@ export function DotCube({ className }: { className?: string }) {
     return () => {
       cancelAnimationFrame(raf)
       ro.disconnect()
+      window.removeEventListener('pointermove', onMove)
     }
   }, [])
 

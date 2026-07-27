@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useQaState } from '@/lib/qa-state'
 import { RatioBarChart } from '@/components/common/RatioBarChart'
 import { useLayerStore } from '@/stores/layer-store'
@@ -5,7 +6,12 @@ import { useAppStore } from '@/stores/app-store'
 import { useLayoutMetrics } from '@/lib/responsive'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
-/** 에코바디스 증빙자료 — 문항 ↔ 문서 ↔ 페이지 매핑 + 커버리지 패널 */
+/**
+ * 에코바디스 증빙자료
+ *
+ * 문항 ↔ 문서 ↔ 인용 페이지 매핑 표 + 우측 커버리지/경보 패널.
+ * 경보 카드(유효기한 임박·미연결·중복)를 누르면 해당 상태로 표가 필터링된다.
+ */
 
 /** 시안 EV — 문항 ↔ 문서 ↔ 인용 페이지 매핑 9건 */
 interface EvRow {
@@ -60,6 +66,7 @@ const ALERTS: { tag: string; count: number; text: string; bg: string; bd: string
 export function EcoDocsView() {
   const openLayer = useLayerStore((s) => s.open)
   const { setScreen, setFolder, openFile } = useAppStore()
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [cat, setCat] = useQaState('evCat', '전체')
   const [state, setState] = useQaState('evState', '전체')
   const [query, setQuery] = useQaState('ecoQuery', '')
@@ -196,9 +203,7 @@ export function EcoDocsView() {
                 <span className="min-w-0">
                   {r.file ? (
                     <span className="flex min-w-0 items-center gap-2">
-                      <span className="flex size-[22px] flex-none items-center justify-center rounded-[5px] bg-ink-100 font-mono text-[7.3px] font-extrabold text-ink-600">
-                        {r.ext}
-                      </span>
+                      <FileExt ext={r.ext} size={22} />
                       <span className="min-w-0 flex-1 truncate text-sm2 font-semibold">{r.file}</span>
                     </span>
                   ) : (
@@ -260,7 +265,7 @@ export function EcoDocsView() {
               <button
                 key={a.tag}
                 onClick={() => setState(a.to)}
-                className="block rounded-lg border p-[11px] text-left hover:border-brand-fade"
+                className="block whitespace-normal rounded-lg border p-[11px] text-left hover:border-brand-fade"
                 style={{ background: a.bg, borderColor: a.bd }}
               >
                 <span className="mb-[3px] flex items-center gap-1.5">

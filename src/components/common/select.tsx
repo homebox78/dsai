@@ -34,7 +34,7 @@ export function Select({
       <button
         ref={ref}
         onClick={() => setDdOpen(open ? null : ddKey)}
-        className="flex w-full items-center gap-2 rounded-md border bg-white px-2.5 py-1.5 text-left text-sm2"
+        className="flex h-full min-h-0 w-full items-center gap-2 rounded-md border bg-white px-2.5 py-1.5 text-left text-sm2"
         style={{ borderColor: open ? '#1750d8' : '#cbd5e1' }}
       >
         <span className="min-w-0 flex-1 truncate">{value}</span>

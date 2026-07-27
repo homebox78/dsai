@@ -6,7 +6,12 @@ import { useAppStore, type SysTab } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
-/** 멤버 / 시스템 (p19~22) — 관리 항목 196px | 목록 테이블 (시안 1:1) */
+/**
+ * 멤버 / 시스템 (설계서 p19~22)
+ *
+ * 좌측 관리 항목 196px | 우측 목록 테이블. 탭 4종(멤버·조직&사업부·채널·권한)을 한 화면에서 바꾼다.
+ * 표 정렬 규칙: 헤더는 모두 가운데, 길이가 들쭉날쭉한 이메일만 좌측, 나머지 셀은 가운데.
+ */
 
 const SYS_TABS: { id: SysTab; label: string; count: number; icon: string }[] = [
   { id: 'member', label: '멤버 관리', count: 6, icon: 'group' },
@@ -100,6 +105,7 @@ const SYS_GRID = 'minmax(180px,1fr) 108px 96px 96px 84px'
 export function MembersView() {
   const { sysTab, setSysTab } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [query, setQuery] = useQaState('memberQuery', '')
   const [filter, setFilter] = useQaState('memberFilter', 'all')
   const [sel, setSel] = useQaState<Record<string, boolean>>('memberSel', {})
@@ -190,6 +196,13 @@ export function MembersView() {
             />
           </div>
           <button
+            onClick={() => openLayer('ext-collab')}
+            className="flex h-[34px] items-center gap-1 whitespace-nowrap rounded-md border border-ink-300 bg-white px-3 text-xs2 font-bold text-ink-700 hover:border-brand hover:text-brand-dark"
+          >
+            <Icon name="group_add" size={17} />
+            외부 협업자 관리
+          </button>
+          <button
             onClick={() => openLayer('member-invite')}
             className="flex h-[34px] items-center gap-1 whitespace-nowrap rounded-md bg-brand px-3 text-xs2 font-bold text-white hover:bg-brand-dark"
           >
@@ -248,7 +261,14 @@ export function MembersView() {
                 className="grid min-w-[800px] gap-2 border-b border-ink-200 px-3.5 py-[9px]"
                 style={{ gridTemplateColumns: GRID }}
               >
-                <button onClick={toggleAll} className="justify-self-start" style={{ color: allOn ? '#1750d8' : '#cbd5e1' }}>
+                <button
+                  onClick={toggleAll}
+                  title="전체 선택"
+                  role="checkbox"
+                  aria-checked={allOn}
+                  className="justify-self-start"
+                  style={{ color: allOn ? '#1750d8' : '#cbd5e1' }}
+                >
                   <Icon name={allOn ? 'check_box' : 'check_box_outline_blank'} size={18} />
                 </button>
                 <span className={`${head} text-center`}>멤버</span>
@@ -272,6 +292,9 @@ export function MembersView() {
                   >
                     <button
                       onClick={() => setSel({ ...sel, [m.id]: !checked })}
+                      title={`${m.name} 선택`}
+                      role="checkbox"
+                      aria-checked={checked}
                       className="justify-self-start"
                       style={{ color: checked ? '#1750d8' : '#cbd5e1' }}
                     >
@@ -308,7 +331,7 @@ export function MembersView() {
                         setDdOpen(null)
                       }}
                     />
-                    <span className="truncate text-[11.6px] text-ink-500">
+                    <span className="truncate text-center text-[11.6px] text-ink-500">
                       {m.dept === '외부 협업자' ? '에코바디스 2026' : m.perm === '마스터' ? '전체 3개' : '에코바디스 2026'}
                     </span>
 

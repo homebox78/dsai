@@ -1,3 +1,7 @@
+/**
+ * ⚠️ 검수 전용 — 클라이언트 검수가 끝나면 삭제합니다.
+ *    제거 명령: npm run remove-qa   (미리보기: npm run remove-qa -- --dry)
+ */
 import { useEffect, useState } from 'react'
 import { Icon } from '@/components/common/icon'
 import { useOpenIdxItem } from '@/lib/qa-open'
@@ -123,14 +127,14 @@ export function QaBar() {
           </div>
 
           <div className="flex flex-none items-center gap-1.5 border-t border-ink-200 bg-ink-50 px-3 py-2">
-            <button
+            <button title="이전 항목"
               onClick={() => go(cursor - 1)}
               className="flex flex-1 items-center justify-center rounded-md border border-ink-300 bg-white py-[7px] text-[11.6px] font-bold text-ink-700 hover:bg-ink-100"
             >
               <Icon name="chevron_left" size={15} />
               이전
             </button>
-            <button
+            <button title="다음 항목"
               onClick={() => go(cursor + 1)}
               className="flex flex-1 items-center justify-center rounded-md bg-brand py-[7px] text-[11.6px] font-bold text-white hover:bg-brand-dark"
             >

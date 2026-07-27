@@ -1,3 +1,7 @@
+/**
+ * ⚠️ 검수 전용 — 클라이언트 검수가 끝나면 삭제합니다.
+ *    제거 명령: npm run remove-qa   (미리보기: npm run remove-qa -- --dry)
+ */
 import { Icon } from '@/components/common/icon'
 import { useQaState } from '@/lib/qa-state'
 import { useOpenIdxItem } from '@/lib/qa-open'
@@ -46,6 +50,13 @@ export function IndexView() {
             <p className="mt-1.5 text-sm2 text-ink-500">
               스토리보드 63p 대비 제작 현황입니다. <b className="font-bold text-ink-900">열기</b>를 누르면 해당 화면·모달·시트가
               그 상태 그대로 열립니다 (페이지 이동 없음).
+            </p>
+            {/* 검수 완료 후 제거 대상임을 화면에서도 알린다 */}
+            <p className="mt-2 flex items-center gap-1.5 text-sm2 text-ink-400">
+              <Icon name="schedule" size={15} />
+              이 화면과 우하단 검수 바는 <b className="font-bold text-ink-600">검수용 임시 도구</b>로, 검수 완료 후
+              <code className="mx-1 rounded bg-ink-100 px-1.5 py-px font-mono text-tiny text-ink-700">npm run remove-qa</code>
+              로 삭제됩니다.
             </p>
           </div>
           <div className="ml-auto flex gap-2">

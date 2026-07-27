@@ -15,6 +15,9 @@ export type LayerKey =
   | 'ws-create'
   | 'proj-create'
   | 'member-invite'
+  | 'ws-delete'
+  | 'ext-collab'
+  | 'activity-all'
   | 'plan'
   // 문서
   | 'folder-create'

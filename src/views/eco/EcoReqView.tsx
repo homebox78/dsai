@@ -20,6 +20,7 @@ export function EcoReqView() {
   const { setScreen, setFolder } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
   const { chatRowMin, contentMin } = useLayoutMetrics()
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [filter, setFilter] = useQaState<'전체' | ReqStatus>('rqFilter', '전체')
   const [query, setQuery] = useQaState('rqQuery', '')
   const [sel, setSel] = useQaState('rqSel', 'REQ-142')

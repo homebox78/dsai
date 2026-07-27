@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
@@ -6,7 +7,15 @@ import { ctx, findFile, fileStatusTone, rooms, tasks, taskStatusTone } from '@/m
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 
-/** 대시보드 (p59~60) — 시안 실측 1:1. min-width 1150 / bg #fff */
+/**
+ * 대시보드 (설계서 p59~60)
+ *
+ * "내가 할 일과 상태를 한 화면에" — KPI 4장 → 에코 진행 → 문서 파이프라인 → 우측 위젯(활동·스토리지).
+ * 카드·행은 대부분 클릭 가능하고, 누르면 해당 화면으로 이동하거나 레이어를 연다.
+ * 숫자는 mocks/data 와 data-store 파생값을 섞어 쓴다(업무 건수는 실제 스토어 기준).
+ */
+
+/* ── 상단 KPI ─────────────────────────────────────── */
 
 const KPIS = [
   { label: '색인 완료 문서', value: '1,284', unit: '건', color: '#15803d', delta: '+42', deltaColor: '#16a34a', icon: 'topic', bar: '#16a34a', pct: '92%', go: 'store' as const },
@@ -323,9 +332,7 @@ export function DashboardView() {
                     onClick={() => { setFolder(f.id.startsWith('a') ? 'f2' : f.id.startsWith('b') ? 'f3' : 'f4'); openFile(id); setScreen('store') }}
                     className="flex w-full items-center gap-3 border-b border-ink-100 bg-white px-[18px] py-[11px] text-left hover:bg-ink-50"
                   >
-                    <span className="flex size-7 flex-none items-center justify-center rounded-md bg-ink-100 font-mono text-[8.7px] font-extrabold text-ink-600">
-                      {f.ext}
-                    </span>
+                    <FileExt ext={f.ext} size={28} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-body font-semibold">{f.name}</span>
                       <span className="block text-xs2 text-ink-400">ESG 정책 문서 · {f.date}</span>
@@ -420,7 +427,9 @@ export function DashboardView() {
           <div className="border-b border-ink-200 px-[18px] py-3.5">
             <div className="mb-2.5 flex items-center gap-2">
               <span className="text-sm2 font-extrabold">최근 활동</span>
-              <button className="ml-auto text-xs2 font-bold text-brand-link">전체</button>
+              <button onClick={() => openLayer('activity-all')} className="ml-auto text-xs2 font-bold text-brand-link">
+                전체
+              </button>
             </div>
             <div className="flex flex-col gap-2">
               {ACTIVITIES.map((a) => (

@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useQaState } from '@/lib/qa-state'
@@ -7,7 +8,15 @@ import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { useLayoutMetrics } from '@/lib/responsive'
 
-/** 채팅 (p46~50) — 룸 목록 250px | 대화 | 업무존 318px(탭 전환, 룸 안에서는 항상 열림) */
+/**
+ * 채팅 (설계서 p46~50)
+ *
+ * 3분할: 룸 목록 250px | 대화 | 업무존 318px
+ * 업무존은 [Task 업무영역 / 대화방 정보] 탭으로 바뀌고, 룸 안에서는 항상 열려 있다(설계서 p46 특이사항).
+ * 폭이 아주 좁아지면 useLayoutMetrics().autoHideZone 으로만 접힌다.
+ */
+
+/* ── 화면 전용 목업 ───────────────────────────────── */
 
 const ROOM_FILTERS: [string, string][] = [
   ['all', '전체'],
@@ -35,9 +44,14 @@ const ROOM_FILES = [
   { ext: 'XLSX', name: '안전보건 교육 이수 내역_2025.xlsx', who: '최민호', date: '07.14' },
 ]
 
+/* ── 화면 ─────────────────────────────────────────── */
+
 export function ChatView() {
   const { room, setRoom, setTaskId, setScreen } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
+
+  // useQaState = useState + 검수 프리셋 연동. 검수 인덱스가 재현해야 하는 상태만 이걸 쓴다
+  // (열린 드롭다운·선택 탭 등). 순수 입력값은 그냥 useState.
   const [roomQuery, setRoomQuery] = useState('')
   const [roomFilter, setRoomFilter] = useQaState('roomFilter', 'all')
   const [searchOpen, setSearchOpen] = useQaState('roomSearch', false)
@@ -49,6 +63,7 @@ export function ChatView() {
   const [mentionOpen, setMentionOpen] = useQaState('mentionOpen', false)
   const { chatRowMin, autoHideZone } = useLayoutMetrics()
 
+  // ── 파생 계산 (검색어·필터 반영) ──
   const cur = rooms.find((r) => r.id === room) ?? rooms[0]
   const curMsgs = msgs[room] ?? []
   const roomTasks = tasks.filter((t) => t.room === cur.name)
@@ -245,7 +260,7 @@ export function ChatView() {
             <span className="whitespace-nowrap text-xs2 text-ink-500">
               {curMsgs.filter((m) => msgQuery && m.text?.includes(msgQuery)).length}건
             </span>
-            <button onClick={() => setSearchOpen(false)} className="size-6 p-0 text-ink-400">
+            <button title="닫기" onClick={() => setSearchOpen(false)} className="size-6 p-0 text-ink-400">
               <Icon name="close" size={17} />
             </button>
           </div>
@@ -332,9 +347,7 @@ export function ChatView() {
                     onClick={() => setScreen('store')}
                     className="mt-1.5 flex items-center gap-2 border-l-2 border-ink-300 bg-white px-3 py-2 hover:border-l-brand hover:bg-ink-50"
                   >
-                    <span className="flex size-[26px] flex-none items-center justify-center rounded-md bg-ink-100 font-mono text-[8.2px] font-extrabold text-ink-600">
-                      {m.fileExt}
-                    </span>
+                    <FileExt ext={m.fileExt} size={26} />
                     <span className="text-left">
                       <span className="block text-label font-bold">{m.file}</span>
                       <span className="block text-tiny text-ink-400">{m.fileSize} · 문서 저장소에서 열기</span>
@@ -565,9 +578,7 @@ export function ChatView() {
                   onClick={() => setScreen('store')}
                   className="flex items-center gap-2 rounded-[7px] border border-ink-200 bg-ink-50 px-[9px] py-2 text-left hover:border-brand-fade"
                 >
-                  <span className="flex size-[22px] flex-none items-center justify-center rounded-[5px] border border-ink-200 bg-white font-mono text-[7.3px] font-extrabold text-ink-600">
-                    {f.ext}
-                  </span>
+                  <FileExt ext={f.ext} size={22} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm2 font-semibold">{f.name}</span>
                     <span className="block text-mini text-ink-400">

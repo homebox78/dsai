@@ -1,4 +1,5 @@
 import { useQaState } from '@/lib/qa-state'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Icon } from '@/components/common/icon'
 import { ctx, tasks, taskStatusTone } from '@/mocks/data'
@@ -128,6 +129,15 @@ const STATS = [
 export function MegaMenu() {
   const overlay = useAppStore((s) => s.overlay)
   const setOverlay = useAppStore((s) => s.setOverlay)
+
+  // Esc로 전체 메뉴 닫기 (닫기 버튼의 Esc 힌트와 동작 일치)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOverlay(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [setOverlay])
   const openLayer = useLayerStore((s) => s.open)
   const [query, setQuery] = useQaState('menuQuery', '')
   if (!overlay) return null
@@ -181,14 +191,6 @@ export function MegaMenu() {
             className="min-w-0 flex-1 border-none bg-transparent p-0 text-label text-white placeholder:text-white/60 focus:outline-none"
           />
         </div>
-        <span className="mx-2 h-5 w-px flex-none bg-white/25" />
-        <button
-          onClick={() => setOverlay(false)}
-          title="전체 메뉴 닫기"
-          className="flex size-[34px] flex-none items-center justify-center rounded-full border border-white/30 bg-white/10 text-white hover:bg-white/20"
-        >
-          <Icon name="close" size={19} />
-        </button>
       </div>
 
       {/* 바로가기 */}
@@ -206,6 +208,19 @@ export function MegaMenu() {
             </button>
           ))}
         </div>
+
+        {/* 전체 메뉴 닫기 — 바로가기 줄 우측 끝 */}
+        <button
+          onClick={() => setOverlay(false)}
+          title="전체 메뉴 닫기 (Esc)"
+          className="ml-auto flex h-[34px] flex-none items-center gap-1.5 whitespace-nowrap rounded-[7px] border border-ink-300 bg-white px-3 text-sm2 font-bold text-ink-600 hover:border-brand hover:bg-brand-soft hover:text-brand-dark"
+        >
+          <Icon name="close" size={17} />
+          닫기
+          <span className="ml-0.5 rounded border border-ink-200 bg-ink-50 px-1.5 py-px font-mono text-tiny font-bold text-ink-400">
+            Esc
+          </span>
+        </button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto px-7 py-6">

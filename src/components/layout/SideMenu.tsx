@@ -5,7 +5,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
@@ -40,15 +39,9 @@ interface MenuItem {
   badge: number
   /** 1:1 대화방 — 아이콘 대신 이름 이니셜 아바타로 구분(아이콘 중복 방지) */
   avatar?: boolean
-  /** 하위 메뉴 — 트리거 우측 ⇅ 클릭 시 우측 팝오버로 열린다 */
-  sub?: { label: string; target: Target; tab?: string; icon: string; kbd?: string }[]
-  /** 팝오버 하단 액션 (예: + 멤버 추가) */
-  subAction?: { label: string; target: Target; icon: string }
-  /** 트리거 두 번째 줄 */
-  desc?: string
 }
 
-const GROUPS: { title: string; items: MenuItem[] }[] = [
+const GROUPS: { title: string; items: MenuItem[]; asMenu?: { icon: string; desc: string } }[] = [
   {
     title: '프로젝트',
     items: [
@@ -83,47 +76,12 @@ const GROUPS: { title: string; items: MenuItem[] }[] = [
   },
   {
     title: '시스템',
+    // 그룹 헤더 자체가 트리거 — 클릭하면 팝오버로 하위 메뉴가 나온다
+    asMenu: { icon: 'settings_applications', desc: '멤버 · 채널 · 설정' },
     items: [
-      {
-        label: '멤버등록',
-        target: 'members',
-        icon: 'person_add',
-        badge: 0,
-        desc: `멤버 ${ctx.projMembers}명 · 권한 4단계`,
-        sub: [
-          { label: '멤버 관리', target: 'members', icon: 'group' },
-          { label: '조직&사업부', target: 'sys:ws', icon: 'account_tree' },
-          { label: '권한 그룹', target: 'sys:perm', icon: 'admin_panel_settings' },
-        ],
-        subAction: { label: '멤버 추가', target: 'layer:member-invite', icon: 'add' },
-      },
-      {
-        label: '채널관리',
-        target: 'channel',
-        icon: 'hub',
-        badge: 8,
-        desc: `채널 ${ctx.wsChannels}개 운영중`,
-        sub: [
-          { label: '채널 목록', target: 'channel', icon: 'forum' },
-          { label: '외부 협업자 초대', target: 'layer:chat-invite', icon: 'person_add' },
-        ],
-        subAction: { label: '채널 만들기', target: 'layer:chat-invite', icon: 'add' },
-      },
-      {
-        label: '설정',
-        target: 'settings',
-        icon: ICON.gear,
-        badge: 0,
-        desc: '계정 · 보안 · AI · 알림',
-        sub: [
-          { label: '내 계정', target: 'settings', tab: 'account', icon: 'person' },
-          { label: '보안 및 로그인', target: 'settings', tab: 'security', icon: 'lock' },
-          { label: '조직&사업부', target: 'settings', tab: 'org', icon: 'apartment' },
-          { label: 'AI · 색인', target: 'settings', tab: 'ai', icon: 'auto_awesome' },
-          { label: '알림', target: 'settings', tab: 'noti', icon: 'notifications' },
-        ],
-        subAction: { label: '요금제 · 크레딧', target: 'layer:plan', icon: 'add' },
-      },
+      { label: '멤버등록', target: 'members', icon: 'person_add', badge: 0 },
+      { label: '채널관리', target: 'channel', icon: 'hub', badge: 8 },
+      { label: '설정', target: 'settings', icon: ICON.gear, badge: 0 },
     ],
   },
 ]
@@ -193,7 +151,7 @@ export function SideMenu() {
           <div className="px-[13px] pb-[11px]">
             <button
               onClick={() => setDropdown('wsPopOpen', true)}
-              className="block w-full rounded-[7px] border border-ink-200 bg-white px-3 py-2 text-left hover:border-brand-border hover:bg-brand-soft"
+              className="block w-full overflow-hidden rounded-[7px] border border-ink-200 bg-white px-3 py-2 text-left hover:border-brand-border hover:bg-brand-soft"
             >
               <span className="flex items-center gap-1.5">
                 <span className="whitespace-nowrap text-mini font-extrabold tracking-[.06em] text-ink-400">현재 프로젝트</span>
@@ -209,7 +167,79 @@ export function SideMenu() {
       )}
 
       <SidebarContent className="gap-0 overflow-x-hidden pb-[7.6px] pt-[4.7px]">
-        {GROUPS.map((g) => (
+        {GROUPS.map((g) =>
+          g.asMenu ? (
+            // 그룹 헤더 자체가 트리거 — 클릭하면 우측 팝오버로 하위 메뉴
+            <SidebarGroup key={g.title} className="gap-0 p-0 pb-[5.7px]">
+              {open && (
+                <SidebarGroupLabel className="h-auto px-3.5 pb-[2.8px] pt-[3.8px] text-mini font-extrabold tracking-[.07em] text-ink-400">
+                  {g.title}
+                </SidebarGroupLabel>
+              )}
+              {!open && <div className="mx-2.5 my-[5px] h-px bg-ink-200" />}
+              <SidebarGroupContent>
+                <SidebarMenu className="gap-0">
+                  <SidebarMenuItem>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuButton
+                          tooltip={g.title}
+                          title={g.title}
+                          className="h-auto rounded-none border-l-2 border-l-transparent text-body hover:bg-ink-100 data-[state=open]:bg-ink-100"
+                          style={{
+                            gap: open ? 9 : 0,
+                            padding: open ? '7px 10px 7px 12px' : '7.8px 0',
+                            justifyContent: open ? 'flex-start' : 'center',
+                            color: '#334155',
+                          }}
+                        >
+                          <span className="flex size-[26px] flex-none items-center justify-center rounded-[7px] border border-ink-200 bg-white text-ink-600">
+                            <Icon name={g.asMenu.icon} size={16} />
+                          </span>
+                          {open && (
+                            <span className="flex min-w-0 flex-1 flex-col text-left leading-tight">
+                              <span className="truncate text-label font-bold">{g.title}</span>
+                              <span className="truncate text-tiny text-ink-400">{g.asMenu.desc}</span>
+                            </span>
+                          )}
+                          {open && <Icon name="unfold_more" size={16} className="ml-auto flex-none text-ink-400" />}
+                        </SidebarMenuButton>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        side="right"
+                        align="start"
+                        sideOffset={8}
+                        // 화면 아래·위 가장자리에 붙지 않게 여백 확보
+                        collisionPadding={16}
+                        avoidCollisions
+                        className="min-w-[212px] rounded-lg border-ink-200 p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
+                      >
+                        <DropdownMenuLabel className="px-2.5 pb-1 pt-1.5 text-mini font-extrabold tracking-[.06em] text-ink-400">
+                          {g.title}
+                        </DropdownMenuLabel>
+                        {g.items.map((mi) => (
+                          <DropdownMenuItem
+                            key={mi.label}
+                            onSelect={() => go(mi.target)}
+                            className="cursor-pointer gap-2.5 rounded-md px-2.5 py-2 text-label text-ink-700 focus:bg-ink-100 focus:text-ink-900"
+                            data-active={isActive(mi.target) || undefined}
+                          >
+                            <Icon name={mi.icon} size={17} className="text-ink-500" />
+                            <span className="flex-1 truncate">{mi.label}</span>
+                            {!!mi.badge && (
+                              <span className="rounded-full border border-ink-200 px-2 py-[1.5px] text-tiny font-extrabold text-ink-500">
+                                {mi.badge}
+                              </span>
+                            )}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ) : (
           <Collapsible key={g.title} defaultOpen className="group/collapsible">
           <SidebarGroup className="gap-0 p-0 pb-[5.7px]">
             {open ? (
@@ -233,86 +263,13 @@ export function SideMenu() {
                   const active = isActive(mi.target)
                   const badge = mi.target === 'task' ? myOpen : mi.badge
                   const alert = ALERT_TARGETS.has(mi.target)
-                  if (mi.sub) {
-                    // 하위 메뉴가 있는 항목 — 아이콘 + 2줄 텍스트 + ⇅, 클릭 시 우측 팝오버
-                    return (
-                      <SidebarMenuItem key={`${g.title}-${mi.label}`}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <SidebarMenuButton
-                              isActive={active}
-                              tooltip={mi.label}
-                              className="h-auto rounded-none border-l-2 text-body hover:bg-ink-100 data-[active=true]:bg-brand-softer data-[state=open]:bg-ink-100"
-                              style={{
-                                gap: open ? 9 : 0,
-                                padding: open ? '7px 10px 7px 12px' : '7.8px 0',
-                                justifyContent: open ? 'flex-start' : 'center',
-                                borderLeftColor: active ? '#2563eb' : 'transparent',
-                                color: active ? '#1d4ed8' : '#334155',
-                              }}
-                            >
-                              <span
-                                className="flex size-[26px] flex-none items-center justify-center rounded-[7px] border"
-                                style={{
-                                  background: active ? '#dbeafe' : '#fff',
-                                  borderColor: active ? '#bfdbfe' : '#e2e8f0',
-                                  color: active ? '#1d4ed8' : '#475569',
-                                }}
-                              >
-                                <Icon name={mi.icon} size={16} />
-                              </span>
-                              {open && (
-                                <span className="flex min-w-0 flex-1 flex-col text-left leading-tight">
-                                  <span className="truncate text-label font-bold">{mi.label}</span>
-                                  {mi.desc && <span className="truncate text-tiny text-ink-400">{mi.desc}</span>}
-                                </span>
-                              )}
-                              {open && <Icon name="unfold_more" size={16} className="ml-auto flex-none text-ink-400" />}
-                            </SidebarMenuButton>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            side="right"
-                            align="start"
-                            sideOffset={8}
-                            className="min-w-[212px] rounded-lg border-ink-200 p-1 shadow-[0_12px_30px_rgba(15,23,42,.16)]"
-                          >
-                            <DropdownMenuLabel className="px-2.5 pb-1 pt-1.5 text-mini font-extrabold tracking-[.06em] text-ink-400">
-                              {mi.label}
-                            </DropdownMenuLabel>
-                            {mi.sub.map((sm) => (
-                              <DropdownMenuItem
-                                key={sm.label}
-                                onSelect={() => go(sm.target, sm.tab)}
-                                className="cursor-pointer gap-2.5 rounded-md px-2.5 py-2 text-label text-ink-700 focus:bg-ink-100 focus:text-ink-900"
-                              >
-                                <Icon name={sm.icon} size={17} className="text-ink-500" />
-                                <span className="flex-1 truncate">{sm.label}</span>
-                              </DropdownMenuItem>
-                            ))}
-                            {mi.subAction && (
-                              <>
-                                <DropdownMenuSeparator className="my-1 bg-ink-100" />
-                                <DropdownMenuItem
-                                  onSelect={() => go(mi.subAction!.target)}
-                                  className="cursor-pointer gap-2.5 rounded-md px-2.5 py-2 text-label font-semibold text-ink-500 focus:bg-ink-100 focus:text-ink-900"
-                                >
-                                  <Icon name={mi.subAction.icon} size={17} className="text-ink-400" />
-                                  <span className="flex-1 truncate">{mi.subAction.label}</span>
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </SidebarMenuItem>
-                    )
-                  }
-
                   const item = (
                     <SidebarMenuItem key={`${g.title}-${mi.label}`}>
                       <SidebarMenuButton
                         onClick={() => go(mi.target)}
                         isActive={active}
                         tooltip={badge ? `${mi.label} (${badge})` : mi.label}
+                        title={badge ? `${mi.label} (${badge})` : mi.label}
                         className="h-auto rounded-none border-l-2 text-body hover:bg-ink-100 data-[active=true]:bg-brand-softer"
                         style={{
                           gap: open ? 9 : 0,
@@ -339,9 +296,9 @@ export function SideMenu() {
                         )}
                         {open && <span className="truncate leading-none">{mi.label}</span>}
                       </SidebarMenuButton>
-                      {open && !!badge && !mi.sub && (
+                      {open && !!badge && (
                         <SidebarMenuBadge
-                          className="top-1/2 h-auto -translate-y-1/2 rounded-full border px-2 py-[1.5px] text-tiny font-extrabold leading-[1.45]"
+                          className="top-1/2 h-auto -translate-y-1/2 rounded-full border px-2 py-[1.5px] text-tiny font-extrabold leading-[1.45] peer-data-[size=default]/menu-button:top-1/2 peer-data-[size=sm]/menu-button:top-1/2 peer-data-[size=lg]/menu-button:top-1/2"
                           style={{
                             background: alert ? '#fef2f2' : '#fff',
                             color: alert ? '#b91c1c' : '#475569',
@@ -360,7 +317,8 @@ export function SideMenu() {
             </CollapsibleContent>
           </SidebarGroup>
           </Collapsible>
-        ))}
+          ),
+        )}
       </SidebarContent>
     </Sidebar>
   )

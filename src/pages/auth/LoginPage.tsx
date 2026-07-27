@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
+import { markEntered, takeReturnHash } from '@/lib/session'
 import { Icon } from '@/components/common/icon'
 import { DotCube } from '@/components/common/DotCube'
 
@@ -58,6 +59,17 @@ export function LoginPage() {
   const [pw, setPw] = useState('')
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [agree, setAgree] = useState({ tos: false, priv: false, mkt: false })
+
+  /**
+   * 인증 완료 → 앱 셸로.
+   * 기본 착지 화면은 작업목록(검수 인덱스)이고,
+   * 로그인 전에 딥링크로 들어왔다면 그 화면으로 되돌려 준다.
+   */
+  const enter = () => {
+    markEntered()
+    const back = takeReturnHash()
+    navigate(`/${back || '#screen=index'}`)
+  }
 
   const cur = TABS.find((t) => t.id === tab)!
   const strength = pw.length >= 12 ? 2 : pw.length >= 8 ? 1 : pw ? 0 : -1
@@ -259,7 +271,7 @@ export function LoginPage() {
           )}
 
           <button
-            onClick={() => (tab === 'login' || tab === '2fa' ? navigate('/') : setTab(tab === 'signup' ? '2fa' : 'login'))}
+            onClick={() => (tab === 'login' || tab === '2fa' ? enter() : setTab(tab === 'signup' ? '2fa' : 'login'))}
             className="w-full rounded-[9px] bg-brand py-3 text-body font-bold text-white hover:bg-brand-dark"
           >
             {tab === 'login' ? '로그인' : tab === 'signup' ? '가입하고 시작하기' : tab === 'find' ? '재설정 링크 보내기' : '인증 완료'}

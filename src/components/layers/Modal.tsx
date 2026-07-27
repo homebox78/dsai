@@ -40,7 +40,7 @@ export function Modal({
             <div className="text-[15px] font-extrabold tracking-[-.01em]">{title}</div>
             {desc && <div className="mt-1 text-sm2 text-ink-500">{desc}</div>}
           </div>
-          <button onClick={onClose} className="size-[26px] flex-none p-0 text-ink-400 hover:text-ink-900">
+          <button title="닫기" onClick={onClose} className="size-[26px] flex-none p-0 text-ink-400 hover:text-ink-900">
             <Icon name="close" size={19} />
           </button>
         </div>
@@ -93,7 +93,7 @@ export function Sheet({
             <div className="text-[15px] font-extrabold tracking-[-.01em]">{title}</div>
             {desc && <div className="mt-1 text-sm2 text-ink-500">{desc}</div>}
           </div>
-          <button onClick={onClose} className="size-[26px] flex-none p-0 text-ink-400 hover:text-ink-900">
+          <button title="닫기" onClick={onClose} className="size-[26px] flex-none p-0 text-ink-400 hover:text-ink-900">
             <Icon name="close" size={19} />
           </button>
         </div>
@@ -146,7 +146,7 @@ export function BtnPrimary({ children, onClick }: { children: ReactNode; onClick
   return (
     <button
       onClick={onClick}
-      className="rounded-md bg-brand px-3.5 py-2 text-sm2 font-bold text-white hover:bg-brand-dark"
+      className="flex-none whitespace-nowrap rounded-md bg-brand px-3.5 py-2 text-sm2 font-bold text-white hover:bg-brand-dark"
     >
       {children}
     </button>
@@ -157,7 +157,7 @@ export function BtnGhost({ children, onClick }: { children: ReactNode; onClick?:
   return (
     <button
       onClick={onClick}
-      className="rounded-md border border-ink-300 bg-white px-3.5 py-2 text-sm2 font-bold text-ink-700 hover:bg-ink-100"
+      className="flex-none whitespace-nowrap rounded-md border border-ink-300 bg-white px-3.5 py-2 text-sm2 font-bold text-ink-700 hover:bg-ink-100"
     >
       {children}
     </button>
@@ -168,7 +168,7 @@ export function BtnDanger({ children, onClick }: { children: ReactNode; onClick?
   return (
     <button
       onClick={onClick}
-      className="rounded-md bg-bad-dark px-3.5 py-2 text-sm2 font-bold text-white hover:opacity-90"
+      className="flex-none whitespace-nowrap rounded-md bg-bad-dark px-3.5 py-2 text-sm2 font-bold text-white hover:opacity-90"
     >
       {children}
     </button>

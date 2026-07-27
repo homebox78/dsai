@@ -1,3 +1,7 @@
+/**
+ * ⚠️ 검수 전용 — 클라이언트 검수가 끝나면 삭제합니다.
+ *    제거 명령: npm run remove-qa   (미리보기: npm run remove-qa -- --dry)
+ */
 import { useEffect, useRef, useState } from 'react'
 import { useAppStore } from '@/stores/app-store'
 

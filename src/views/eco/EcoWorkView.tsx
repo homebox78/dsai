@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Select } from '@/components/common/select'
@@ -15,6 +16,8 @@ import { useLayoutMetrics } from '@/lib/responsive'
  * 질문 목록 300 | 질문 상세·OCR 수정·폴더 지정 AI 검색·프로세스·답변 | 챗봇 330
  * 진행률은 AI 초안/미처리/답변완료 합산 100% 기준.
  */
+
+/* ── 화면 전용 목업 ───────────────────────────────── */
 
 const FILTERS: [string, string][] = [
   ['전체', '전체'],
@@ -40,6 +43,7 @@ export function EcoWorkView() {
   const { contentMin, autoHideBot } = useLayoutMetrics()
   const botOpen = botPref && !autoHideBot
   const openLayer = useLayerStore((s) => s.open)
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [query, setQuery] = useQaState('ecoQuery', '')
   const [filter, setFilter] = useState('전체')
   const [editing, setEditing] = useQaState('qEdit', false)
@@ -264,9 +268,7 @@ export function EcoWorkView() {
                 onClick={() => openLayer('viewer')}
                 className="flex items-center gap-2 rounded-[7px] border border-ink-200 bg-white px-3 py-2 hover:border-brand-fade"
               >
-                <span className="flex size-6 flex-none items-center justify-center rounded-[5px] bg-ink-100 font-mono text-[7.3px] font-extrabold text-ink-600">
-                  PDF
-                </span>
+                <FileExt ext="pdf" size={24} />
                 <span className="text-left">
                   <span className="block text-sm2 font-bold">윤리경영 행동강령_v2.pdf</span>
                   <span className="block text-tiny font-bold text-brand-link">
@@ -381,9 +383,7 @@ export function EcoWorkView() {
                   key={at.name}
                   className="flex items-center gap-2 rounded-[7px] border border-ink-200 bg-ink-50 px-3 py-2"
                 >
-                  <span className="flex size-6 flex-none items-center justify-center rounded-[5px] border border-ink-200 bg-white font-mono text-[7.3px] font-extrabold text-ink-600">
-                    {at.ext}
-                  </span>
+                  <FileExt ext={at.ext} size={24} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm2 font-bold">{at.name}</span>
                     <span className="block text-tiny text-ink-500">
@@ -398,6 +398,7 @@ export function EcoWorkView() {
                   </button>
                   <button
                     onClick={() => setAttachments((a) => a.filter((x) => x.name !== at.name))}
+                    title={`${at.name} 첨부 제거`}
                     className="size-[22px] flex-none p-0 text-ink-400 hover:text-bad-dark"
                   >
                     <Icon name="close" size={17} />

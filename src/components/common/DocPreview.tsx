@@ -40,14 +40,22 @@ function Loading() {
 }
 
 function PdfPreview({ file, page, zoom }: { file: DocFile; page: number; zoom: number }) {
-  // #page= 로 해당 페이지를 열고, 페이지가 바뀌면 key로 다시 로드한다
+  // #page= 로 해당 페이지를 열고, 페이지가 바뀌면 key로 다시 로드한다.
+  //
+  // ⚠️ iframe 안은 브라우저 내장 PDF 뷰어라 우리 CSS(얇은 스크롤바)가 닿지 않는다.
+  //    뷰어가 그리는 두꺼운 회색 스크롤바를 감추려고, iframe 을 스크롤바 폭만큼 넓게 잡고
+  //    바깥 래퍼에서 잘라낸다. 휠 스크롤과 페이지 이동은 그대로 동작한다.
   return (
-    <iframe
-      key={`${file.id}-${page}-${zoom}`}
-      title={file.name}
-      src={`${fileUrl(file)}#page=${page}&zoom=${zoom}&toolbar=0&navpanes=0`}
-      className="h-full w-full border-none bg-white"
-    />
+    <div className="relative h-full w-full overflow-hidden bg-white">
+      <iframe
+        key={`${file.id}-${page}-${zoom}`}
+        title={file.name}
+        src={`${fileUrl(file)}#page=${page}&zoom=${zoom}&toolbar=0&navpanes=0`}
+        // iframe 은 대체 요소라 inset-y-0 만으로는 늘어나지 않는다 — 높이를 명시한다
+        className="absolute inset-y-0 left-0 h-full border-none bg-white"
+        style={{ width: 'calc(100% + 17px)' }}
+      />
+    </div>
   )
 }
 

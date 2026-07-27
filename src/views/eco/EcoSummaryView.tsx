@@ -1,10 +1,16 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useQaState } from '@/lib/qa-state'
 import { ecoQuestions, ecoStatusTone, tasks, taskStatusTone } from '@/mocks/data'
 import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { Icon } from '@/components/common/icon'
 
-/** 에코바디스 요약 (p57) — 질문지 바 + 질문항 결과 목록 + 요청한 자료 패널 */
+/**
+ * 에코바디스 요약 (설계서 p57)
+ *
+ * 상단 진행 바(답변완료/AI 초안/미처리) + 문항 결과 목록 + 우측 [요청한 자료 / 병목 문항] 탭 패널.
+ * 문항을 누르면 처리부(ecoWork)로 이동해 같은 문항이 열린다.
+ */
 
 const BARS = [
   { label: '답변완료', count: 214, w: '71%', color: '#16a34a' },
@@ -12,6 +18,7 @@ const BARS = [
   { label: '미처리', count: 45, w: '15%', color: '#cbd5e1' },
 ]
 
+/** 상태 필터 — 설계서 p57 처럼 각 칩에 건수를 함께 보여준다 */
 const FILTERS = ['전체', '답변완료', 'AI 초안', '미처리']
 
 /** 평가 점수 요약 (시안 ecoScores) */
@@ -40,11 +47,24 @@ const BLOCKERS = [
 export function EcoSummaryView() {
   const { setQId, setScreen, setTaskId } = useAppStore()
   const openLayer = useLayerStore((s) => s.open)
+  // useQaState = useState + 검수 프리셋 연동 (검수 인덱스가 재현해야 하는 상태만 사용)
   const [filter, setFilter] = useQaState('ecoFilter', '전체')
   const [page, setPage] = useQaState('ecoPage', 1)
   const [query, setQuery] = useQaState('ecoQuery', '')
   const [area, setArea] = useQaState('ecoArea', '전체')
   const [aside, setAside] = useQaState<'req' | 'block'>('ecoAside', 'req')
+
+  // 칩에 표시할 상태별 건수 (영역 필터·검색어는 반영하고 상태 필터만 제외한다)
+  const q0raw = query.trim()
+  const scoped = ecoQuestions
+    .filter((q) => area === '전체' || q.cat.includes(area))
+    .filter((q) => !q0raw || q.no.includes(q0raw) || q.q.includes(q0raw) || q.cat.includes(q0raw))
+  const counts: Record<string, number> = {
+    전체: scoped.length,
+    답변완료: scoped.filter((q) => q.status === '답변완료').length,
+    'AI 초안': scoped.filter((q) => q.status === 'AI 초안').length,
+    미처리: scoped.filter((q) => q.status === '미처리').length,
+  }
 
   const q0 = query.trim()
   const rows = ecoQuestions
@@ -82,9 +102,7 @@ export function EcoSummaryView() {
         {/* 질문지 + 전체 진행률 */}
         <div className="flex flex-none items-stretch border-b border-ink-200">
           <div className="flex w-[340px] flex-none items-center gap-3 border-r border-ink-200 px-[18px] py-3.5">
-            <span className="flex size-[34px] flex-none items-center justify-center rounded-lg bg-ink-100 font-mono text-[8.7px] font-extrabold text-ink-600">
-              PDF
-            </span>
+            <FileExt ext="pdf" size={34} className="rounded-lg" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-label font-bold">에코바디스_2026_질문항.pdf</div>
               <div className="mt-1 flex items-center gap-1">
@@ -185,7 +203,7 @@ export function EcoSummaryView() {
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className="h-[34px] rounded-full border px-2.5 text-xs2 font-bold"
+                    className="flex h-[34px] items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-xs2 font-bold"
                     style={{
                       background: on ? '#1750d8' : '#fff',
                       borderColor: on ? '#1750d8' : '#cbd5e1',
@@ -193,6 +211,16 @@ export function EcoSummaryView() {
                     }}
                   >
                     {f}
+                    <span
+                      className="rounded-full px-1.5 py-px text-mini font-extrabold"
+                      style={
+                        on
+                          ? { background: 'rgba(255,255,255,.22)', color: '#fff' }
+                          : { background: '#f1f5f9', color: '#475569' }
+                      }
+                    >
+                      {counts[f] ?? 0}
+                    </span>
                   </button>
                 )
               })}
@@ -241,6 +269,7 @@ export function EcoSummaryView() {
                   <button
                     key={i}
                     onClick={() => !isIcon && setPage(Number(p))}
+                    title={p === 'chevron_left' ? '이전 페이지' : p === 'chevron_right' ? '다음 페이지' : undefined}
                     className="inline-flex h-[26px] min-w-[26px] items-center justify-center rounded-[5px] border px-1.5 text-cap font-bold"
                     style={{
                       background: on ? '#1750d8' : '#fff',

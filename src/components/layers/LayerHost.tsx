@@ -1,19 +1,39 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { Icon } from '@/components/common/icon'
 import { BtnDanger, BtnGhost, BtnPrimary, Field, Modal, Sheet, inputCls } from './Modal'
 import { FormModal } from './FormModal'
 import { ChoiceRow } from '@/components/common/ChoiceRow'
+import { Select } from '@/components/common/select'
 import { SettingsModal } from './SettingsModal'
 import { ViewerModal } from './ViewerModal'
 import { ctx, findFile, folders, members, rooms, tasks, taskStatusTone } from '@/mocks/data'
+import { email as emailRule, minLen, maxLen } from '@/lib/validate'
 import { useLayer } from '@/stores/layer-store'
 import { useAppStore } from '@/stores/app-store'
 
 /**
- * 모든 레이어(모달·시트)를 한 곳에서 렌더한다.
- * 화면 운영 원칙: 페이지를 늘리지 않고 이 레이어들이 셸 위에 겹쳐 뜬다.
+ * 레이어(모달·시트) 호스트.
+ *
+ * 화면 운영 원칙상 페이지를 늘리지 않는다 — 상세·설정·요청은 전부 셸 위에 겹쳐 뜨는 레이어다.
+ * 여는 방법은 `useLayerStore().open('<key>')` 하나뿐이고, 여기서 key 별로 컴포넌트를 매칭해 렌더한다.
+ * 해시(`#modal=<key>`)로도 열리므로 검수 인덱스·딥링크가 그대로 동작한다.
+ *
+ * ── 목차 ──────────────────────────────────────────
+ *  문서    FolderCreate · FileUpload · FileCreate · FileDelete
+ *  조직    OrgCreate · WsCreate · ProjCreate · MemberInvite · PlanModal · WsDelete
+ *  협업    ChatInvite · ChatInfo · ChatLeave · ExtCollab · ActivityAll
+ *  업무    TaskPreview · TaskRequestSheet · TaskAlertSheet
+ *  에코    EcoExport
+ *  작성기  TocEditSheet
+ *  AI      AiChatSheet · SearchModal
+ *  외부    SettingsModal · ViewerModal (별도 파일)
+ *
+ * 폼이 있는 레이어는 대부분 FormModal 에 필드 정의만 넘긴다 (검증 규칙은 라벨로 자동 추론).
+ * 직접 마크업을 쓰는 레이어는 시안에 고유 레이아웃이 있는 경우다.
  */
-/** 시안 chipsPerm */
+
+/** 권한 선택 칩 (시안 chipsPerm) — 초대·공유 계열 레이어에서 공용 */
 const PERM_CHIPS = ['편집 가능', '댓글 가능', '보기 전용']
 const REQ_TYPES = ['자료 요청', '업무 처리', '검토 요청']
 const DUES = ['오늘', '3일 내', '1주 내', '직접 입력']
@@ -33,6 +53,9 @@ export function LayerHost() {
       <ChatInvite />
       <ChatInfo />
       <ChatLeave />
+      <WsDelete />
+      <ExtCollab />
+      <ActivityAll />
       <TaskPreview />
       <EcoExport />
       <TaskRequestSheet />
@@ -217,6 +240,8 @@ function FileDelete() {
   )
 }
 
+/* ── 조직 · 멤버 ──────────────────────────────────── */
+
 function OrgCreate() {
   const { isOpen, close } = useLayer('org-create')
   return (
@@ -224,13 +249,16 @@ function OrgCreate() {
       open={isOpen}
       onClose={close}
       id="org"
-      title="조직 만들기"
-      desc="조직 단위로 조직&사업부와 멤버를 관리합니다"
+      title="새로운 조직 등록하기"
+      desc="조직의 기본 정보와 브랜드 정보를 입력합니다"
       width={460}
-      cta="조직 만들기"
+      cta="조직 등록"
       fields={[
-        { label: '조직 이름', type: 'text', required: true, placeholder: '예: Amber Evolution' },
+        { label: '조직명', type: 'text', required: true, placeholder: '2-100자', rules: [minLen(2, '조직명'), maxLen(100, '조직명')] },
+        { label: '조직 설명', type: 'area', placeholder: '조직을 간단히 소개해주세요' },
+        { label: '웹사이트 URL', type: 'text', placeholder: 'https://birdlab.com' },
         { label: '사업자 등록번호', type: 'text', placeholder: '000-00-00000' },
+        { label: '기본 아이콘', type: 'chips', options: ['자동 생성', '직접 업로드'] },
         { label: '플랜', type: 'select', options: ['ENTERPRISE', 'BUSINESS', 'STARTER'] },
       ]}
     />
@@ -244,12 +272,13 @@ function WsCreate() {
       open={isOpen}
       onClose={close}
       id="ws"
-      title="조직&사업부 만들기"
-      desc="사업부·팀 단위 공간을 만듭니다"
+      title="새로운 조직&사업부 생성하기"
+      desc="조직&사업부 이름과 분석할 URL을 입력해 주세요."
       width={460}
-      cta="만들기"
+      cta="생성"
       fields={[
-        { label: '조직&사업부 이름', type: 'text', required: true, placeholder: '예: ESG 전략팀' },
+        { label: '조직&사업부 이름', type: 'text', required: true, placeholder: '2-100자', rules: [minLen(2, '조직&사업부 이름'), maxLen(100, '조직&사업부 이름')] },
+        { label: '웹사이트 URL', type: 'text', placeholder: 'https://birdlab.com' },
         { label: '상위 사업부', type: 'select', options: ['ESG 본부', '경영지원 본부', '구매 본부'] },
         { label: '설명', type: 'area', placeholder: '용도를 간단히 적어주세요' },
       ]}
@@ -284,14 +313,13 @@ function MemberInvite() {
       open={isOpen}
       onClose={close}
       id="member"
-      title="멤버 추가"
-      desc="이메일로 초대하고 권한을 지정합니다"
-      width={460}
-      cta="초대 보내기"
+      title="멤버 초대하기"
+      desc="이메일로 초대하고 역할을 지정합니다"
+      width={520}
+      cta="초대하기"
       fields={[
-        { label: '이메일', type: 'text', required: true, placeholder: 'name@company.com' },
-        { label: '소속 팀', type: 'text', placeholder: '예: ESG팀' },
-        { label: '기본 권한', type: 'chips', options: PERM_CHIPS },
+        { label: '조직&사업부 명칭', type: 'readonly', value: ctx.ws },
+        { label: '멤버', type: 'invite', required: true, options: PERM_CHIPS },
       ]}
     />
   )
@@ -340,25 +368,145 @@ function PlanModal() {
 
 /* ── 협업 ─────────────────────────────────────────── */
 
+/** 채팅방 초대 시 지정할 수 있는 역할 (설계서 p48) */
+const INVITE_ROLES = ['디자이너', '영상편집자', '카피라이터', '웹/그래픽', '마케터']
+const LINK_EXPIRY = ['7일 후 만료', '30일 후 만료', '만료 없음']
+
+/**
+ * 채팅방 초대 (설계서 p48)
+ * [이메일로 초대 | 초대 링크] 탭 전환. 외부 협업자는 지정한 프로젝트에만 접근한다는 안내를 함께 띄운다.
+ */
 function ChatInvite() {
   const { isOpen, close } = useLayer('chat-invite')
   const room = useAppStore((s) => s.room)
   const cur = rooms.find((r) => r.id === room) ?? rooms[0]
+  const [tab, setTab] = useState<'email' | 'link'>('email')
+  const [email, setEmail] = useState('')
+  const [perm, setPerm] = useState(PERM_CHIPS[0])
+  const [roles, setRoles] = useState<string[]>([])
+  const [msg, setMsg] = useState('')
+  const [expiry, setExpiry] = useState(LINK_EXPIRY[0])
+  const [linkPerm, setLinkPerm] = useState(PERM_CHIPS[0])
+  const [copied, setCopied] = useState(false)
+
+  const badEmail = tab === 'email' && !!email.trim() && !!emailRule(email)
+
   return (
-    <FormModal
+    <Modal
       open={isOpen}
       onClose={close}
-      id="invite"
-      title="채팅방 초대"
-      desc={`${cur.name} 대화방에 멤버를 초대합니다`}
-      width={460}
-      cta="초대 링크 만들기"
-      fields={[
-        { label: '초대할 멤버', type: 'text', placeholder: '이름 또는 이메일 검색' },
-        { label: '링크 만료', type: 'chips', options: ['7일 후 만료', '30일 후 만료', '만료 없음'] },
-        { label: '기본 권한', type: 'chips', options: PERM_CHIPS },
-      ]}
-    />
+      title="외부 협업자 초대"
+      desc="초대 링크를 보내거나 이메일로 바로 추가하세요"
+      width={480}
+      footer={
+        <>
+          <div className="flex-1" />
+          <BtnGhost onClick={close}>취소</BtnGhost>
+          <BtnPrimary onClick={close}>{tab === 'email' ? '초대 보내기' : '링크 보내기'}</BtnPrimary>
+        </>
+      }
+    >
+      {/* 탭 */}
+      <div className="mb-3 flex gap-1.5">
+        {([['email', '이메일로 초대'], ['link', '초대 링크']] as const).map(([id, label]) => {
+          const on = tab === id
+          return (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              className="flex-1 whitespace-nowrap rounded-md px-3 py-2 text-sm2 font-bold transition-colors"
+              style={on ? { background: '#1750d8', color: '#fff' } : { background: '#f1f5f9', color: '#475569' }}
+            >
+              {label}
+            </button>
+          )
+        })}
+      </div>
+
+      {tab === 'email' ? (
+        <>
+          <Field label="이메일 주소" error={badEmail ? '이메일 형식이 올바르지 않습니다' : null}>
+            <div className="flex items-stretch gap-1.5">
+              <input
+                className={`${inputCls} h-[34px] py-0${badEmail ? ' border-bad-border' : ''}`}
+                placeholder="collaborator@example.com"
+                value={email}
+                aria-invalid={badEmail}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Select ddKey="invite:perm" className="h-[34px] w-[130px] flex-none" value={perm} options={PERM_CHIPS} onChange={setPerm} />
+            </div>
+          </Field>
+
+          <Field label="역할 (선택)">
+            <div className="flex flex-wrap gap-1.5">
+              {INVITE_ROLES.map((r) => {
+                const on = roles.includes(r)
+                return (
+                  <button
+                    key={r}
+                    onClick={() => setRoles(on ? roles.filter((x) => x !== r) : [...roles, r])}
+                    aria-pressed={on}
+                    className="whitespace-nowrap rounded-full border px-2.5 py-1.5 text-sm2 font-bold transition-colors"
+                    style={
+                      on
+                        ? { background: '#eff6ff', borderColor: '#1750d8', color: '#1345bd' }
+                        : { background: '#fff', borderColor: '#cbd5e1', color: '#475569' }
+                    }
+                  >
+                    {r}
+                  </button>
+                )
+              })}
+            </div>
+          </Field>
+
+          <Field label="초대 메시지 (선택)">
+            <textarea
+              className={`${inputCls} resize-none`}
+              rows={3}
+              placeholder={`안녕하세요. ${cur.name} 프로젝트에 협업자로 초대합니다.`}
+              value={msg}
+              onChange={(e) => setMsg(e.target.value)}
+            />
+          </Field>
+
+          <div className="flex gap-2 rounded-lg border border-brand-border bg-brand-soft px-3 py-2.5">
+            <Icon name="info" size={17} className="mt-px flex-none text-brand" />
+            <span className="text-sm2 leading-[1.65] text-brand-dark">
+              외부 협업자는 <b className="font-bold">지정한 프로젝트</b>만 접근할 수 있으며, 조직&amp;사업부 전체에는
+              접근할 수 없습니다.
+            </span>
+          </div>
+        </>
+      ) : (
+        <>
+          <Field label="공유 가능한 초대 링크">
+            <div className="flex items-stretch gap-1.5">
+              <input
+                className={`${inputCls} h-[34px] py-0 bg-ink-50 font-mono text-sm2 text-ink-500`}
+                value={`https://amber.console/invite?token=hub_x9k2s4b7`}
+                readOnly
+                tabIndex={-1}
+              />
+              <button
+                onClick={() => setCopied(true)}
+                className="flex h-[34px] flex-none items-center gap-1 whitespace-nowrap rounded-md border border-ink-300 bg-white px-3 text-sm2 font-bold text-ink-700 hover:border-brand hover:text-brand-dark"
+              >
+                <Icon name={copied ? 'check' : 'content_copy'} size={16} />
+                {copied ? '복사됨' : '복사'}
+              </button>
+            </div>
+          </Field>
+          <Field label="링크 만료">
+            <Select ddKey="invite:expiry" value={expiry} options={LINK_EXPIRY} onChange={setExpiry} />
+          </Field>
+          <Field label="기본 권한">
+            <Select ddKey="invite:linkperm" value={linkPerm} options={PERM_CHIPS} onChange={setLinkPerm} />
+          </Field>
+        </>
+      )}
+    </Modal>
   )
 }
 
@@ -417,6 +565,163 @@ function ChatInfo() {
   )
 }
 
+/** 외부 협업자 관리 (설계서 p62) */
+function ExtCollab() {
+  const { isOpen, close } = useLayer('ext-collab')
+  const ext = members.filter((m) => m.dept === '외부 협업자')
+  const stats = [
+    { label: '협업 중', value: String(ext.length) },
+    { label: '공유 프로젝트', value: '10' },
+    { label: '평균 응답률', value: '87%' },
+  ]
+  return (
+    <Modal
+      open={isOpen}
+      onClose={close}
+      title="외부 협업자 관리"
+      desc={`전체 ${ext.length}명 · 참여 중인 프로젝트 기준`}
+      width={620}
+      footer={<><div className="flex-1" /><BtnGhost onClick={close}>닫기</BtnGhost><BtnPrimary onClick={close}>초대</BtnPrimary></>}
+    >
+      <div className="overflow-hidden rounded-lg border border-ink-200">
+        <div className="grid grid-cols-[minmax(0,1fr)_120px_92px_72px] gap-2 border-b border-ink-200 bg-ink-50 px-3 py-2">
+          {['협업자', '소속', '최근 활동', ''].map((h, i) => (
+            <span key={i} className="text-center text-mini font-extrabold tracking-[.06em] text-ink-400">
+              {h}
+            </span>
+          ))}
+        </div>
+        {ext.map((m) => (
+          <div
+            key={m.id}
+            className="grid grid-cols-[minmax(0,1fr)_120px_92px_72px] items-center gap-2 border-b border-ink-100 px-3 py-2.5 last:border-b-0"
+          >
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="flex size-7 flex-none items-center justify-center rounded-full border border-[#fed7aa] bg-[#fff7ed] text-[11.6px] font-extrabold text-[#c2410c]">
+                {m.name[0]}
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-label font-bold">{m.name}</span>
+                <span className="block truncate text-left text-[11.2px] text-ink-400">{m.email}</span>
+              </span>
+            </span>
+            <span className="truncate text-center text-sm2 text-ink-500">{m.role}</span>
+            <span className="text-center text-sm2 text-ink-500">{m.last}</span>
+            <span className="flex justify-center">
+              <button className="h-[30px] rounded-md border border-ink-300 bg-white px-2.5 text-sm2 font-bold text-ink-600 hover:border-bad hover:text-bad">
+                내보내기
+              </button>
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {stats.map((s) => (
+          <div key={s.label} className="rounded-lg border border-ink-200 bg-ink-50 px-3 py-2.5 text-center">
+            <div className="text-base2 font-extrabold text-brand-dark">{s.value}</div>
+            <div className="mt-0.5 text-tiny text-ink-500">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </Modal>
+  )
+}
+
+/** 최근 활동 전체 보기 (설계서 p63) */
+const ACTIVITY_FILTERS = ['전체', '업로드', '댓글', '발행'] as const
+
+function ActivityAll() {
+  const { isOpen, close } = useLayer('activity-all')
+  const [filter, setFilter] = useState<string>('전체')
+  const rows = [
+    { kind: '발행', who: '김지원', text: 'SS26 키비주얼 v3을 컨펌했습니다', time: '2시간 전', dot: '#16a34a' },
+    { kind: '업로드', who: '박디자이너', text: '새 시안을 업로드했습니다', time: '3시간 전', dot: '#2563eb' },
+    { kind: '댓글', who: '박매니저', text: '코멘트를 남겼습니다', time: '5시간 전', dot: '#94a3b8' },
+    { kind: '발행', who: '이대리', text: '3월 리포트를 발행했습니다', time: '2주 전', dot: '#16a34a' },
+    { kind: '업로드', who: '박지원', text: 'ISO 14001 인증서를 업로드했습니다', time: '18분 전', dot: '#2563eb' },
+    { kind: '댓글', who: '김대성', text: 'TASK-139에 코멘트를 남겼습니다', time: '3시간 전', dot: '#94a3b8' },
+  ].filter((r) => filter === '전체' || r.kind === filter)
+
+  return (
+    <Modal
+      open={isOpen}
+      onClose={close}
+      title="최근 활동 전체"
+      desc={`총 ${rows.length}건 · 프로젝트 ${ctx.proj}`}
+      width={560}
+      footer={<><div className="flex-1" /><BtnGhost onClick={close}>닫기</BtnGhost></>}
+    >
+      <ChoiceRow
+        name="activity-filter"
+        value={filter}
+        options={[...ACTIVITY_FILTERS]}
+        onChange={setFilter}
+        className="mb-3"
+      />
+      <div className="overflow-hidden rounded-lg border border-ink-200">
+        {rows.map((r, i) => (
+          <div key={i} className="flex items-center gap-2.5 border-b border-ink-100 px-3 py-2.5 last:border-b-0">
+            <span className="size-1.5 flex-none rounded-full" style={{ background: r.dot }} />
+            <span className="min-w-0 flex-1 truncate text-left text-label">
+              <b className="font-bold">{r.who}</b>님이 {r.text}
+            </span>
+            <span className="flex-none whitespace-nowrap text-tiny text-ink-400">{r.time}</span>
+          </div>
+        ))}
+      </div>
+    </Modal>
+  )
+}
+
+/** 조직&사업부 삭제 (설계서 p34) — 이름을 정확히 입력해야 삭제된다 */
+function WsDelete() {
+  const { isOpen, close } = useLayer('ws-delete')
+  const [typed, setTyped] = useState('')
+  const ok = typed.trim() === ctx.ws
+  return (
+    <Modal
+      open={isOpen}
+      onClose={close}
+      title="조직&사업부 삭제"
+      desc="삭제하면 모든 데이터가 영구적으로 제거됩니다."
+      width={480}
+      footer={
+        <>
+          <div className="flex-1" />
+          <BtnGhost onClick={close}>취소</BtnGhost>
+          <button
+            disabled={!ok}
+            onClick={close}
+            className="h-[34px] rounded-md bg-bad px-3.5 text-sm2 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            영구 삭제
+          </button>
+        </>
+      }
+    >
+      <div className="rounded-lg border border-bad-border bg-bad-soft px-3.5 py-3">
+        <div className="flex items-center gap-1.5 text-label font-bold text-bad-dark">
+          <Icon name="warning" size={17} />이 작업은 되돌릴 수 없습니다
+        </div>
+        <ul className="mt-1.5 flex list-disc flex-col gap-1 pl-4 text-sm2 leading-[1.7] text-ink-600">
+          <li>모든 프로젝트·문서·색인 데이터가 삭제됩니다.</li>
+          <li>소속된 모든 멤버의 접근 권한이 회수됩니다.</li>
+          <li>남은 크레딧 및 구독은 환불되지 않습니다.</li>
+        </ul>
+      </div>
+      <Field label={`확인을 위해 ${ctx.ws} 을(를) 입력하세요`} error={typed && !ok ? '이름이 일치하지 않습니다' : null}>
+        <input
+          className={inputCls + (typed && !ok ? ' border-bad-border' : '')}
+          value={typed}
+          aria-invalid={!!typed && !ok}
+          placeholder={ctx.ws}
+          onChange={(e) => setTyped(e.target.value)}
+        />
+      </Field>
+    </Modal>
+  )
+}
+
 function ChatLeave() {
   const { isOpen, close } = useLayer('chat-leave')
   return (
@@ -439,72 +744,249 @@ function ChatLeave() {
   )
 }
 
+/* ── 업무 ─────────────────────────────────────────── */
+
+/**
+ * Task 미리보기 (설계서 p51~53)
+ *
+ * 좌: [미리보기 · 버전 · 활동] 탭 / 우: 댓글·채팅 (탭과 무관하게 항상 열림)
+ * 상단 액션 [공유][다운로드][캠페인에 사용] + 파일 메타·공개 배지.
+ */
+
+/** 버전 히스토리 (p52) */
+const TASK_VERSIONS = [
+  { v: 'v1', when: '2주 전', by: '김지원', how: '직접 업로드', size: '2.3 MB', ext: 'PDF', cur: true, memo: '겨울 시즌 캠페인 최종 성과 정리. KPI 달성률 및 채널별 분석 포함.' },
+  { v: 'v2', when: '3주 전', by: '박디자이너', how: '', size: '2.1 MB', ext: 'PDF', cur: false, memo: '헤드라인 위치 조정 및 여백 수정 반영.' },
+  { v: 'v3', when: '4주 전', by: '김지원', how: '최초 업로드', size: '1.8 MB', ext: 'PDF', cur: false, memo: '초안. 데이터 집계 전 구조 잡기용.' },
+]
+
+/** 활동 로그 (p53) */
+const TASK_ACTIVITY = [
+  { who: '김지원', text: '파일을 컨펌했습니다', sub: '캠페인 발행 승인', when: '2주 전', icon: 'check_circle', color: '#16a34a' },
+  { who: '김지원', text: 'v1을 업로드했습니다', sub: '2.3 MB · PDF', when: '2주 전', icon: 'upload_file', color: '#1750d8' },
+  { who: '이리더', text: '댓글을 남겼습니다', sub: '"히어로 위쪽 여백이 조금 더 있으면 좋을 것 같아요."', when: '3주 전', icon: 'chat_bubble', color: '#7c3aed' },
+  { who: '박디자이너', text: 'v2를 업로드했습니다', sub: '2.1 MB · PDF', when: '3주 전', icon: 'upload_file', color: '#1750d8' },
+  { who: '박디자이너', text: '댓글을 남겼습니다', sub: '"v4 올렸습니다. 헤드라인 위치 조정했어요."', when: '3주 전', icon: 'chat_bubble', color: '#7c3aed' },
+  { who: '이리더', text: '파일을 열람했습니다', sub: '', when: '4주 전', icon: 'visibility', color: '#94a3b8' },
+  { who: '김지원', text: '파일을 등록했습니다', sub: '겨울 시즌 회고', when: '4주 전', icon: 'add_circle', color: '#64748b' },
+]
+
+/** 댓글·채팅 (p51~53 우측 패널) */
+const TASK_COMMENTS = [
+  { who: '박디자이너', ext: true, when: '12분 전', text: 'v4 올렸습니다. 헤드라인 위치 조정했어요. 확인 부탁드려요.', me: false },
+  { who: '이리더', ext: false, when: '1시간 전', text: '히어로 위쪽 여백이 조금 더 있으면 좋을 것 같아요.', me: false },
+  { who: '박디자이너', ext: true, when: '2시간 전', text: '네 알겠습니다 다음 버전에 반영할게요', me: false },
+  { who: '김지원 (나)', ext: false, when: '3시간 전', text: '감사합니다! 컬러는 톤 다운된 게 더 잘 어울리네요.', me: true },
+]
+
 function TaskPreview() {
   const { isOpen, close, payload } = useLayer('task-preview')
   const [tab, setTab] = useState<'preview' | 'version' | 'activity'>('preview')
+  const [comment, setComment] = useState('')
   const task = tasks.find((t) => t.id === payload?.id) ?? tasks[0]
+
   return (
     <Modal
       open={isOpen}
       onClose={close}
       title={task.title}
       desc={`TASK-${task.no} · ${task.from} → ${task.to} · 기한 ${task.due}`}
-      width={720}
-      footer={<><BtnGhost onClick={close}>다운로드</BtnGhost><div className="flex-1" /><BtnGhost onClick={close}>수정 요청</BtnGhost><BtnPrimary onClick={close}>완료 처리</BtnPrimary></>}
+      width={860}
+      footer={
+        <>
+          <span className="flex items-center gap-1.5 text-sm2 text-ink-400">
+            <Icon name="schedule" size={15} />
+            마지막 활동 2주 전
+          </span>
+          <div className="flex-1" />
+          <BtnGhost onClick={close}>공유</BtnGhost>
+          <BtnGhost onClick={close}>다운로드</BtnGhost>
+          <BtnPrimary onClick={close}>캠페인에 사용</BtnPrimary>
+        </>
+      }
     >
-      <div className="mb-4 flex gap-1 border-b border-ink-200">
-        {([['preview', '미리보기'], ['version', '버전'], ['activity', '활동']] as const).map(([id, label]) => {
-          const on = tab === id
-          return (
-            <button
-              key={id}
-              onClick={() => setTab(id)}
-              className="border-b-2 px-3 py-2 text-label font-bold"
-              style={{ borderBottomColor: on ? '#1750d8' : 'transparent', color: on ? '#0f172a' : '#94a3b8' }}
-            >
-              {label}
-            </button>
-          )
-        })}
+      {/* 파일 메타 — 형식 아이콘 · 배지 · 업로드 경로 */}
+      <div className="mb-3 flex items-center gap-2.5 rounded-lg border border-ink-200 bg-ink-50 px-3.5 py-2.5">
+        <FileExt ext="pdf" size={30} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span className="truncate text-label font-extrabold">{task.title}</span>
+            <span className="flex-none whitespace-nowrap rounded-full bg-ink-200 px-2 py-0.5 text-mini font-bold text-ink-600">
+              기타
+            </span>
+            <span className="flex-none whitespace-nowrap rounded-full bg-ok-soft px-2 py-0.5 text-mini font-bold text-ok-dark">
+              공개
+            </span>
+          </div>
+          <div className="mt-0.5 text-xs2 text-ink-400">직접 업로드 · v1 · 첨부 {task.files}건</div>
+        </div>
       </div>
 
-      {tab === 'preview' && (
-        <div className="grid h-[280px] place-items-center rounded-lg border border-ink-200 bg-ink-50">
-          <div className="text-center">
-            <Icon name="description" size={38} className="text-ink-300" />
-            <div className="mt-2 text-sm2 text-ink-400">첨부 {task.files}건 · 미리보기를 불러오는 중…</div>
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_300px]">
+        {/* 좌측 — 탭 */}
+        <div className="min-w-0">
+          <div className="mb-3 flex gap-1 border-b border-ink-200">
+            {([['preview', '미리보기'], ['version', `버전 ${TASK_VERSIONS.length}`], ['activity', '활동']] as const).map(
+              ([id, label]) => {
+                const on = tab === id
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setTab(id)}
+                    className="border-b-2 px-3 py-2 text-label font-bold"
+                    style={{ borderBottomColor: on ? '#1750d8' : 'transparent', color: on ? '#0f172a' : '#94a3b8' }}
+                  >
+                    {label}
+                  </button>
+                )
+              },
+            )}
           </div>
-        </div>
-      )}
-      {tab === 'version' && (
-        <div className="flex flex-col gap-2">
-          {['v3 · 현재', 'v2 · 보관', 'v1 · 최초'].map((v) => (
-            <div key={v} className="flex items-center gap-3 rounded-lg border border-ink-200 px-3.5 py-3">
-              <span className="rounded bg-ink-200 px-2 py-0.5 font-mono text-tiny font-extrabold text-ink-600">
-                {v.split(' · ')[0]}
-              </span>
-              <span className="flex-1 text-label font-semibold">{v.split(' · ')[1]}</span>
-              <BtnGhost>복원</BtnGhost>
-            </div>
-          ))}
-        </div>
-      )}
-      {tab === 'activity' && (
-        <div className="flex flex-col gap-3">
-          {['요청 생성', '담당자 확인', '자료 회신'].map((a, i) => (
-            <div key={a} className="flex gap-2.5">
-              <span className="mt-1.5 size-2 flex-none rounded-full bg-brand-link" />
-              <div>
-                <div className="text-label font-bold">{a}</div>
-                <div className="mt-0.5 text-xs2 text-ink-400">07.2{i + 2} · {members[i]?.name ?? '시스템'}</div>
+
+          {tab === 'preview' && (
+            <div className="grid h-[300px] place-items-center rounded-lg border border-ink-200 bg-ink-50">
+              <div className="text-center">
+                <Icon name="description" size={38} className="text-ink-300" />
+                <div className="mt-2 text-sm2 text-ink-400">첨부 {task.files}건 · 미리보기를 불러오는 중…</div>
               </div>
             </div>
-          ))}
+          )}
+
+          {tab === 'version' && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-label font-extrabold">버전 히스토리</span>
+                <button className="ml-auto flex h-[30px] items-center gap-1 whitespace-nowrap rounded-md border border-ink-300 bg-white px-2.5 text-sm2 font-bold text-ink-700 hover:border-brand hover:text-brand-dark">
+                  <Icon name="add" size={16} />새 버전 업로드
+                </button>
+              </div>
+              {TASK_VERSIONS.map((v) => (
+                <div
+                  key={v.v}
+                  className="flex gap-2.5 rounded-lg border px-3 py-2.5"
+                  style={{ borderColor: v.cur ? '#bfdbfe' : '#e2e8f0', background: v.cur ? '#f5f9ff' : '#fff' }}
+                >
+                  <FileExt ext={v.ext} size={38} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-label font-extrabold">{v.v}</span>
+                      {v.cur && (
+                        <span className="whitespace-nowrap rounded-full bg-brand-soft px-2 py-0.5 text-mini font-bold text-brand-dark">
+                          현재
+                        </span>
+                      )}
+                      <span className="whitespace-nowrap text-tiny text-ink-400">
+                        {v.when}
+                        {v.how ? ` · ${v.how}` : ''}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-sm2 leading-[1.6] text-ink-600">{v.memo}</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-tiny text-ink-400">
+                      <span className="flex size-4 items-center justify-center rounded-full bg-ink-200 text-[8px] font-extrabold text-ink-600">
+                        {v.by[0]}
+                      </span>
+                      {v.by} · {v.size} · {v.ext}
+                    </div>
+                  </div>
+                  <div className="flex flex-none flex-col gap-1">
+                    <button className="h-[26px] whitespace-nowrap rounded border border-ink-300 bg-white px-2 text-tiny font-bold text-ink-600 hover:border-brand hover:text-brand-dark">
+                      다운로드
+                    </button>
+                    <button
+                      className="h-[26px] whitespace-nowrap rounded px-2 text-tiny font-bold"
+                      style={
+                        v.cur
+                          ? { background: '#eff6ff', color: '#1345bd' }
+                          : { border: '1px solid #cbd5e1', background: '#fff', color: '#475569' }
+                      }
+                    >
+                      {v.cur ? '사용 중' : '복원'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === 'activity' && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-label font-extrabold">활동 로그</span>
+                <span className="ml-auto text-tiny text-ink-400">총 {TASK_ACTIVITY.length}건</span>
+              </div>
+              {TASK_ACTIVITY.map((a, i) => (
+                <div key={i} className="flex items-start gap-2.5 border-b border-ink-100 pb-2 last:border-b-0">
+                  <span
+                    className="mt-0.5 flex size-6 flex-none items-center justify-center rounded-full"
+                    style={{ background: `${a.color}1a`, color: a.color }}
+                  >
+                    <Icon name={a.icon} size={15} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm2">
+                      <b className="font-bold">{a.who}</b>이(가) {a.text}
+                    </div>
+                    {a.sub && <div className="mt-0.5 truncate text-tiny text-ink-400">{a.sub}</div>}
+                  </div>
+                  <span className="flex-none whitespace-nowrap text-tiny text-ink-400">{a.when}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* 우측 — 댓글·채팅 (탭과 무관하게 항상 열려 있다) */}
+        <div className="flex min-w-0 flex-col rounded-lg border border-ink-200">
+          <div className="flex items-center gap-1.5 border-b border-ink-200 px-3 py-2">
+            <span className="text-sm2 font-extrabold">댓글 · 채팅</span>
+            <span className="ml-auto text-tiny text-ink-400">{TASK_COMMENTS.length}건</span>
+          </div>
+          <div className="flex max-h-[320px] min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3">
+            {TASK_COMMENTS.map((c, i) => (
+              <div key={i} className={`flex gap-2 ${c.me ? 'flex-row-reverse' : ''}`}>
+                <span
+                  className="flex size-6 flex-none items-center justify-center rounded-full text-mini font-extrabold"
+                  style={c.me ? { background: '#1750d8', color: '#fff' } : { background: '#f1f5f9', color: '#475569' }}
+                >
+                  {c.who[0]}
+                </span>
+                <div className={`min-w-0 ${c.me ? 'text-right' : ''}`}>
+                  <div className="flex items-center gap-1">
+                    <span className="whitespace-nowrap text-tiny font-bold">{c.who}</span>
+                    {c.ext && (
+                      <span className="whitespace-nowrap rounded-full bg-[#fff7ed] px-1.5 py-px text-[9.7px] font-extrabold text-[#c2410c]">
+                        외부
+                      </span>
+                    )}
+                    <span className="whitespace-nowrap text-tiny text-ink-400">{c.when}</span>
+                  </div>
+                  <div
+                    className="mt-1 inline-block rounded-lg px-2.5 py-1.5 text-left text-sm2 leading-[1.6]"
+                    style={c.me ? { background: '#1750d8', color: '#fff' } : { background: '#f1f5f9', color: '#334155' }}
+                  >
+                    {c.text}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-stretch gap-1.5 border-t border-ink-200 p-2">
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={2}
+              placeholder="메시지 입력… @로 멘션"
+              className={`${inputCls} resize-none`}
+            />
+            <BtnPrimary onClick={() => setComment('')}>보내기</BtnPrimary>
+          </div>
+        </div>
+      </div>
     </Modal>
   )
 }
+
+/* ── 에코바디스 ───────────────────────────────────── */
 
 function EcoExport() {
   const { isOpen, close } = useLayer('eco-export')
@@ -637,6 +1119,8 @@ function TaskAlertSheet() {
   )
 }
 
+/* ── 문서 작성기 ──────────────────────────────────── */
+
 function TocEditSheet() {
   const { isOpen, close } = useLayer('toc-edit')
   const items: [string, number][] = [
@@ -678,6 +1162,8 @@ function TocEditSheet() {
     </Sheet>
   )
 }
+
+/* ── AI 검색 ──────────────────────────────────────── */
 
 function AiChatSheet() {
   const { isOpen, close } = useLayer('ai-chat')

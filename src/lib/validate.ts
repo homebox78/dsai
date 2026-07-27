@@ -41,6 +41,12 @@ export const bizNo: Validator = (v) =>
 export const safeName: Validator = (v) =>
   !v.trim() || !/[\\/:*?"<>|]/.test(v) ? null : '이름에 \\ / : * ? " < > | 는 쓸 수 없습니다'
 
+/** 웹사이트 URL — http(s) 스킴 또는 도메인만 입력해도 통과 */
+export const url: Validator = (v) =>
+  !v.trim() || /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(v.trim())
+    ? null
+    : 'URL 형식이 올바르지 않습니다 (예: https://example.com)'
+
 export const runRules = (value: string, rules: Validator[]) => {
   for (const rule of rules) {
     const msg = rule(value)

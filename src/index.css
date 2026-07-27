@@ -203,6 +203,36 @@
     height: 100%;
   }
 
+  /* Tailwind v4 preflight는 버튼 커서를 default로 되돌린다.
+     클릭 가능한 요소는 모두 손가락 커서가 나오게 한다. */
+  button,
+  summary,
+  a[href],
+  label[for],
+  [role='button'],
+  [role='link'],
+  [role='menuitem'],
+  [role='option'],
+  [role='tab'],
+  [role='radio'],
+  [role='checkbox'],
+  [role='switch'] {
+    cursor: pointer;
+  }
+
+  /* 좁은 칸에서 버튼 글자가 세로로 쪼개지지 않게.
+     여러 줄이 필요한 버튼은 whitespace-normal 유틸로 덮어쓴다. */
+  button,
+  [role='button'] {
+    white-space: nowrap;
+  }
+
+  button:disabled,
+  [aria-disabled='true'],
+  [data-disabled] {
+    cursor: not-allowed;
+  }
+
   /* 시안 body 기준: 14.1px / line-height 1.7 / letter-spacing -.005em */
   body {
     margin: 0;
@@ -253,17 +283,40 @@
       'opsz' 24;
   }
 
-  /* 스크롤바 (시안 실측) */
+  /* 스크롤바 — 아주 얇게(4px). 화면이 좁아 보이지 않게 트랙은 투명 처리한다 */
+  /* Firefox 전용 — Chrome 계열에서 scrollbar-width 를 쓰면 ::-webkit-scrollbar 가 무시되고
+     브라우저 기본 thin(약 10px)이 적용돼 오히려 두꺼워진다 */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-ink-400) transparent;
+    }
+  }
+  /*
+   * 트랙은 10px 을 잡되 썸에 투명 테두리를 둘러 실제로는 4px 만 보이게 한다.
+   * 호버하면 테두리만 얇아져 8px 로 굵어진다 — 트랙 폭은 그대로라 레이아웃이 밀리지 않는다.
+   * (스크롤바 의사요소는 transition 이 먹지 않아 즉시 전환된다)
+   */
   ::-webkit-scrollbar {
-    width: 9px;
-    height: 9px;
+    width: 10px;
+    height: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-ink-300);
-    border-radius: 5px;
+    background-color: var(--color-ink-400);
+    border: 3px solid transparent; /* 10 - 3*2 = 4px */
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-ink-500);
+    border-width: 1px; /* 10 - 1*2 = 8px */
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-ink-100);
+    background: transparent;
+  }
+  /* 가로·세로가 만나는 모서리도 배경과 같게 */
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

@@ -1,3 +1,4 @@
+import { FileExt } from '@/components/common/FileExt'
 import { useState } from 'react'
 import { useQaState } from '@/lib/qa-state'
 import { Icon } from '@/components/common/icon'
@@ -6,7 +7,12 @@ import { useAppStore } from '@/stores/app-store'
 import { useLayerStore } from '@/stores/layer-store'
 import { DocPreview, fileUrl } from '@/components/common/DocPreview'
 
-/** 파일 상세 (p40) — 요약 hide/show · 탭 4종 · 뷰어 · 메타/버전/활동 */
+/**
+ * 파일 상세 (설계서 p40)
+ *
+ * AI 요약(접기/펼치기) + 탭 4종 [문서 보기 · 메타데이터 · 버전 · 활동].
+ * '문서 보기'는 DocPreview 가 public/files 의 실제 PDF/XLSX/DOCX 를 렌더한다 (페이지 이동·확대축소 실동작).
+ */
 
 const TABS: [string, string][] = [
   ['preview', '문서 보기'],
@@ -64,9 +70,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
     <>
       <div className="flex-none border-b border-ink-200 bg-white">
         <div className="flex items-center gap-2 px-3.5 py-3">
-          <span className="flex size-7 flex-none items-center justify-center rounded-md bg-ink-100 font-mono text-[8.7px] font-extrabold text-ink-600">
-            {file.ext}
-          </span>
+          <FileExt ext={file.ext} size={28} />
           <div className="min-w-0 flex-1">
             <div className="truncate text-base2 font-extrabold">{file.name}</div>
             <div className="mt-1 flex items-center gap-1.5">
@@ -155,7 +159,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
           {tab === 'preview' && (
             <>
               <div className="flex items-center gap-1 rounded-md bg-ink-200 px-[5px] py-[3px]">
-                <button
+                <button title="이전 페이지"
                   onClick={() => { setPage((p) => Math.max(1, p - 1)); setHighlight(null) }}
                   className="size-[22px] flex-none rounded border border-ink-200 bg-white p-0 text-ink-600"
                 >
@@ -164,7 +168,7 @@ export function FileDetail({ file, folderName }: { file: DocFile; folderName: st
                 <span className="min-w-[74px] text-center text-cap font-bold">
                   {page} / {file.pages}p
                 </span>
-                <button
+                <button title="다음 페이지"
                   onClick={() => { setPage((p) => Math.min(file.pages, p + 1)); setHighlight(null) }}
                   className="size-[22px] flex-none rounded border border-ink-200 bg-white p-0 text-ink-600"
                 >
